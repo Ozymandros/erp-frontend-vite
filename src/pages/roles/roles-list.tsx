@@ -29,7 +29,7 @@ export function RolesListPage() {
     setIsLoading(true)
     setError(null)
     try {
-      const data = await rolesService.getRoles({
+      const data = await rolesService.getRolesPaginated({
         page,
         pageSize: 10,
         search: searchQuery || undefined,

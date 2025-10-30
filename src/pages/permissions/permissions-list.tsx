@@ -28,7 +28,7 @@ export function PermissionsListPage() {
     setIsLoading(true)
     setError(null)
     try {
-      const data = await permissionsService.getPermissions({
+      const data = await permissionsService.getPermissionsPaginated({
         page,
         pageSize: 10,
         search: searchQuery || undefined,
