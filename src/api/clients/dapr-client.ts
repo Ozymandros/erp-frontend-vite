@@ -1,4 +1,5 @@
 import { type ApiClient, type ApiClientConfig, type RequestConfig, ApiClientError } from "./types"
+import { showToastError } from '@/contexts/toast.service'
 
 export class DaprHttpClient implements ApiClient {
   private baseURL: string
@@ -103,6 +104,10 @@ export class DaprHttpClient implements ApiClient {
         if (this.onError) {
           this.onError(timeoutError)
         }
+        try {
+          console.debug('[DaprHttpClient] emitting timeout toast', timeoutError.message)
+          showToastError('Request timeout', timeoutError.message)
+        } catch (e) {}
         throw timeoutError
       }
 
@@ -110,6 +115,10 @@ export class DaprHttpClient implements ApiClient {
         if (this.onError) {
           this.onError(error)
         }
+        try {
+          console.debug('[DaprHttpClient] emitting error toast', error.message)
+          showToastError('Error', error.message)
+        } catch (e) {}
         throw error
       }
 
@@ -117,6 +126,10 @@ export class DaprHttpClient implements ApiClient {
       if (this.onError) {
         this.onError(networkError)
       }
+      try {
+        console.debug('[DaprHttpClient] emitting network toast', networkError.message)
+        showToastError('Network Error', networkError.message)
+      } catch (e) {}
       throw networkError
     }
   }

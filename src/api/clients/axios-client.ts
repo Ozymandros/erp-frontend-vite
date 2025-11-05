@@ -1,5 +1,6 @@
 import axios, { type AxiosInstance, type AxiosError, type InternalAxiosRequestConfig } from "axios"
 import { type ApiClient, type ApiClientConfig, type RequestConfig, ApiClientError } from "./types"
+import { showToastError } from '@/contexts/toast.service'
 
 export class AxiosApiClient implements ApiClient {
   private client: AxiosInstance
@@ -56,16 +57,36 @@ export class AxiosApiClient implements ApiClient {
       const { status, data } = error.response
       const errorData = data as any
 
-      return new ApiClientError(
+      const apiErr = new ApiClientError(
         errorData?.message || error.message || "An error occurred",
         status,
         errorData?.code,
         errorData?.details,
       )
+
+      // show typed toast (queued if provider not ready)
+      try {
+        console.debug('[AxiosApiClient] emitting toast error', status, apiErr.message)
+        showToastError(status ? `Error ${status}` : 'Error', apiErr.message)
+      } catch (e) {
+        // ignore
+      }
+
+      return apiErr
     } else if (error.request) {
-      return new ApiClientError("No response received from server", undefined, "NETWORK_ERROR")
+      const netErr = new ApiClientError("No response received from server", undefined, "NETWORK_ERROR")
+      try {
+        console.debug('[AxiosApiClient] emitting network toast', netErr.message)
+        showToastError('Network Error', netErr.message)
+      } catch (e) {}
+      return netErr
     } else {
-      return new ApiClientError(error.message || "Request setup failed", undefined, "REQUEST_ERROR")
+      const reqErr = new ApiClientError(error.message || "Request setup failed", undefined, "REQUEST_ERROR")
+      try {
+        console.debug('[AxiosApiClient] emitting request toast', reqErr.message)
+        showToastError('Request Error', reqErr.message)
+      } catch (e) {}
+      return reqErr
     }
   }
 
