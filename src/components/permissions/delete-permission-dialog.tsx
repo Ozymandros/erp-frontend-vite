@@ -59,7 +59,7 @@ export function DeletePermissionDialog({ permission, open, onOpenChange, onSucce
 
           <div className="space-y-2">
             <p className="text-sm">
-              <span className="font-medium">Resource:</span> {permission.resource}
+              <span className="font-medium">Resource:</span> {permission.module}
             </p>
             <p className="text-sm">
               <span className="font-medium">Action:</span> {permission.action}

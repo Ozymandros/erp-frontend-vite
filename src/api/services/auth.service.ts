@@ -33,8 +33,8 @@ class AuthService {
     return this.apiClient.get<User>("/users/me")
   }
 
-  async checkPermission(resource: string, action: string): Promise<PermissionCheckResponse> {
-    const request: PermissionCheckRequest = { resource, action }
+  async checkPermission(module: string, action: string): Promise<PermissionCheckResponse> {
+    const request: PermissionCheckRequest = { module, action }
     return this.apiClient.post<PermissionCheckResponse>("/permissions/check", request)
   }
 }

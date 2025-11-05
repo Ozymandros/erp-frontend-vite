@@ -52,7 +52,7 @@ export function ProtectedRoute({ children, requiredResource, requiredAction }: P
         <div className="text-center max-w-md">
           <h1 className="text-2xl font-bold text-destructive mb-2">Access Denied</h1>
           <p className="text-muted-foreground">
-            You don't have permission to access this resource. Please contact your administrator.
+            You don't have permission to access this module. Please contact your administrator.
           </p>
         </div>
       </div>

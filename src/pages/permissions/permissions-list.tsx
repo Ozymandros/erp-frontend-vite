@@ -88,7 +88,7 @@ export function PermissionsListPage() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search permissions by resource or action..."
+                placeholder="Search permissions by module or action..."
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
                 className="pl-10"
@@ -108,7 +108,7 @@ export function PermissionsListPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Resource</TableHead>
+                      <TableHead>Module</TableHead>
                       <TableHead>Action</TableHead>
                       <TableHead>Description</TableHead>
                       <TableHead>Created</TableHead>
@@ -119,7 +119,7 @@ export function PermissionsListPage() {
                     {permissions.items.map((permission) => (
                       <TableRow key={permission.id}>
                         <TableCell>
-                          <Badge variant="secondary">{permission.resource}</Badge>
+                          <Badge variant="secondary">{permission.module}</Badge>
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline">{permission.action}</Badge>

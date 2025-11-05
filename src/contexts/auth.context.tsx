@@ -14,7 +14,7 @@ interface AuthContextType {
   login: (credentials: LoginRequest) => Promise<void>
   register: (data: RegisterRequest) => Promise<void>
   logout: () => Promise<void>
-  checkPermission: (resource: string, action: string) => Promise<boolean>
+  checkPermission: (module: string, action: string) => Promise<boolean>
   refreshUserData: () => Promise<void>
 }
 
@@ -149,9 +149,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [getRefreshToken, clearTokens, navigate])
 
   // Check permission
-  const checkPermission = useCallback(async (resource: string, action: string): Promise<boolean> => {
+  const checkPermission = useCallback(async (module: string, action: string): Promise<boolean> => {
     try {
-      const response = await authService.checkPermission(resource, action)
+      const response = await authService.checkPermission(module, action)
       return response.allowed
     } catch (error) {
       console.error("[Auth] Permission check failed:", error)

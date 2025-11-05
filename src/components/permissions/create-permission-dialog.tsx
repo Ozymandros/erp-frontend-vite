@@ -27,7 +27,7 @@ interface CreatePermissionDialogProps {
 
 export function CreatePermissionDialog({ open, onOpenChange, onSuccess }: CreatePermissionDialogProps) {
   const [formData, setFormData] = useState<CreatePermissionRequest>({
-    resource: "",
+    module: "",
     action: "",
     description: "",
   })
@@ -49,7 +49,7 @@ export function CreatePermissionDialog({ open, onOpenChange, onSuccess }: Create
         description: formData.description || undefined,
       })
       onSuccess()
-      setFormData({ resource: "", action: "", description: "" })
+      setFormData({ module: "", action: "", description: "" })
     } catch (err: any) {
       setError(err.message || "Failed to create permission")
     } finally {
@@ -74,16 +74,16 @@ export function CreatePermissionDialog({ open, onOpenChange, onSuccess }: Create
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="resource">Resource *</Label>
+              <Label htmlFor="module">Resource *</Label>
               <Input
-                id="resource"
-                value={formData.resource}
-                onChange={(e) => handleChange("resource", e.target.value)}
+                id="module"
+                value={formData.module}
+                onChange={(e) => handleChange("module", e.target.value)}
                 required
                 disabled={isLoading}
                 placeholder="e.g., users, roles, permissions"
               />
-              <p className="text-xs text-muted-foreground">The resource this permission applies to</p>
+              <p className="text-xs text-muted-foreground">The module this permission applies to</p>
             </div>
 
             <div className="space-y-2">

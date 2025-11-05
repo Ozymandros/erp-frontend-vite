@@ -28,7 +28,7 @@ interface EditPermissionDialogProps {
 
 export function EditPermissionDialog({ permission, open, onOpenChange, onSuccess }: EditPermissionDialogProps) {
   const [formData, setFormData] = useState<UpdatePermissionRequest>({
-    resource: permission.resource,
+    module: permission.module,
     action: permission.action,
     description: permission.description,
   })
@@ -37,7 +37,7 @@ export function EditPermissionDialog({ permission, open, onOpenChange, onSuccess
 
   useEffect(() => {
     setFormData({
-      resource: permission.resource,
+      module: permission.module,
       action: permission.action,
       description: permission.description,
     })
@@ -79,11 +79,11 @@ export function EditPermissionDialog({ permission, open, onOpenChange, onSuccess
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="edit-resource">Resource</Label>
+              <Label htmlFor="edit-module">Resource</Label>
               <Input
-                id="edit-resource"
-                value={formData.resource || ""}
-                onChange={(e) => handleChange("resource", e.target.value)}
+                id="edit-module"
+                value={formData.module || ""}
+                onChange={(e) => handleChange("module", e.target.value)}
                 disabled={isLoading}
               />
             </div>

@@ -63,7 +63,7 @@ export class RoleDto extends AuditableDto<string> {
 }
 
 export class PermissionDto extends AuditableDto<string> {
-  public resource!: string
+  public module!: string
   public action!: string
   public description?: string
 
@@ -170,7 +170,7 @@ export interface RefreshTokenRequest {
 }
 
 export interface PermissionCheckRequest {
-  resource: string
+  module: string
   action: string
 }
 
@@ -227,19 +227,19 @@ export interface UpdateRoleRequest {
 
 // Permission Types
 export interface Permission extends IAuditableDto<string> {
-  resource: string
+  module: string
   action: string
   description?: string
 }
 
 export interface CreatePermissionRequest {
-  resource: string
+  module: string
   action: string
   description?: string
 }
 
 export interface UpdatePermissionRequest {
-  resource?: string
+  module?: string
   action?: string
   description?: string
 }

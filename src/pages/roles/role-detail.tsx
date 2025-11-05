@@ -140,7 +140,7 @@ export function RoleDetailPage() {
                       {permission.action}
                     </Badge>
                   </div>
-                  <p className="font-medium text-sm text-foreground">{permission.resource}</p>
+                  <p className="font-medium text-sm text-foreground">{permission.module}</p>
                   {permission.description && (
                     <p className="text-xs text-muted-foreground mt-1">{permission.description}</p>
                   )}

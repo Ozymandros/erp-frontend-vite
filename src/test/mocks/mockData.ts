@@ -14,7 +14,7 @@ export const mockUser: User = {
 
 export const mockPermission: Permission = {
   id: "perm-1",
-  resource: "users",
+  module: "users",
   action: "read",
   description: "Read users",
   createdAt: "2024-01-01T00:00:00Z",

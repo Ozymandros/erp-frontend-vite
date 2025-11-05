@@ -161,7 +161,7 @@ export function UserDetailPage() {
                       <div className="flex flex-wrap gap-2">
                         {role.permissions.map((permission) => (
                           <Badge key={permission.id} variant="secondary">
-                            {permission.resource}:{permission.action}
+                            {permission.module}:{permission.action}
                           </Badge>
                         ))}
                       </div>
