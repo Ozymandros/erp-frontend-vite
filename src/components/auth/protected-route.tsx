@@ -16,6 +16,14 @@ export function ProtectedRoute({ children, requiredResource, requiredAction }: P
   const location = useLocation()
   const [hasPermission, setHasPermission] = React.useState<boolean | null>(null)
 
+  // #region agent log
+  React.useEffect(() => {
+    const sessionStorage = window.sessionStorage;
+    const token = sessionStorage.getItem('access_token');
+    fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'protected-route.tsx:15',message:'ProtectedRoute rendered',data:{path:location.pathname,isAuthenticated,isLoading,hasToken:!!token,tokenLength:token?.length||0,requiredResource,requiredAction},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
+  }, [location.pathname, isAuthenticated, isLoading, requiredResource, requiredAction]);
+  // #endregion
+
   React.useEffect(() => {
     const verifyPermission = async () => {
       if (requiredResource && requiredAction) {

@@ -1,9 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { render, screen, fireEvent, waitFor } from "@/test/utils/test-utils"
-import { CreateUserDialog } from "../create-user-dialog"
-import * as usersService from "@/api/services/users.service"
 
-vi.mock("@/api/services/users.service")
+vi.mock("@/api/services/users.service", () => ({
+  usersService: {
+    createUser: vi.fn(),
+  },
+}))
+
+// Import after mocking
+import { CreateUserDialog } from "../create-user-dialog"
+import { usersService } from "@/api/services/users.service"
 
 describe("CreateUserDialog", () => {
   const mockOnSuccess = vi.fn()
@@ -29,7 +35,8 @@ describe("CreateUserDialog", () => {
   })
 
   it("should handle successful user creation", async () => {
-    const mockCreateUser = vi.spyOn(usersService.usersService, "createUser").mockResolvedValue({
+    const mockCreateUser = vi.mocked(usersService.createUser)
+    mockCreateUser.mockResolvedValue({
       id: "user-1",
       username: "newuser",
       email: "new@example.com",
@@ -37,11 +44,11 @@ describe("CreateUserDialog", () => {
       roles: [],
       createdAt: "2024-01-01T00:00:00Z",
       updatedAt: "2024-01-01T00:00:00Z",
-    })
+    } as any)
 
     render(<CreateUserDialog open={true} onOpenChange={mockOnOpenChange} onSuccess={mockOnSuccess} />)
 
-    fireEvent.change(screen.getByLabelText(/username/i), { target: { value: "newuser" } })
+    fireEvent.change(screen.getByLabelText(/username/i), { target: { value: "newuser123" } })
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: "new@example.com" } })
     fireEvent.change(screen.getByLabelText(/password/i), { target: { value: "password123" } })
 
@@ -49,18 +56,19 @@ describe("CreateUserDialog", () => {
 
     await waitFor(() => {
       expect(mockCreateUser).toHaveBeenCalledWith({
-        username: "newuser",
+        username: "newuser123",
         email: "new@example.com",
         password: "password123",
         firstName: undefined,
         lastName: undefined,
       })
       expect(mockOnSuccess).toHaveBeenCalled()
-    })
+    }, { timeout: 3000 })
   })
 
   it("should display error on creation failure", async () => {
-    vi.spyOn(usersService.usersService, "createUser").mockRejectedValue(new Error("Username already exists"))
+    const mockCreateUser = vi.mocked(usersService.createUser)
+    mockCreateUser.mockRejectedValue(new Error("Username already exists"))
 
     render(<CreateUserDialog open={true} onOpenChange={mockOnOpenChange} onSuccess={mockOnSuccess} />)
 

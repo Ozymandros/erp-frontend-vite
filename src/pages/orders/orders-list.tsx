@@ -32,28 +32,58 @@ export function OrdersListPage() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchOrders = async () => {
+    // #region agent log
+    const sessionStorage = window.sessionStorage;
+    const token = sessionStorage.getItem('access_token');
+    fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'orders-list.tsx:30',message:'fetchOrders called',data:{hasToken:!!token,tokenLength:token?.length||0},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
     setIsLoading(true);
     setError(null);
     try {
       const data = await ordersService.getOrders();
       setOrders(data);
     } catch (err: any) {
-      setError(err.message || "Failed to fetch orders");
+      // #region agent log
+      fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'orders-list.tsx:38',message:'fetchOrders failed',data:{error:err?.message||String(err),status:err?.status,hasToken:!!token},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+      // #endregion
+      // Handle 403 Forbidden (permission denied) with user-friendly message
+      if (err.statusCode === 403) {
+        setError("You don't have permission to view orders. Please contact your administrator to request access.");
+      } else {
+        setError(err.message || "Failed to fetch orders");
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   const fetchCustomers = async () => {
+    // #region agent log
+    const sessionStorage = window.sessionStorage;
+    const token = sessionStorage.getItem('access_token');
+    fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'orders-list.tsx:47',message:'fetchCustomers called',data:{hasToken:!!token,tokenLength:token?.length||0,hasSessionStorage:!!sessionStorage},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
     try {
       const data = await customersService.getCustomers();
       setCustomers(data);
-    } catch (err) {
-      console.error("Failed to fetch customers", err);
+    } catch (err: any) {
+      // #region agent log
+      fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'orders-list.tsx:52',message:'fetchCustomers failed',data:{error:err instanceof Error?err.message:String(err),hasToken:!!token,status:err?.statusCode},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+      // #endregion
+      // Handle 403 Forbidden (permission denied) gracefully - don't show error for customers dropdown
+      if (err.statusCode !== 403) {
+        console.error("Failed to fetch customers", err);
+      }
+      // If 403, just leave customers list empty - the user doesn't have permission to view it
     }
   };
 
   useEffect(() => {
+    // #region agent log
+    const sessionStorage = window.sessionStorage;
+    const token = sessionStorage.getItem('access_token');
+    fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'orders-list.tsx:56',message:'OrdersListPage mounted, fetching data',data:{hasToken:!!token,tokenLength:token?.length||0},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
+    // #endregion
     fetchOrders();
     fetchCustomers();
   }, []);

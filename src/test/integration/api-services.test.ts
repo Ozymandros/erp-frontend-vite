@@ -1,24 +1,27 @@
 import { describe, it, expect, beforeEach, vi } from "vitest"
-import { usersService } from "@/api/services/users.service"
-import { rolesService } from "@/api/services/roles.service"
-import { permissionsService } from "@/api/services/permissions.service"
 import * as apiClients from "@/api/clients"
 
-vi.mock("@/api/clients")
+const mockApiClient = {
+  get: vi.fn(),
+  post: vi.fn(),
+  put: vi.fn(),
+  patch: vi.fn(),
+  delete: vi.fn(),
+  setAuthToken: vi.fn(),
+}
+
+vi.mock("@/api/clients", () => ({
+  getApiClient: () => mockApiClient,
+}))
+
+// Import after mocking - services will be instantiated with mocked client
+const { usersService } = await import("@/api/services/users.service")
+const { rolesService } = await import("@/api/services/roles.service")
+const { permissionsService } = await import("@/api/services/permissions.service")
 
 describe("API Services Integration", () => {
-  const mockApiClient = {
-    get: vi.fn(),
-    post: vi.fn(),
-    put: vi.fn(),
-    patch: vi.fn(),
-    delete: vi.fn(),
-    setAuthToken: vi.fn(),
-  }
-
   beforeEach(() => {
     vi.clearAllMocks()
-    ;(apiClients.getApiClient as any).mockReturnValue(mockApiClient)
   })
 
   describe("UsersService", () => {
@@ -28,14 +31,15 @@ describe("API Services Integration", () => {
         total: 0,
         page: 1,
         pageSize: 10,
-        totalPages: 0,
+        hasNext: false,
+        hasPrevious: false,
       }
       mockApiClient.get.mockResolvedValue(mockResponse)
 
-      const result = await usersService.getUsers({ page: 1, pageSize: 10 })
+      const result = await usersService.searchUsers({ page: 1, pageSize: 10, searchTerm: "" })
 
-      expect(mockApiClient.get).toHaveBeenCalledWith("/users", {
-        params: { page: 1, pageSize: 10 },
+      expect(mockApiClient.get).toHaveBeenCalledWith("/auth/api/users/search", {
+        params: { page: 1, pageSize: 10, searchTerm: "" },
       })
       expect(result).toEqual(mockResponse)
     })
@@ -51,43 +55,31 @@ describe("API Services Integration", () => {
 
       const result = await usersService.createUser(newUser)
 
-      expect(mockApiClient.post).toHaveBeenCalledWith("/users", newUser)
+      expect(mockApiClient.post).toHaveBeenCalledWith("/auth/api/users/create", newUser)
       expect(result).toEqual(mockResponse)
     })
   })
 
   describe("RolesService", () => {
     it("should fetch roles", async () => {
-      const mockResponse = {
-        items: [],
-        total: 0,
-        page: 1,
-        pageSize: 10,
-        totalPages: 0,
-      }
+      const mockResponse: any[] = []
       mockApiClient.get.mockResolvedValue(mockResponse)
 
       const result = await rolesService.getRoles()
 
-      expect(mockApiClient.get).toHaveBeenCalledWith("/roles", { params: undefined })
+      expect(mockApiClient.get).toHaveBeenCalledWith("/auth/api/roles")
       expect(result).toEqual(mockResponse)
     })
   })
 
   describe("PermissionsService", () => {
     it("should fetch permissions", async () => {
-      const mockResponse = {
-        items: [],
-        total: 0,
-        page: 1,
-        pageSize: 10,
-        totalPages: 0,
-      }
+      const mockResponse: any[] = []
       mockApiClient.get.mockResolvedValue(mockResponse)
 
       const result = await permissionsService.getPermissions()
 
-      expect(mockApiClient.get).toHaveBeenCalledWith("/permissions", { params: undefined })
+      expect(mockApiClient.get).toHaveBeenCalledWith("/auth/api/permissions")
       expect(result).toEqual(mockResponse)
     })
   })

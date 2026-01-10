@@ -18,9 +18,12 @@ import { WarehousesListPage } from "@/pages/inventory/warehouses-list";
 import { WarehouseDetailPage } from "@/pages/inventory/warehouse-detail";
 import { WarehouseStocksListPage } from "@/pages/inventory/warehouse-stocks-list";
 import { InventoryTransactionsListPage } from "@/pages/inventory/inventory-transactions-list";
+import { StockOperationsPage } from "@/pages/inventory/stock-operations";
 import { CustomersListPage } from "@/pages/sales/customers-list";
 import { CustomerDetailPage } from "@/pages/sales/customer-detail";
+import { SalesOrdersListPage } from "@/pages/sales/sales-orders-list";
 import { OrdersListPage } from "@/pages/orders/orders-list";
+import { PurchaseOrdersListPage } from "@/pages/purchasing/purchase-orders-list";
 import { ToastContextProvider } from "./contexts/toast.context";
 
 function App() {
@@ -63,6 +66,7 @@ function App() {
               <Route path="/inventory/warehouses/:id" element={<WarehouseDetailPage />} />
               <Route path="/inventory/warehouse-stocks" element={<WarehouseStocksListPage />} />
               <Route path="/inventory/transactions" element={<InventoryTransactionsListPage />} />
+              <Route path="/inventory/stock-operations" element={<StockOperationsPage />} />
 
               {/* Orders Management */}
               <Route path="/orders" element={<OrdersListPage />} />
@@ -70,6 +74,12 @@ function App() {
               {/* Sales Management */}
               <Route path="/sales/customers" element={<CustomersListPage />} />
               <Route path="/sales/customers/:id" element={<CustomerDetailPage />} />
+              <Route path="/sales/orders" element={<SalesOrdersListPage />} />
+              <Route path="/sales/orders/:id" element={<SalesOrdersListPage />} />
+
+              {/* Purchasing Management */}
+              <Route path="/purchasing/orders" element={<PurchaseOrdersListPage />} />
+              <Route path="/purchasing/orders/:id" element={<PurchaseOrdersListPage />} />
             </Route>
 
             {/* Catch all */}

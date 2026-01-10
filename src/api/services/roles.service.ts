@@ -1,6 +1,15 @@
 import { getApiClient } from "../clients";
 import { ROLES_ENDPOINTS } from "../constants/endpoints";
-import type { Role, CreateRoleRequest, UpdateRoleRequest, PaginatedResponse, SearchParams, QuerySpec, User, Permission } from "@/types/api.types";
+import type {
+  Role,
+  CreateRoleRequest,
+  UpdateRoleRequest,
+  PaginatedResponse,
+  SearchParams,
+  QuerySpec,
+  User,
+  Permission,
+} from "@/types/api.types";
 
 class RolesService {
   private apiClient = getApiClient();
@@ -9,12 +18,19 @@ class RolesService {
     return this.apiClient.get<Role[]>(ROLES_ENDPOINTS.BASE);
   }
 
-  async getRolesPaginated(params?: SearchParams): Promise<PaginatedResponse<Role>> {
-    return this.apiClient.get<PaginatedResponse<Role>>(ROLES_ENDPOINTS.PAGINATED, { params });
+  async getRolesPaginated(
+    params?: SearchParams
+  ): Promise<PaginatedResponse<Role>> {
+    return this.apiClient.get<PaginatedResponse<Role>>(
+      ROLES_ENDPOINTS.PAGINATED,
+      { params }
+    );
   }
 
   async searchRoles(querySpec: QuerySpec): Promise<PaginatedResponse<Role>> {
-    return this.apiClient.get<PaginatedResponse<Role>>(ROLES_ENDPOINTS.SEARCH, { params: querySpec });
+    return this.apiClient.get<PaginatedResponse<Role>>(ROLES_ENDPOINTS.SEARCH, {
+      params: querySpec,
+    });
   }
 
   async getRoleById(id: string): Promise<Role> {
@@ -41,16 +57,28 @@ class RolesService {
     return this.apiClient.get<User[]>(ROLES_ENDPOINTS.USERS_IN_ROLE(name));
   }
 
-  async addPermissionToRole(roleId: string, permissionId: string): Promise<void> {
-    return this.apiClient.post<void>(ROLES_ENDPOINTS.ADD_PERMISSION(roleId), { permissionId });
+  async addPermissionToRole(
+    roleId: string,
+    permissionId: string
+  ): Promise<void> {
+    return this.apiClient.post<void>(ROLES_ENDPOINTS.ADD_PERMISSION(roleId), {
+      permissionId,
+    });
   }
 
-  async removePermissionFromRole(roleId: string, permissionId: string): Promise<void> {
-    return this.apiClient.delete<void>(ROLES_ENDPOINTS.REMOVE_PERMISSION(roleId, permissionId));
+  async removePermissionFromRole(
+    roleId: string,
+    permissionId: string
+  ): Promise<void> {
+    return this.apiClient.delete<void>(
+      ROLES_ENDPOINTS.REMOVE_PERMISSION(roleId, permissionId)
+    );
   }
 
   async getRolePermissions(roleId: string): Promise<Permission[]> {
-    return this.apiClient.get<Permission[]>(ROLES_ENDPOINTS.PERMISSIONS(roleId));
+    return this.apiClient.get<Permission[]>(
+      ROLES_ENDPOINTS.PERMISSIONS(roleId)
+    );
   }
 }
 

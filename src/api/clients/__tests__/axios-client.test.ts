@@ -20,7 +20,12 @@ describe("AxiosApiClient", () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    ;(axios.create as any).mockReturnValue(mockAxiosInstance)
+    ;(axios.create as any).mockReturnValue({
+      ...mockAxiosInstance,
+      defaults: {
+        baseURL: "http://localhost:8080",
+      },
+    })
     client = new AxiosApiClient({
       baseURL: "http://localhost:8080",
     })

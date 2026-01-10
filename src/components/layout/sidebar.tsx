@@ -5,7 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
-import { Users, Shield, Key, Menu, X, Package, Warehouse, ShoppingCart, DollarSign, TrendingUp, FileText } from "lucide-react"
+import { Users, Shield, Key, Menu, X, Package, Warehouse, ShoppingCart, DollarSign, TrendingUp, FileText, ShoppingBag } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface NavItem {
@@ -46,6 +46,16 @@ const navItems: NavItem[] = [
     icon: DollarSign,
   },
   {
+    title: "Sales Orders",
+    href: "/sales/orders",
+    icon: ShoppingCart,
+  },
+  {
+    title: "Purchase Orders",
+    href: "/purchasing/orders",
+    icon: ShoppingBag,
+  },
+  {
     title: "Warehouse Stocks",
     href: "/inventory/warehouse-stocks",
     icon: TrendingUp,
@@ -54,6 +64,11 @@ const navItems: NavItem[] = [
     title: "Transactions",
     href: "/inventory/transactions",
     icon: FileText,
+  },
+  {
+    title: "Stock Operations",
+    href: "/inventory/stock-operations",
+    icon: TrendingUp,
   },
   {
     title: "Orders",

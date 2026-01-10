@@ -31,6 +31,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Store tokens in sessionStorage
   const storeTokens = useCallback((accessToken: string, refreshToken: string, expiresIn: number) => {
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'auth.context.tsx:33',message:'storeTokens called',data:{hasAccessToken:!!accessToken,tokenLength:accessToken.length,expiresIn},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
     sessionStorage.setItem(ACCESS_TOKEN_KEY, accessToken)
     sessionStorage.setItem(REFRESH_TOKEN_KEY, refreshToken)
     const expiryTime = Date.now() + expiresIn * 1000
@@ -39,6 +42,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Set token in API client
     const apiClient = getApiClient()
     apiClient.setAuthToken(accessToken)
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'auth.context.tsx:42',message:'Token stored and set in API client',data:{tokenSet:true},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
   }, [])
 
   // Clear tokens from storage
@@ -170,13 +176,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const accessToken = getAccessToken()
       const refreshToken = getRefreshToken()
 
+      // #region agent log
+      fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'auth.context.tsx:169',message:'Auth initialization started',data:{hasAccessToken:!!accessToken,hasRefreshToken:!!refreshToken,accessTokenLength:accessToken?.length||0},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
+      // #endregion
+
       if (!accessToken || !refreshToken) {
+        // #region agent log
+        fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'auth.context.tsx:175',message:'No tokens found in storage',data:{hasAccessToken:!!accessToken,hasRefreshToken:!!refreshToken},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+        // #endregion
         setIsLoading(false)
         return
       }
 
       // Set token in API client
       const apiClient = getApiClient()
+      // #region agent log
+      fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'auth.context.tsx:181',message:'Setting token in API client',data:{hasToken:!!accessToken,tokenLength:accessToken.length},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+      // #endregion
       apiClient.setAuthToken(accessToken)
 
       // Check if token is expired
