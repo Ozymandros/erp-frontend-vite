@@ -47,7 +47,10 @@ npm run dev
 
 \`\`\`env
 # API Configuration
-VITE_API_BASE_URL=http://localhost:5000/api
+# ⚠️ IMPORTANT: Do NOT include /api suffix in base URL!
+# All endpoints in src/api/constants/endpoints.ts already include full gateway paths
+# The API client will automatically remove /api if accidentally included
+VITE_API_BASE_URL=http://localhost:5000
 
 # API Client Selection (true = Dapr, false = Axios)
 VITE_USE_DAPR=false
@@ -56,6 +59,9 @@ VITE_USE_DAPR=false
 VITE_DAPR_APP_ID=auth-service
 VITE_DAPR_PORT=3500
 \`\`\`
+
+**Common Mistake:** If you see URLs like `http://localhost:5000/api/auth/api/auth/login` (double `/api`), 
+your `VITE_API_BASE_URL` likely includes `/api`. Remove it!
 
 ## Project Structure
 

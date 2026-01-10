@@ -4,21 +4,19 @@ import { Input } from "../ui/input";
 import * as Select from "@radix-ui/react-select";
 import { rolesService } from "@/api/services/roles.service";
 import { Role } from "@/types/api.types";
-import { Toast } from "@radix-ui/react-toast";
 
 type FilterProps = {
-  onFilterChange: (filters: Record<string, string>) => void;
-};
+  filters: Record<string, string>
+  onFilterChange: (filters: Record<string, string>) => void
+}
 
-export const PermissionFilterHeader = ({ onFilterChange }: FilterProps) => {
-  const [filters, setFilters] = useState({ search: "", role: "" });
+export const PermissionFilterHeader = ({ filters, onFilterChange }: FilterProps) => {
   const [roles, setRoles] = useState<Role[]>([]);
 
   const handleChange = (key: string, value: string) => {
     const updated = { ...filters, [key]: value };
-    setFilters(updated);
     onFilterChange(updated);
-  };
+  }
 
   useEffect(() => {
     const fetchRoles = async () => {

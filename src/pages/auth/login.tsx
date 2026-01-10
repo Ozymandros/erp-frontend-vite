@@ -5,6 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/auth.context"
+import { LoginSchema, type LoginFormData } from "@/lib/validation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -13,18 +14,46 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export function LoginPage() {
   const { login } = useAuth()
-  const [email, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+  const [formData, setFormData] = useState<LoginFormData>({ email: "", password: "" })
   const [error, setError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [isLoading, setIsLoading] = useState(false)
+
+  const handleChange = (field: keyof LoginFormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+    // Clear field error when user starts typing
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => {
+        const newErrors = { ...prev }
+        delete newErrors[field]
+        return newErrors
+      })
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    setFieldErrors({})
+
+    // Client-side validation
+    const validation = LoginSchema.safeParse(formData)
+    if (!validation.success) {
+      const errors: Record<string, string> = {}
+      validation.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          errors[err.path[0].toString()] = err.message
+        }
+      })
+      setFieldErrors(errors)
+      setError("Please fix the validation errors")
+      return
+    }
+
     setIsLoading(true)
 
     try {
-      await login({ email, password })
+      await login(formData)
     } catch (err: any) {
       setError(err.message || "Login failed. Please check your credentials.")
     } finally {
@@ -47,16 +76,20 @@ export function LoginPage() {
               </Alert>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email">Username</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
-                type="text"
+                type="email"
                 placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setUsername(e.target.value)}
+                value={formData.email}
+                onChange={(e) => handleChange("email", e.target.value)}
                 required
                 disabled={isLoading}
+                className={fieldErrors.email ? "border-red-500" : ""}
               />
+              {fieldErrors.email && (
+                <p className="text-sm text-red-500">{fieldErrors.email}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -64,11 +97,15 @@ export function LoginPage() {
                 id="password"
                 type="password"
                 placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={formData.password}
+                onChange={(e) => handleChange("password", e.target.value)}
                 required
                 disabled={isLoading}
+                className={fieldErrors.password ? "border-red-500" : ""}
               />
+              {fieldErrors.password && (
+                <p className="text-sm text-red-500">{fieldErrors.password}</p>
+              )}
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">

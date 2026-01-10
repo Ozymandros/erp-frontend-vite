@@ -1,4 +1,9 @@
-import { getApiClient } from "../clients"
+import { getApiClient } from "../clients";
+import {
+  AUTH_ENDPOINTS,
+  USERS_ENDPOINTS,
+  PERMISSIONS_ENDPOINTS,
+} from "../constants/endpoints";
 import type {
   LoginRequest,
   RegisterRequest,
@@ -7,36 +12,45 @@ import type {
   PermissionCheckRequest,
   PermissionCheckResponse,
   User,
-} from "@/types/api.types"
+} from "@/types/api.types";
 
 class AuthService {
-  private apiClient = getApiClient()
+  private apiClient = getApiClient();
 
   async login(credentials: LoginRequest): Promise<AuthResponse> {
-    return this.apiClient.post<AuthResponse>("/auth/login", credentials)
+    return this.apiClient.post<AuthResponse>(AUTH_ENDPOINTS.LOGIN, credentials);
   }
 
   async register(data: RegisterRequest): Promise<AuthResponse> {
-    return this.apiClient.post<AuthResponse>("/auth/register", data)
+    return this.apiClient.post<AuthResponse>(AUTH_ENDPOINTS.REGISTER, data);
   }
 
-  async refreshToken(refreshToken: string): Promise<AuthResponse> {
-    const request: RefreshTokenRequest = { refreshToken }
-    return this.apiClient.post<AuthResponse>("/auth/refresh", request)
+  async refreshToken(
+    accessToken: string,
+    refreshToken: string
+  ): Promise<AuthResponse> {
+    const request: RefreshTokenRequest = { accessToken, refreshToken };
+    return this.apiClient.post<AuthResponse>(AUTH_ENDPOINTS.REFRESH, request);
   }
 
-  async logout(refreshToken: string): Promise<void> {
-    return this.apiClient.post<void>("/auth/logout", { refreshToken })
+  async logout(): Promise<void> {
+    return this.apiClient.post<void>(AUTH_ENDPOINTS.LOGOUT);
   }
 
   async getCurrentUser(): Promise<User> {
-    return this.apiClient.get<User>("/users/me")
+    return this.apiClient.get<User>(USERS_ENDPOINTS.ME);
   }
 
-  async checkPermission(module: string, action: string): Promise<PermissionCheckResponse> {
-    const request: PermissionCheckRequest = { module, action }
-    return this.apiClient.post<PermissionCheckResponse>("/permissions/check", request)
+  async checkPermission(
+    module: string,
+    action: string
+  ): Promise<PermissionCheckResponse> {
+    const request: PermissionCheckRequest = { module, action };
+    return this.apiClient.post<PermissionCheckResponse>(
+      PERMISSIONS_ENDPOINTS.CHECK,
+      request
+    );
   }
 }
 
-export const authService = new AuthService()
+export const authService = new AuthService();

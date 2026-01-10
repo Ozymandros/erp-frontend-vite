@@ -5,6 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { usersService } from "@/api/services/users.service"
 import type { CreateUserRequest } from "@/types/api.types"
+import { CreateUserSchema, type CreateUserFormData } from "@/lib/validation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -25,7 +26,7 @@ interface CreateUserDialogProps {
 }
 
 export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDialogProps) {
-  const [formData, setFormData] = useState<CreateUserRequest>({
+  const [formData, setFormData] = useState<CreateUserFormData>({
     username: "",
     email: "",
     password: "",
@@ -33,15 +34,40 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
     lastName: "",
   })
   const [error, setError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleChange = (field: keyof CreateUserRequest, value: string) => {
+  const handleChange = (field: keyof CreateUserFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+    // Clear field error when user starts typing
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => {
+        const newErrors = { ...prev }
+        delete newErrors[field]
+        return newErrors
+      })
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    setFieldErrors({})
+    
+    // Client-side validation
+    const validation = CreateUserSchema.safeParse(formData)
+    if (!validation.success) {
+      const errors: Record<string, string> = {}
+      validation.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          errors[err.path[0].toString()] = err.message
+        }
+      })
+      setFieldErrors(errors)
+      setError("Please fix the validation errors")
+      return
+    }
+
     setIsLoading(true)
 
     try {
@@ -52,6 +78,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
       })
       onSuccess()
       setFormData({ username: "", email: "", password: "", firstName: "", lastName: "" })
+      onOpenChange(false)
     } catch (err: any) {
       setError(err.message || "Failed to create user")
     } finally {
@@ -104,7 +131,11 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                 onChange={(e) => handleChange("username", e.target.value)}
                 required
                 disabled={isLoading}
+                className={fieldErrors.username ? "border-red-500" : ""}
               />
+              {fieldErrors.username && (
+                <p className="text-sm text-red-500">{fieldErrors.username}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -116,7 +147,11 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                 onChange={(e) => handleChange("email", e.target.value)}
                 required
                 disabled={isLoading}
+                className={fieldErrors.email ? "border-red-500" : ""}
               />
+              {fieldErrors.email && (
+                <p className="text-sm text-red-500">{fieldErrors.email}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -129,7 +164,11 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                 required
                 disabled={isLoading}
                 placeholder="At least 8 characters"
+                className={fieldErrors.password ? "border-red-500" : ""}
               />
+              {fieldErrors.password && (
+                <p className="text-sm text-red-500">{fieldErrors.password}</p>
+              )}
             </div>
           </div>
 

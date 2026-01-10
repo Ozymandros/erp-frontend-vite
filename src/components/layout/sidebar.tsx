@@ -5,7 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
-import { Users, Shield, Key, Menu, X } from "lucide-react"
+import { Users, Shield, Key, Menu, X, Package, Warehouse, ShoppingCart, DollarSign } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface NavItem {
@@ -29,6 +29,21 @@ const navItems: NavItem[] = [
     title: "Permissions",
     href: "/permissions",
     icon: Key,
+  },
+  {
+    title: "Products",
+    href: "/inventory/products",
+    icon: Package,
+  },
+  {
+    title: "Warehouses",
+    href: "/inventory/warehouses",
+    icon: Warehouse,
+  },
+  {
+    title: "Customers",
+    href: "/sales/customers",
+    icon: DollarSign,
   },
 ]
 
