@@ -16,8 +16,11 @@ import { ProductsListPage } from "@/pages/inventory/products-list";
 import { ProductDetailPage } from "@/pages/inventory/product-detail";
 import { WarehousesListPage } from "@/pages/inventory/warehouses-list";
 import { WarehouseDetailPage } from "@/pages/inventory/warehouse-detail";
+import { WarehouseStocksListPage } from "@/pages/inventory/warehouse-stocks-list";
+import { InventoryTransactionsListPage } from "@/pages/inventory/inventory-transactions-list";
 import { CustomersListPage } from "@/pages/sales/customers-list";
 import { CustomerDetailPage } from "@/pages/sales/customer-detail";
+import { OrdersListPage } from "@/pages/orders/orders-list";
 import { ToastContextProvider } from "./contexts/toast.context";
 
 function App() {
@@ -58,6 +61,11 @@ function App() {
               <Route path="/inventory/products/:id" element={<ProductDetailPage />} />
               <Route path="/inventory/warehouses" element={<WarehousesListPage />} />
               <Route path="/inventory/warehouses/:id" element={<WarehouseDetailPage />} />
+              <Route path="/inventory/warehouse-stocks" element={<WarehouseStocksListPage />} />
+              <Route path="/inventory/transactions" element={<InventoryTransactionsListPage />} />
+
+              {/* Orders Management */}
+              <Route path="/orders" element={<OrdersListPage />} />
 
               {/* Sales Management */}
               <Route path="/sales/customers" element={<CustomersListPage />} />
