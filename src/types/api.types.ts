@@ -38,13 +38,19 @@ export class UserDto extends AuditableDto<string> {
   public email!: string
   public firstName?: string
   public lastName?: string
+  public emailConfirmed: boolean = false
+  public isExternalLogin: boolean = false
+  public externalProvider?: string
   public isActive: boolean = true
+  public isAdmin: boolean = false
   public roles: RoleDto[] = []
+  public permissions: PermissionDto[] = []
 
   constructor(data?: Partial<UserDto>) {
     super(data)
     if (data) {
       this.roles = data.roles?.map(role => new RoleDto(role)) ?? []
+      this.permissions = data.permissions?.map(permission => new PermissionDto(permission)) ?? []
     }
   }
 }
@@ -135,13 +141,49 @@ export interface ApiError {
   details?: Record<string, any>
 }
 
+// ProblemDetails for ASP.NET Core validation errors
+export interface ProblemDetails {
+  type?: string
+  title?: string
+  status?: number
+  detail?: string
+  instance?: string
+  errors?: Record<string, string[]>
+}
+
+// Pagination and Query Types
 export interface PaginatedResponse<T> {
   items: T[]
-  total: number
-  page: number
+  page: number  // Maps to backend PageNumber (JSON property name)
   pageSize: number
+  total: number  // Maps to backend TotalCount (JSON property name)
   totalPages: number
+  hasPreviousPage: boolean
+  hasNextPage: boolean
 }
+
+export interface QuerySpec {
+  page?: number
+  pageSize?: number
+  sortBy?: string
+  sortDesc?: boolean
+  filters?: Record<string, string>
+  searchFields?: string
+  searchTerm?: string
+}
+
+export interface PaginationParams {
+  page?: number
+  pageSize?: number
+  sortBy?: string
+  sortOrder?: "asc" | "desc"
+}
+
+export interface SearchParams extends PaginationParams {
+  search?: string
+}
+
+// ==================== AUTH MODULE ====================
 
 // Auth Types
 export interface LoginRequest {
@@ -153,6 +195,7 @@ export interface RegisterRequest {
   username: string
   email: string
   password: string
+  passwordConfirm: string
   firstName?: string
   lastName?: string
 }
@@ -166,7 +209,16 @@ export interface AuthResponse {
 }
 
 export interface RefreshTokenRequest {
+  accessToken: string
   refreshToken: string
+}
+
+export interface ExternalLoginDto {
+  provider: string
+  externalId: string
+  email: string
+  firstName?: string
+  lastName?: string
 }
 
 export interface PermissionCheckRequest {
@@ -181,15 +233,21 @@ export interface PermissionCheckResponse {
 
 // User Types
 export interface User extends IAuditableDto<string> {
-  username: string
-  email: string
+  username?: string
+  email?: string
   firstName?: string
   lastName?: string
+  emailConfirmed: boolean
+  isExternalLogin: boolean
+  externalProvider?: string
   isActive: boolean
+  isAdmin: boolean
   roles: Role[]
+  permissions: Permission[]
 }
 
 export interface CreateUserRequest {
+  id?: string  // Optional Guid for backend
   username: string
   email: string
   password: string
@@ -202,6 +260,7 @@ export interface UpdateUserRequest {
   email?: string
   firstName?: string
   lastName?: string
+  phoneNumber?: string
   isActive?: boolean
   roleIds?: string[]
 }
@@ -239,19 +298,347 @@ export interface CreatePermissionRequest {
 }
 
 export interface UpdatePermissionRequest {
-  module?: string
-  action?: string
+  module: string
+  action: string
   description?: string
 }
 
-// Query Parameters
-export interface PaginationParams {
-  page?: number
-  pageSize?: number
-  sortBy?: string
-  sortOrder?: "asc" | "desc"
+// ==================== INVENTORY MODULE ====================
+
+// Product Types
+export interface ProductDto extends IAuditableDto<string> {
+  sku: string
+  name: string
+  description?: string
+  category?: string
+  unitPrice: number
+  stock: number
+  reorderLevel: number
+  isActive: boolean
 }
 
-export interface SearchParams extends PaginationParams {
-  search?: string
+export interface CreateUpdateProductDto {
+  sku: string
+  name: string
+  description?: string
+  category?: string
+  unitPrice: number
+  reorderLevel: number
+  isActive: boolean
+}
+
+// Warehouse Types
+export interface WarehouseDto extends IAuditableDto<string> {
+  name: string
+  location?: string
+  address?: string
+  city?: string
+  country?: string
+  postalCode?: string
+  isActive: boolean
+}
+
+export interface CreateUpdateWarehouseDto {
+  name: string
+  location?: string
+  address?: string
+  city?: string
+  country?: string
+  postalCode?: string
+  isActive: boolean
+}
+
+// Warehouse Stock Types
+export interface WarehouseStockDto {
+  productId: string
+  warehouseId: string
+  quantity: number
+  reservedQuantity: number
+  reorderLevel: number
+  lastUpdated: string
+}
+
+export interface StockAvailabilityDto {
+  productId: string
+  totalAvailable: number
+  warehouseStocks: WarehouseStockDto[]
+}
+
+// Stock Operations Types
+export interface ReserveStockDto {
+  productId: string
+  warehouseId: string
+  quantity: number
+  orderId: string
+  expiresAt?: string
+}
+
+export interface ReservationDto {
+  id: string
+  productId: string
+  warehouseId: string
+  quantity: number
+  orderId: string
+  reservedAt: string
+  expiresAt: string
+}
+
+export interface StockTransferDto {
+  productId: string
+  fromWarehouseId: string
+  toWarehouseId: string
+  quantity: number
+  reason: string
+}
+
+export interface StockAdjustmentDto {
+  productId: string
+  warehouseId: string
+  quantity: number
+  reason: string
+  adjustmentType: AdjustmentType
+}
+
+// Inventory Transaction Types
+export interface InventoryTransactionDto extends IAuditableDto<string> {
+  transactionType: TransactionType
+  productId: string
+  warehouseId: string
+  quantity: number
+  referenceId?: string
+  referenceType?: string
+  reason?: string
+  transactionDate: string
+}
+
+export interface CreateUpdateInventoryTransactionDto {
+  transactionType: TransactionType
+  productId: string
+  warehouseId: string
+  quantity: number
+  referenceId?: string
+  referenceType?: string
+  reason?: string
+  transactionDate: string
+}
+
+// ==================== ORDERS MODULE ====================
+
+export interface OrderDto extends IAuditableDto<string> {
+  orderNumber: string
+  status: OrderStatus
+  orderDate: string
+  customerId: string
+  orderLines: OrderLineDto[]
+  totalAmount: number
+}
+
+export interface CreateUpdateOrderDto {
+  customerId: string
+  orderLines: OrderLineDto[]
+  orderDate: string
+}
+
+export interface CreateOrderWithReservationDto {
+  customerId: string
+  orderLines: OrderLineDto[]
+  orderDate: string
+}
+
+export interface FulfillOrderDto {
+  orderId: string
+  fulfillmentDate: string
+}
+
+export interface CancelOrderDto {
+  orderId: string
+  cancellationReason: string
+}
+
+export interface OrderLineDto {
+  productId: string
+  quantity: number
+  unitPrice: number
+  totalPrice: number
+}
+
+// ==================== SALES MODULE ====================
+
+export interface SalesOrderDto extends IAuditableDto<string> {
+  orderNumber: string
+  customerId: string
+  status: SalesOrderStatus
+  orderDate: string
+  totalAmount: number
+  orderLines: SalesOrderLineDto[]
+}
+
+export interface CreateUpdateSalesOrderDto {
+  customerId: string
+  orderDate: string
+  orderLines: CreateUpdateSalesOrderLineDto[]
+}
+
+export interface SalesOrderLineDto {
+  productId: string
+  quantity: number
+  unitPrice: number
+  totalPrice: number
+}
+
+export interface CreateUpdateSalesOrderLineDto {
+  productId: string
+  quantity: number
+  unitPrice: number
+}
+
+export interface CreateQuoteDto {
+  customerId: string
+  orderLines: CreateUpdateSalesOrderLineDto[]
+  validUntil: string
+}
+
+export interface ConfirmQuoteDto {
+  quoteId: string
+  confirmationDate: string
+}
+
+export interface ConfirmQuoteResponseDto {
+  convertedToOrderId: string
+  salesOrder: SalesOrderDto
+}
+
+export interface StockAvailabilityCheckDto {
+  productId: string
+  available: boolean
+  warehouseId: string
+  quantity: number
+}
+
+export interface CustomerDto extends IAuditableDto<string> {
+  name: string
+  email: string
+  phone?: string
+  address?: string
+  city?: string
+  country?: string
+  postalCode?: string
+  isActive: boolean
+}
+
+// ==================== PURCHASING MODULE ====================
+
+export interface PurchaseOrderDto extends IAuditableDto<string> {
+  orderNumber: string
+  supplierId: string
+  status: PurchaseOrderStatus
+  orderDate: string
+  expectedDeliveryDate?: string
+  totalAmount: number
+  orderLines: PurchaseOrderLineDto[]
+}
+
+export interface CreateUpdatePurchaseOrderDto {
+  supplierId: string
+  orderDate: string
+  expectedDeliveryDate?: string
+  orderLines: PurchaseOrderLineDto[]
+}
+
+export interface PurchaseOrderLineDto {
+  productId: string
+  quantity: number
+  unitPrice: number
+  totalPrice: number
+}
+
+export interface ApprovePurchaseOrderDto {
+  purchaseOrderId: string
+  approvedBy: string
+  approvalDate: string
+}
+
+export interface ReceivePurchaseOrderDto {
+  purchaseOrderId: string
+  warehouseId: string
+  receivedDate: string
+  receivedItems: ReceivedItemDto[]
+}
+
+export interface ReceivedItemDto {
+  productId: string
+  quantity: number
+  warehouseId: string
+}
+
+export interface SupplierDto extends IAuditableDto<string> {
+  name: string
+  email: string
+  phone?: string
+  address?: string
+  city?: string
+  country?: string
+  postalCode?: string
+  isActive: boolean
+}
+
+export interface CreateUpdateSupplierDto {
+  name: string
+  email: string
+  phone?: string
+  address?: string
+  city?: string
+  country?: string
+  postalCode?: string
+  isActive: boolean
+}
+
+// ==================== ENUMS ====================
+
+export enum TransactionType {
+  Purchase = 'Purchase',
+  Sale = 'Sale',
+  Adjustment = 'Adjustment',
+  Transfer = 'Transfer',
+  Return = 'Return',
+  Damage = 'Damage',
+  Loss = 'Loss'
+}
+
+export enum OrderStatus {
+  Pending = 'Pending',
+  Processing = 'Processing',
+  Fulfilled = 'Fulfilled',
+  Cancelled = 'Cancelled',
+  Shipped = 'Shipped',
+  Delivered = 'Delivered'
+}
+
+export enum SalesOrderStatus {
+  Draft = 'Draft',
+  Quote = 'Quote',
+  Confirmed = 'Confirmed',
+  Processing = 'Processing',
+  Shipped = 'Shipped',
+  Delivered = 'Delivered',
+  Cancelled = 'Cancelled'
+}
+
+export enum PurchaseOrderStatus {
+  Draft = 'Draft',
+  Pending = 'Pending',
+  Approved = 'Approved',
+  Ordered = 'Ordered',
+  PartiallyReceived = 'PartiallyReceived',
+  Received = 'Received',
+  Cancelled = 'Cancelled'
+}
+
+export enum AdjustmentType {
+  Increase = 'Increase',
+  Decrease = 'Decrease',
+  Found = 'Found',
+  Lost = 'Lost',
+  Damaged = 'Damaged',
+  Expired = 'Expired'
 }

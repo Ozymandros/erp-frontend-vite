@@ -26,8 +26,8 @@ describe("LoginPage", () => {
   it("should render login form", () => {
     render(<LoginPage />)
 
-    expect(screen.getByText("Sign in")).toBeInTheDocument()
-    expect(screen.getByLabelText(/username/i)).toBeInTheDocument()
+    expect(screen.getAllByText("Sign in")[0]).toBeInTheDocument()
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
     expect(screen.getByRole("button", { name: /sign in/i })).toBeInTheDocument()
   })
@@ -36,17 +36,17 @@ describe("LoginPage", () => {
     mockLogin.mockResolvedValue(undefined)
     render(<LoginPage />)
 
-    const usernameInput = screen.getByLabelText(/username/i)
+    const emailInput = screen.getByLabelText(/email/i)
     const passwordInput = screen.getByLabelText(/password/i)
     const submitButton = screen.getByRole("button", { name: /sign in/i })
 
-    fireEvent.change(usernameInput, { target: { value: "testuser" } })
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } })
     fireEvent.change(passwordInput, { target: { value: "password123" } })
     fireEvent.click(submitButton)
 
     await waitFor(() => {
       expect(mockLogin).toHaveBeenCalledWith({
-        username: "testuser",
+        email: "test@example.com",
         password: "password123",
       })
     })
@@ -56,11 +56,11 @@ describe("LoginPage", () => {
     mockLogin.mockRejectedValue(new Error("Invalid credentials"))
     render(<LoginPage />)
 
-    const usernameInput = screen.getByLabelText(/username/i)
+    const emailInput = screen.getByLabelText(/email/i)
     const passwordInput = screen.getByLabelText(/password/i)
     const submitButton = screen.getByRole("button", { name: /sign in/i })
 
-    fireEvent.change(usernameInput, { target: { value: "testuser" } })
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } })
     fireEvent.change(passwordInput, { target: { value: "wrongpassword" } })
     fireEvent.click(submitButton)
 
@@ -73,16 +73,16 @@ describe("LoginPage", () => {
     mockLogin.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 100)))
     render(<LoginPage />)
 
-    const usernameInput = screen.getByLabelText(/username/i)
+    const emailInput = screen.getByLabelText(/email/i)
     const passwordInput = screen.getByLabelText(/password/i)
     const submitButton = screen.getByRole("button", { name: /sign in/i })
 
-    fireEvent.change(usernameInput, { target: { value: "testuser" } })
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } })
     fireEvent.change(passwordInput, { target: { value: "password123" } })
     fireEvent.click(submitButton)
 
     expect(submitButton).toBeDisabled()
-    expect(usernameInput).toBeDisabled()
+    expect(emailInput).toBeDisabled()
     expect(passwordInput).toBeDisabled()
   })
 })

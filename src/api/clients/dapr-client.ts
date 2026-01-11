@@ -1,4 +1,5 @@
 import { type ApiClient, type ApiClientConfig, type RequestConfig, ApiClientError } from "./types"
+import { showToastError } from '@/contexts/toast.service'
 
 export class DaprHttpClient implements ApiClient {
   private baseURL: string
@@ -80,11 +81,35 @@ export class DaprHttpClient implements ApiClient {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
+        
+        // Check for ASP.NET Core ProblemDetails format
+        let message = errorData.message || `HTTP ${response.status}: ${response.statusText}`
+        let details = errorData.details
+
+        // Handle ProblemDetails validation errors
+        if (errorData?.title || errorData?.errors) {
+          message = errorData?.title || errorData?.detail || message
+          // Extract validation errors from ProblemDetails.errors
+          if (errorData?.errors && typeof errorData.errors === 'object') {
+            details = errorData.errors
+            // Build a user-friendly message from validation errors
+            const validationMessages = Object.entries(errorData.errors)
+              .map(([field, messages]: [string, any]) => {
+                const fieldMessages = Array.isArray(messages) ? messages : [messages]
+                return `${field}: ${fieldMessages.join(', ')}`
+              })
+              .join('; ')
+            if (validationMessages) {
+              message = validationMessages
+            }
+          }
+        }
+        
         throw new ApiClientError(
-          errorData.message || `HTTP ${response.status}: ${response.statusText}`,
+          message,
           response.status,
-          errorData.code,
-          errorData.details,
+          errorData.code || errorData.type,
+          details,
         )
       }
 
@@ -103,6 +128,10 @@ export class DaprHttpClient implements ApiClient {
         if (this.onError) {
           this.onError(timeoutError)
         }
+        try {
+          console.debug('[DaprHttpClient] emitting timeout toast', timeoutError.message)
+          showToastError('Request timeout', timeoutError.message)
+        } catch (e) {}
         throw timeoutError
       }
 
@@ -110,6 +139,10 @@ export class DaprHttpClient implements ApiClient {
         if (this.onError) {
           this.onError(error)
         }
+        try {
+          console.debug('[DaprHttpClient] emitting error toast', error.message)
+          showToastError('Error', error.message)
+        } catch (e) {}
         throw error
       }
 
@@ -117,6 +150,10 @@ export class DaprHttpClient implements ApiClient {
       if (this.onError) {
         this.onError(networkError)
       }
+      try {
+        console.debug('[DaprHttpClient] emitting network toast', networkError.message)
+        showToastError('Network Error', networkError.message)
+      } catch (e) {}
       throw networkError
     }
   }

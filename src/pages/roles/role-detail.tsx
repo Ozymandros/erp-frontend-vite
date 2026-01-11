@@ -11,6 +11,7 @@ import { ArrowLeft, Pencil, Trash2 } from "lucide-react"
 import { EditRoleDialog } from "@/components/roles/edit-role-dialog"
 import { DeleteRoleDialog } from "@/components/roles/delete-role-dialog"
 import { formatDateTime } from "@/lib/utils"
+import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling"
 
 export function RoleDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -28,8 +29,14 @@ export function RoleDetailPage() {
     try {
       const data = await rolesService.getRoleById(id)
       setRole(data)
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch role")
+    } catch (error: unknown) {
+      const apiError = handleApiError(error)
+      // Handle 403 Forbidden (permission denied) with user-friendly message
+      if (isForbiddenError(apiError)) {
+        setError(getForbiddenMessage("role"))
+      } else {
+        setError(getErrorMessage(apiError, "Failed to fetch role"))
+      }
     } finally {
       setIsLoading(false)
     }

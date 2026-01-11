@@ -1,0 +1,99 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import { customersService } from "@/api/services/customers.service";
+import type { CustomerDto } from "@/types/api.types";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft } from "lucide-react";
+import { formatDateTime } from "@/lib/utils";
+import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
+
+export function CustomerDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const [customer, setCustomer] = useState<CustomerDto | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCustomer = async () => {
+      if (!id) return;
+      setIsLoading(true);
+      setError(null);
+      try {
+        const data = await customersService.getCustomerById(id);
+        setCustomer(data);
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch customer");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchCustomer();
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Link to="/sales/customers"><Button variant="ghost" size="sm"><ArrowLeft className="h-4 w-4 mr-2" />Back to Customers</Button></Link>
+        <div className="text-center py-8"><p className="text-muted-foreground">Loading customer...</p></div>
+      </div>
+    );
+  }
+
+  if (error || !customer) {
+    return (
+      <div className="space-y-6">
+        <Link to="/sales/customers"><Button variant="ghost" size="sm"><ArrowLeft className="h-4 w-4 mr-2" />Back to Customers</Button></Link>
+        <div className="text-center text-red-500 py-8"><p>{error || "Customer not found"}</p></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <Link to="/sales/customers"><Button variant="ghost" size="sm"><ArrowLeft className="h-4 w-4 mr-2" />Back to Customers</Button></Link>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Customer Information</CardTitle>
+            <CardDescription>Basic customer details</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div><label className="text-sm font-medium text-muted-foreground">Name</label><p className="text-lg font-semibold">{customer.name}</p></div>
+            {customer.email && <div><label className="text-sm font-medium text-muted-foreground">Email</label><p className="text-base">{customer.email}</p></div>}
+            {customer.phone && <div><label className="text-sm font-medium text-muted-foreground">Phone</label><p className="text-base">{customer.phone}</p></div>}
+            <div><label className="text-sm font-medium text-muted-foreground">Status</label><div><Badge variant={customer.isActive ? "default" : "secondary"}>{customer.isActive ? "Active" : "Inactive"}</Badge></div></div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Address</CardTitle>
+            <CardDescription>Customer address details</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {customer.address && <div><label className="text-sm font-medium text-muted-foreground">Street Address</label><p className="text-base">{customer.address}</p></div>}
+            {customer.city && <div><label className="text-sm font-medium text-muted-foreground">City</label><p className="text-base">{customer.city}</p></div>}
+            {customer.postalCode && <div><label className="text-sm font-medium text-muted-foreground">Postal Code</label><p className="text-base">{customer.postalCode}</p></div>}
+            {customer.country && <div><label className="text-sm font-medium text-muted-foreground">Country</label><p className="text-base">{customer.country}</p></div>}
+          </CardContent>
+        </Card>
+
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle>Audit Information</CardTitle>
+            <CardDescription>Creation and modification history</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2">
+            <div><label className="text-sm font-medium text-muted-foreground">Created At</label><p className="text-base">{formatDateTime(customer.createdAt)}</p></div>
+            {customer.updatedAt && <div><label className="text-sm font-medium text-muted-foreground">Last Updated</label><p className="text-base">{formatDateTime(customer.updatedAt)}</p></div>}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

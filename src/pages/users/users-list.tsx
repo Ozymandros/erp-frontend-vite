@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { usersService } from "@/api/services/users.service";
-import type { User, PaginatedResponse } from "@/types/api.types";
+import type { User, PaginatedResponse, QuerySpec } from "@/types/api.types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,18 +22,30 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Search, Pencil, Trash2, Eye } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Eye, ArrowUpDown } from "lucide-react";
 import { CreateUserDialog } from "@/components/users/create-user-dialog";
 import { EditUserDialog } from "@/components/users/edit-user-dialog";
 import { DeleteUserDialog } from "@/components/users/delete-user-dialog";
 import { formatDateTime } from "@/lib/utils";
+import {
+  handleApiError,
+  isForbiddenError,
+  getForbiddenMessage,
+  getErrorMessage,
+} from "@/lib/error-handling";
 
 export function UsersListPage() {
   const [users, setUsers] = useState<PaginatedResponse<User> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState(1);
+  const [querySpec, setQuerySpec] = useState<QuerySpec>({
+    page: 1,
+    pageSize: 10,
+    searchTerm: "",
+    searchFields: "username,email,firstName,lastName",
+    sortBy: "createdAt",
+    sortDesc: true,
+  });
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
@@ -42,14 +54,16 @@ export function UsersListPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await usersService.getUsersPaginated({
-        page,
-        pageSize: 10,
-        search: searchQuery || undefined,
-      });
+      const data = await usersService.searchUsers(querySpec);
       setUsers(data);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch users");
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      // Handle 403 Forbidden (permission denied) with user-friendly message
+      if (isForbiddenError(apiError)) {
+        setError(getForbiddenMessage("users"));
+      } else {
+        setError(getErrorMessage(apiError, "Failed to fetch users"));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -57,11 +71,22 @@ export function UsersListPage() {
 
   useEffect(() => {
     fetchUsers();
-  }, [page, searchQuery]);
+  }, [querySpec]);
 
   const handleSearch = (value: string) => {
-    setSearchQuery(value);
-    setPage(1);
+    setQuerySpec(prev => ({ ...prev, searchTerm: value, page: 1 }));
+  };
+
+  const handleSort = (field: string) => {
+    setQuerySpec(prev => ({
+      ...prev,
+      sortBy: field,
+      sortDesc: prev.sortBy === field ? !prev.sortDesc : false,
+    }));
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setQuerySpec(prev => ({ ...prev, page: newPage }));
   };
 
   const handleUserCreated = () => {
@@ -104,8 +129,8 @@ export function UsersListPage() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search users by username or email..."
-                value={searchQuery}
+                placeholder="Search users by username, email, or name..."
+                value={querySpec.searchTerm || ""}
                 onChange={e => handleSearch(e.target.value)}
                 className="pl-10"
               />
@@ -118,18 +143,48 @@ export function UsersListPage() {
             </div>
           ) : error ? (
             <div className="text-center py-8 text-destructive">{error}</div>
-          ) : !!users?.items?.length ? (
+          ) : users?.items?.length ? (
             <>
               <div className="rounded-md border">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Username</TableHead>
-                      <TableHead>Email</TableHead>
+                      <TableHead>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleSort("username")}
+                          className="h-8 px-2"
+                        >
+                          Username
+                          <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
+                      <TableHead>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleSort("email")}
+                          className="h-8 px-2"
+                        >
+                          Email
+                          <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
                       <TableHead>Name</TableHead>
                       <TableHead>Roles</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Created</TableHead>
+                      <TableHead>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleSort("createdAt")}
+                          className="h-8 px-2"
+                        >
+                          Created
+                          <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -176,7 +231,7 @@ export function UsersListPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <Button variant="ghost" size="icon" >
+                            <Button variant="ghost" size="icon">
                               <Link to={`/users/${user.id}`}>
                                 <Eye className="h-4 w-4" />
                               </Link>
@@ -206,23 +261,32 @@ export function UsersListPage() {
               {/* Pagination */}
               <div className="flex items-center justify-between mt-4">
                 <p className="text-sm text-muted-foreground">
-                  Showing {(page - 1) * 10 + 1} to{" "}
-                  {Math.min(page * 10, users.total)} of {users.total} users
+                  Showing{" "}
+                  {((querySpec.page || 1) - 1) * (querySpec.pageSize || 10) + 1}{" "}
+                  to{" "}
+                  {Math.min(
+                    (querySpec.page || 1) * (querySpec.pageSize || 10),
+                    users.total
+                  )}{" "}
+                  of {users.total} users
                 </p>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setPage(page - 1)}
-                    disabled={page === 1}
+                    onClick={() => handlePageChange((querySpec.page || 1) - 1)}
+                    disabled={(querySpec.page || 1) === 1}
                   >
                     Previous
                   </Button>
+                  <span className="flex items-center px-3 text-sm">
+                    Page {querySpec.page || 1} of {users.totalPages}
+                  </span>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setPage(page + 1)}
-                    disabled={page >= users.totalPages}
+                    onClick={() => handlePageChange((querySpec.page || 1) + 1)}
+                    disabled={(querySpec.page || 1) >= users.totalPages}
                   >
                     Next
                   </Button>
