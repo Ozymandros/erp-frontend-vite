@@ -32,18 +32,8 @@ export class AxiosApiClient implements ApiClient {
     // Request interceptor
     this.client.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
-        // #region agent log
-        fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'axios-client.ts:35',message:'Request interceptor called',data:{url:config.url,hasToken:!!this.authToken,tokenPresent:!!this.authToken,tokenLength:this.authToken?.length||0,hasHeaders:!!config.headers},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
-        // #endregion
         if (this.authToken && config.headers) {
           config.headers.Authorization = `Bearer ${this.authToken}`;
-          // #region agent log
-          fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'axios-client.ts:37',message:'Auth header added to request',data:{url:config.url,headerAdded:true,authorizationPrefix:config.headers.Authorization?.substring(0,20)||'none'},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
-          // #endregion
-        } else {
-          // #region agent log
-          fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'axios-client.ts:40',message:'No auth token available for request',data:{url:config.url,hasToken:!!this.authToken,hasHeaders:!!config.headers},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
-          // #endregion
         }
         if (this.onRequest) {
           return this.onRequest(config);
@@ -62,9 +52,6 @@ export class AxiosApiClient implements ApiClient {
         return response;
       },
       (error: AxiosError) => {
-        // #region agent log
-        fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'axios-client.ts:54',message:'Response error intercepted',data:{status:error.response?.status,statusText:error.response?.statusText,url:error.config?.url,hasToken:!!this.authToken,wasAuthHeaderSet:!!error.config?.headers?.Authorization},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
-        // #endregion
         const apiError = this.handleError(error);
         if (this.onError) {
           this.onError(apiError);
@@ -170,19 +157,10 @@ export class AxiosApiClient implements ApiClient {
       const fullUrl = this.client.defaults.baseURL + url;
       console.debug("[AxiosApiClient] GET", url, "→ Full URL:", fullUrl);
     }
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'axios-client.ts:145',message:'GET request initiated',data:{url,hasToken:!!this.authToken,tokenLength:this.authToken?.length||0,fullUrl:this.client.defaults.baseURL + url},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
-    // #endregion
     try {
       const response = await this.client.get<T>(url, config);
-      // #region agent log
-      fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'axios-client.ts:151',message:'GET request succeeded',data:{url,status:response.status,statusText:response.statusText},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
-      // #endregion
       return response.data;
     } catch (error: any) {
-      // #region agent log
-      fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'axios-client.ts:156',message:'GET request failed',data:{url,status:error.response?.status,statusText:error.response?.statusText,hasToken:!!this.authToken},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
-      // #endregion
       throw error;
     }
   }
@@ -224,13 +202,7 @@ export class AxiosApiClient implements ApiClient {
   }
 
   setAuthToken(token: string | null): void {
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'axios-client.ts:190',message:'setAuthToken called',data:{hasToken:!!token,tokenLength:token?.length||0,tokenPresent:!!token},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
-    // #endregion
     this.authToken = token;
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'axios-client.ts:193',message:'Auth token stored in client',data:{hasToken:!!this.authToken,tokenLength:this.authToken?.length||0},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
-    // #endregion
   }
 
   onRequest?: (config: any) => any;

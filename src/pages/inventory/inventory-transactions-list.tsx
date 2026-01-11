@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/table";
 import { Search, ArrowUpDown, Package, Warehouse, Eye } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
+import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
 
 const TRANSACTION_TYPES: { value: TransactionType; label: string }[] = [
   { value: "Purchase", label: "Purchase" },
@@ -66,8 +67,13 @@ export function InventoryTransactionsListPage() {
     try {
       const data = await productsService.getProducts();
       setProducts(data);
-    } catch (err) {
-      console.error("Failed to fetch products", err);
+    } catch (error: unknown) {
+      // Handle 403 Forbidden (permission denied) gracefully - don't show error for dropdowns
+      const apiError = handleApiError(error);
+      if (!isForbiddenError(apiError)) {
+        console.error("Failed to fetch products", apiError);
+      }
+      // If 403, just leave products list empty - the user doesn't have permission to view it
     }
   };
 
@@ -75,8 +81,13 @@ export function InventoryTransactionsListPage() {
     try {
       const data = await warehousesService.getWarehouses();
       setWarehouses(data);
-    } catch (err) {
-      console.error("Failed to fetch warehouses", err);
+    } catch (error: unknown) {
+      // Handle 403 Forbidden (permission denied) gracefully - don't show error for dropdowns
+      const apiError = handleApiError(error);
+      if (!isForbiddenError(apiError)) {
+        console.error("Failed to fetch warehouses", apiError);
+      }
+      // If 403, just leave warehouses list empty - the user doesn't have permission to view it
     }
   };
 
@@ -126,10 +137,16 @@ export function InventoryTransactionsListPage() {
       } else {
         data = await inventoryTransactionsService.searchTransactions(querySpec);
       }
-
+      
       setTransactions(data);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch transactions");
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      // Handle 403 Forbidden (permission denied) with user-friendly message
+      if (isForbiddenError(apiError)) {
+        setError(getForbiddenMessage("inventory transactions"));
+      } else {
+        setError(getErrorMessage(apiError, "Failed to fetch inventory transactions"));
+      }
     } finally {
       setIsLoading(false);
     }

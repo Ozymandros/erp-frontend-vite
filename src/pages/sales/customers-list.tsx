@@ -25,8 +25,14 @@ export function CustomersListPage() {
     try {
       const data = await customersService.searchCustomers(querySpec);
       setCustomers(data);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch customers");
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      // Handle 403 Forbidden (permission denied) with user-friendly message
+      if (isForbiddenError(apiError)) {
+        setError(getForbiddenMessage("customers"));
+      } else {
+        setError(getErrorMessage(apiError, "Failed to fetch customers"));
+      }
     } finally {
       setIsLoading(false);
     }

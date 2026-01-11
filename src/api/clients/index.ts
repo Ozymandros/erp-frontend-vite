@@ -57,14 +57,8 @@ export function createApiClient(): ApiClient {
 let apiClientInstance: ApiClient | null = null
 
 export function getApiClient(): ApiClient {
-  // #region agent log
-  fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'clients/index.ts:59',message:'getApiClient called',data:{hasInstance:!!apiClientInstance,creatingNew:!apiClientInstance},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4'})}).catch(()=>{});
-  // #endregion
   if (!apiClientInstance) {
     apiClientInstance = createApiClient()
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'clients/index.ts:62',message:'New API client instance created',data:{type:USE_DAPR?'Dapr':'Axios'},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4'})}).catch(()=>{});
-    // #endregion
   }
   return apiClientInstance
 }

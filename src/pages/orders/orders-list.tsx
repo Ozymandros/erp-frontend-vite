@@ -24,6 +24,12 @@ import {
 } from "@/components/ui/table";
 import { Plus, Eye } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
+import {
+  handleApiError,
+  isForbiddenError,
+  getForbiddenMessage,
+  getErrorMessage,
+} from "@/lib/error-handling";
 
 export function OrdersListPage() {
   const [orders, setOrders] = useState<OrderDto[]>([]);
@@ -32,25 +38,18 @@ export function OrdersListPage() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchOrders = async () => {
-    // #region agent log
-    const sessionStorage = window.sessionStorage;
-    const token = sessionStorage.getItem('access_token');
-    fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'orders-list.tsx:30',message:'fetchOrders called',data:{hasToken:!!token,tokenLength:token?.length||0},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
-    // #endregion
     setIsLoading(true);
     setError(null);
     try {
       const data = await ordersService.getOrders();
       setOrders(data);
-    } catch (err: any) {
-      // #region agent log
-      fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'orders-list.tsx:38',message:'fetchOrders failed',data:{error:err?.message||String(err),status:err?.status,hasToken:!!token},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
-      // #endregion
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
       // Handle 403 Forbidden (permission denied) with user-friendly message
-      if (err.statusCode === 403) {
-        setError("You don't have permission to view orders. Please contact your administrator to request access.");
+      if (isForbiddenError(apiError)) {
+        setError(getForbiddenMessage("orders"));
       } else {
-        setError(err.message || "Failed to fetch orders");
+        setError(getErrorMessage(apiError, "Failed to fetch orders"));
       }
     } finally {
       setIsLoading(false);
@@ -58,50 +57,47 @@ export function OrdersListPage() {
   };
 
   const fetchCustomers = async () => {
-    // #region agent log
-    const sessionStorage = window.sessionStorage;
-    const token = sessionStorage.getItem('access_token');
-    fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'orders-list.tsx:47',message:'fetchCustomers called',data:{hasToken:!!token,tokenLength:token?.length||0,hasSessionStorage:!!sessionStorage},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
-    // #endregion
     try {
       const data = await customersService.getCustomers();
       setCustomers(data);
-    } catch (err: any) {
-      // #region agent log
-      fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'orders-list.tsx:52',message:'fetchCustomers failed',data:{error:err instanceof Error?err.message:String(err),hasToken:!!token,status:err?.statusCode},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
-      // #endregion
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
       // Handle 403 Forbidden (permission denied) gracefully - don't show error for customers dropdown
-      if (err.statusCode !== 403) {
-        console.error("Failed to fetch customers", err);
+      if (!isForbiddenError(apiError)) {
+        console.error("Failed to fetch customers", apiError);
       }
       // If 403, just leave customers list empty - the user doesn't have permission to view it
     }
   };
 
   useEffect(() => {
-    // #region agent log
-    const sessionStorage = window.sessionStorage;
-    const token = sessionStorage.getItem('access_token');
-    fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'orders-list.tsx:56',message:'OrdersListPage mounted, fetching data',data:{hasToken:!!token,tokenLength:token?.length||0},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
-    // #endregion
     fetchOrders();
     fetchCustomers();
   }, []);
 
   const getCustomerName = (customerId: string) => {
-    const customer = customers.find((c) => c.id === customerId);
+    const customer = customers.find(c => c.id === customerId);
     return customer?.name || customerId;
   };
 
   const getStatusBadge = (status: string) => {
-    const statusMap: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+    const statusMap: Record<
+      string,
+      {
+        label: string;
+        variant: "default" | "secondary" | "destructive" | "outline";
+      }
+    > = {
       Draft: { label: "Draft", variant: "secondary" },
       Pending: { label: "Pending", variant: "outline" },
       Confirmed: { label: "Confirmed", variant: "default" },
       Fulfilled: { label: "Fulfilled", variant: "default" },
       Cancelled: { label: "Cancelled", variant: "destructive" },
     };
-    const statusInfo = statusMap[status] || { label: status, variant: "secondary" };
+    const statusInfo = statusMap[status] || {
+      label: status,
+      variant: "secondary",
+    };
     return <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>;
   };
 
@@ -123,9 +119,7 @@ export function OrdersListPage() {
       <Card>
         <CardHeader>
           <CardTitle>All Orders</CardTitle>
-          <CardDescription>
-            {orders.length} total orders
-          </CardDescription>
+          <CardDescription>{orders.length} total orders</CardDescription>
         </CardHeader>
         <CardContent>
           {error && (
@@ -161,7 +155,7 @@ export function OrdersListPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orders.map((order) => (
+                  {orders.map(order => (
                     <TableRow key={order.id}>
                       <TableCell className="font-medium">
                         {order.orderNumber}

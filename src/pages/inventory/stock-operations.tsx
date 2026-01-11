@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Package, Warehouse, ArrowRight, Plus, Minus } from "lucide-react";
+import { handleApiError, isForbiddenError, getErrorMessage } from "@/lib/error-handling";
 
 export function StockOperationsPage() {
   return (
@@ -87,8 +88,9 @@ function ReserveStockForm() {
       await stockOperationsService.reserveStock(data);
       setSuccess(true);
       (e.target as HTMLFormElement).reset();
-    } catch (err: any) {
-      setError(err.message || "Failed to reserve stock");
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      setError(getErrorMessage(apiError, "Failed to reserve stock"));
     } finally {
       setIsLoading(false);
     }
@@ -178,8 +180,9 @@ function TransferStockForm() {
       await stockOperationsService.transferStock(data);
       setSuccess(true);
       (e.target as HTMLFormElement).reset();
-    } catch (err: any) {
-      setError(err.message || "Failed to transfer stock");
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      setError(getErrorMessage(apiError, "Failed to transfer stock"));
     } finally {
       setIsLoading(false);
     }
@@ -270,8 +273,9 @@ function AdjustStockForm() {
       await stockOperationsService.adjustStock(data);
       setSuccess(true);
       (e.target as HTMLFormElement).reset();
-    } catch (err: any) {
-      setError(err.message || "Failed to adjust stock");
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      setError(getErrorMessage(apiError, "Failed to adjust stock"));
     } finally {
       setIsLoading(false);
     }
@@ -363,8 +367,9 @@ function ReleaseReservationForm() {
       await stockOperationsService.releaseReservation(reservationId);
       setSuccess(true);
       (e.target as HTMLFormElement).reset();
-    } catch (err: any) {
-      setError(err.message || "Failed to release reservation");
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      setError(getErrorMessage(apiError, "Failed to release reservation"));
     } finally {
       setIsLoading(false);
     }

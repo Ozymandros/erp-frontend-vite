@@ -39,12 +39,12 @@ export const PermissionFilterHeader = ({ filters, onFilterChange }: FilterProps)
         onChange={e => handleChange("search", e.target.value)}
       />
       <Select.Root
-        value={filters.role}
-        onValueChange={value => handleChange("role", value)}
+        value={filters.role || "all"}
+        onValueChange={value => handleChange("role", value === "all" ? "" : value)}
       >
         <Select.Trigger className="w-[200px]" />
         <Select.Content>
-          <Select.Item value="">Tots els rols</Select.Item>
+          <Select.Item value="all">Tots els rols</Select.Item>
           {roles.map(role => (
             <Select.Item key={role.id} value={role.id}>
               {role.name}

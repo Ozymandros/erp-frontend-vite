@@ -26,6 +26,8 @@ import { Plus, Search, Pencil, Trash2, Eye, ArrowUpDown } from "lucide-react";
 import { CreateWarehouseDialog } from "@/components/inventory/create-warehouse-dialog";
 import { EditWarehouseDialog } from "@/components/inventory/edit-warehouse-dialog";
 import { DeleteWarehouseDialog } from "@/components/inventory/delete-warehouse-dialog";
+import { formatDateTime } from "@/lib/utils";
+import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
 
 export function WarehousesListPage() {
   const [warehouses, setWarehouses] = useState<PaginatedResponse<WarehouseDto> | null>(null);
@@ -49,8 +51,14 @@ export function WarehousesListPage() {
     try {
       const data = await warehousesService.searchWarehouses(querySpec);
       setWarehouses(data);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch warehouses");
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      // Handle 403 Forbidden (permission denied) with user-friendly message
+      if (isForbiddenError(apiError)) {
+        setError(getForbiddenMessage("warehouses"));
+      } else {
+        setError(getErrorMessage(apiError, "Failed to fetch warehouses"));
+      }
     } finally {
       setIsLoading(false);
     }

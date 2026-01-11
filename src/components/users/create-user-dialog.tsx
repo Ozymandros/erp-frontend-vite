@@ -18,6 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { handleApiError, getErrorMessage } from "@/lib/error-handling"
 
 interface CreateUserDialogProps {
   open: boolean
@@ -79,8 +80,9 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
       onSuccess()
       setFormData({ username: "", email: "", password: "", firstName: "", lastName: "" })
       onOpenChange(false)
-    } catch (err: any) {
-      setError(err.message || "Failed to create user")
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      setError(getErrorMessage(apiError, "Failed to create user"));
     } finally {
       setIsLoading(false)
     }

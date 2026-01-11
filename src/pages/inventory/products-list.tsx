@@ -26,6 +26,7 @@ import { Plus, Search, Pencil, Trash2, Eye, ArrowUpDown, AlertTriangle } from "l
 import { CreateProductDialog } from "@/components/inventory/create-product-dialog";
 import { EditProductDialog } from "@/components/inventory/edit-product-dialog";
 import { DeleteProductDialog } from "@/components/inventory/delete-product-dialog";
+import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
 
 export function ProductsListPage() {
   const [products, setProducts] = useState<PaginatedResponse<ProductDto> | null>(null);
@@ -50,8 +51,14 @@ export function ProductsListPage() {
     try {
       const data = await productsService.searchProducts(querySpec);
       setProducts(data);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch products");
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      // Handle 403 Forbidden (permission denied) with user-friendly message
+      if (isForbiddenError(apiError)) {
+        setError(getForbiddenMessage("products"));
+      } else {
+        setError(getErrorMessage(apiError, "Failed to fetch products"));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -70,8 +77,14 @@ export function ProductsListPage() {
         hasNext: false,
         hasPrevious: false,
       });
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch low stock products");
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      // Handle 403 Forbidden (permission denied) with user-friendly message
+      if (isForbiddenError(apiError)) {
+        setError(getForbiddenMessage("low stock products"));
+      } else {
+        setError(getErrorMessage(apiError, "Failed to fetch low stock products"));
+      }
     } finally {
       setIsLoading(false);
     }

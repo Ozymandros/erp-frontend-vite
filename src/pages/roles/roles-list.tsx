@@ -14,6 +14,7 @@ import { CreateRoleDialog } from "@/components/roles/create-role-dialog"
 import { EditRoleDialog } from "@/components/roles/edit-role-dialog"
 import { DeleteRoleDialog } from "@/components/roles/delete-role-dialog"
 import { formatDateTime } from "@/lib/utils"
+import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling"
 
 export function RolesListPage() {
   const [roles, setRoles] = useState<PaginatedResponse<Role> | null>(null)
@@ -35,8 +36,14 @@ export function RolesListPage() {
         search: searchQuery || undefined,
       })
       setRoles(data)
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch roles")
+    } catch (error: unknown) {
+      const apiError = handleApiError(error)
+      // Handle 403 Forbidden (permission denied) with user-friendly message
+      if (isForbiddenError(apiError)) {
+        setError(getForbiddenMessage("roles"))
+      } else {
+        setError(getErrorMessage(apiError, "Failed to fetch roles"))
+      }
     } finally {
       setIsLoading(false)
     }

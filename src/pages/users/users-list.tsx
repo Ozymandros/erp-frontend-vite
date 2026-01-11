@@ -27,6 +27,12 @@ import { CreateUserDialog } from "@/components/users/create-user-dialog";
 import { EditUserDialog } from "@/components/users/edit-user-dialog";
 import { DeleteUserDialog } from "@/components/users/delete-user-dialog";
 import { formatDateTime } from "@/lib/utils";
+import {
+  handleApiError,
+  isForbiddenError,
+  getForbiddenMessage,
+  getErrorMessage,
+} from "@/lib/error-handling";
 
 export function UsersListPage() {
   const [users, setUsers] = useState<PaginatedResponse<User> | null>(null);
@@ -50,8 +56,14 @@ export function UsersListPage() {
     try {
       const data = await usersService.searchUsers(querySpec);
       setUsers(data);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch users");
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      // Handle 403 Forbidden (permission denied) with user-friendly message
+      if (isForbiddenError(apiError)) {
+        setError(getForbiddenMessage("users"));
+      } else {
+        setError(getErrorMessage(apiError, "Failed to fetch users"));
+      }
     } finally {
       setIsLoading(false);
     }

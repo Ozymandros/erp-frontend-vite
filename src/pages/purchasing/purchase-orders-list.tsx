@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/table";
 import { Plus, Eye, Search, ArrowUpDown } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
+import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
 
 export function PurchaseOrdersListPage() {
   const [purchaseOrders, setPurchaseOrders] = useState<
@@ -51,8 +52,13 @@ export function PurchaseOrdersListPage() {
     try {
       const data = await suppliersService.getSuppliers();
       setSuppliers(data);
-    } catch (err) {
-      console.error("Failed to fetch suppliers", err);
+    } catch (error: unknown) {
+      // Handle 403 Forbidden (permission denied) gracefully - don't show error for suppliers dropdown
+      const apiError = handleApiError(error);
+      if (!isForbiddenError(apiError)) {
+        console.error("Failed to fetch suppliers", apiError);
+      }
+      // If 403, just leave suppliers list empty - the user doesn't have permission to view it
     }
   };
 
@@ -62,8 +68,14 @@ export function PurchaseOrdersListPage() {
     try {
       const data = await purchaseOrdersService.searchPurchaseOrders(querySpec);
       setPurchaseOrders(data);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch purchase orders");
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      // Handle 403 Forbidden (permission denied) with user-friendly message
+      if (isForbiddenError(apiError)) {
+        setError(getForbiddenMessage("purchase orders"));
+      } else {
+        setError(getErrorMessage(apiError, "Failed to fetch purchase orders"));
+      }
     } finally {
       setIsLoading(false);
     }

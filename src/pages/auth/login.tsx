@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { handleApiError, getErrorMessage } from "@/lib/error-handling"
 
 export function LoginPage() {
   const { login } = useAuth()
@@ -54,8 +55,9 @@ export function LoginPage() {
 
     try {
       await login(formData)
-    } catch (err: any) {
-      setError(err.message || "Login failed. Please check your credentials.")
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      setError(getErrorMessage(apiError, "Login failed. Please check your credentials."));
     } finally {
       setIsLoading(false)
     }

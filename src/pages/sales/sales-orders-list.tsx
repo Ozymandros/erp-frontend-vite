@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/table";
 import { Plus, Eye, Search, ArrowUpDown } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
+import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
 
 export function SalesOrdersListPage() {
   const [salesOrders, setSalesOrders] = useState<
@@ -51,8 +52,13 @@ export function SalesOrdersListPage() {
     try {
       const data = await customersService.getCustomers();
       setCustomers(data);
-    } catch (err) {
-      console.error("Failed to fetch customers", err);
+    } catch (error: unknown) {
+      // Handle 403 Forbidden (permission denied) gracefully - don't show error for customers dropdown
+      const apiError = handleApiError(error);
+      if (!isForbiddenError(apiError)) {
+        console.error("Failed to fetch customers", apiError);
+      }
+      // If 403, just leave customers list empty - the user doesn't have permission to view it
     }
   };
 
@@ -62,8 +68,14 @@ export function SalesOrdersListPage() {
     try {
       const data = await salesOrdersService.searchSalesOrders(querySpec);
       setSalesOrders(data);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch sales orders");
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      // Handle 403 Forbidden (permission denied) with user-friendly message
+      if (isForbiddenError(apiError)) {
+        setError(getForbiddenMessage("sales orders"));
+      } else {
+        setError(getErrorMessage(apiError, "Failed to fetch sales orders"));
+      }
     } finally {
       setIsLoading(false);
     }

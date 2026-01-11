@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { handleApiError, getErrorMessage } from "@/lib/error-handling"
 
 export function RegisterPage() {
   const { register } = useAuth()
@@ -68,8 +69,9 @@ export function RegisterPage() {
         firstName: formData.firstName || undefined,
         lastName: formData.lastName || undefined,
       })
-    } catch (err: any) {
-      setError(err.message || "Registration failed. Please try again.")
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      setError(getErrorMessage(apiError, "Registration failed. Please try again."));
     } finally {
       setIsLoading(false)
     }

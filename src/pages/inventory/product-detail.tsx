@@ -17,6 +17,7 @@ import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { EditProductDialog } from "@/components/inventory/edit-product-dialog";
 import { DeleteProductDialog } from "@/components/inventory/delete-product-dialog";
 import { formatDateTime } from "@/lib/utils";
+import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
 
 export function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -34,8 +35,14 @@ export function ProductDetailPage() {
     try {
       const data = await productsService.getProductById(id);
       setProduct(data);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch product");
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      // Handle 403 Forbidden (permission denied) with user-friendly message
+      if (isForbiddenError(apiError)) {
+        setError(getForbiddenMessage("product"));
+      } else {
+        setError(getErrorMessage(apiError, "Failed to fetch product"));
+      }
     } finally {
       setIsLoading(false);
     }

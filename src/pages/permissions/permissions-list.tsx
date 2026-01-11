@@ -13,6 +13,7 @@ import { CreatePermissionDialog } from "@/components/permissions/create-permissi
 import { EditPermissionDialog } from "@/components/permissions/edit-permission-dialog"
 import { DeletePermissionDialog } from "@/components/permissions/delete-permission-dialog"
 import { formatDateTime } from "@/lib/utils"
+import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling"
 import { PermissionFilterHeader } from "@/components/permissions/permission-filter-header"
 
 export function PermissionsListPage() {
