@@ -15,7 +15,7 @@ import type {
 } from "@/types/api.types";
 
 // Helper to silently log analytics (only in non-test environments)
-const silentAnalyticsLog = (data: any) => {
+const silentAnalyticsLog = (data: unknown) => {
   // Skip in test environments (CI, vitest, etc.)
   if (import.meta.env.MODE === 'test' || import.meta.env.CI || typeof process !== 'undefined' && (process.env.CI || process.env.VITEST)) {
     return;
