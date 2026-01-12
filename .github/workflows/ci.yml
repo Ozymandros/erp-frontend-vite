@@ -246,23 +246,25 @@ jobs:
           path: ci-artifacts
       - name: Generate CI summary
         run: |
-          echo "## 🎯 CI Pipeline Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Lint Workflows | ${{ needs.lint-workflows.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Lint & Type Check | ${{ needs.lint.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Security Audit | ${{ needs.audit.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| CodeQL | ${{ needs.codeql.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Unit Tests | ${{ needs.tests.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| E2E Tests | ${{ needs.playwright.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📊 Artifacts Available" >> $GITHUB_STEP_SUMMARY
-          echo "- Coverage reports" >> $GITHUB_STEP_SUMMARY
-          echo "- Test results (JUnit)" >> $GITHUB_STEP_SUMMARY
-          echo "- Playwright report" >> $GITHUB_STEP_SUMMARY
-          echo "- Build artifacts" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 🎯 CI Pipeline Results"
+            echo ""
+            echo "| Check | Status |"
+            echo "|-------|--------|"
+            echo "| Lint Workflows | ${{ needs.lint-workflows.result }} |"
+            echo "| Lint & Type Check | ${{ needs.lint.result }} |"
+            echo "| Build | ${{ needs.build.result }} |"
+            echo "| Security Audit | ${{ needs.audit.result }} |"
+            echo "| CodeQL | ${{ needs.codeql.result }} |"
+            echo "| Unit Tests | ${{ needs.tests.result }} |"
+            echo "| E2E Tests | ${{ needs.playwright.result }} |"
+            echo ""
+            echo "### 📊 Artifacts Available"
+            echo "- Coverage reports"
+            echo "- Test results (JUnit)"
+            echo "- Playwright report"
+            echo "- Build artifacts"
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Check CI status
         run: |
           FAILED=0
@@ -274,8 +276,8 @@ jobs:
           [ "${{ needs.tests.result }}" == "failure" ] && FAILED=1
           [ "${{ needs.playwright.result }}" == "failure" ] && FAILED=1
           
-          if [ $FAILED -eq 1 ]; then
-            echo "❌ CI Failed: One or more checks failed" >> $GITHUB_STEP_SUMMARY
+          if [ "$FAILED" -eq 1 ]; then
+            echo "❌ CI Failed: One or more checks failed" >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
-          echo "✅ All checks passed!" >> $GITHUB_STEP_SUMMARY
+          echo "✅ All checks passed!" >> "$GITHUB_STEP_SUMMARY"
