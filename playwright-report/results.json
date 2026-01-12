@@ -1,0 +1,260 @@
+{
+  "config": {
+    "configFile": "C:\\Projects\\ERP_ASPIRE_APP\\erp-frontend-vite\\playwright.config.ts",
+    "rootDir": "C:/Projects/ERP_ASPIRE_APP/erp-frontend-vite/src/test/e2e",
+    "forbidOnly": true,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 10,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "playwright-report/results.json"
+        }
+      ],
+      [
+        "list",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "C:/Projects/ERP_ASPIRE_APP/erp-frontend-vite/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Projects/ERP_ASPIRE_APP/erp-frontend-vite/src/test/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/src/test/e2e/**/*.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "C:/Projects/ERP_ASPIRE_APP/erp-frontend-vite/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/Projects/ERP_ASPIRE_APP/erp-frontend-vite/src/test/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/src/test/e2e/**/*.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "C:/Projects/ERP_ASPIRE_APP/erp-frontend-vite/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/Projects/ERP_ASPIRE_APP/erp-frontend-vite/src/test/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/src/test/e2e/**/*.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "C:/Projects/ERP_ASPIRE_APP/erp-frontend-vite/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "C:/Projects/ERP_ASPIRE_APP/erp-frontend-vite/src/test/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/src/test/e2e/**/*.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "C:/Projects/ERP_ASPIRE_APP/erp-frontend-vite/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "C:/Projects/ERP_ASPIRE_APP/erp-frontend-vite/src/test/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/src/test/e2e/**/*.spec.ts"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "3way",
+    "version": "1.57.0",
+    "workers": 1,
+    "webServer": {
+      "command": "pnpm dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "stdout": "pipe",
+      "stderr": "pipe",
+      "timeout": 300000
+    }
+  },
+  "suites": [
+    {
+      "title": "smoke.spec.ts",
+      "file": "smoke.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Application Smoke Tests",
+          "file": "smoke.spec.ts",
+          "line": 8,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should load login page",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1035,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-12T10:26:45.977Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4219922fea2e2bd3c691-225e4cbced11585f1994",
+              "file": "smoke.spec.ts",
+              "line": 58,
+              "column": 3
+            },
+            {
+              "title": "should load login page",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 90021,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 90000ms exceeded while running \"beforeEach\" hook.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 90000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n    at C:\\Projects\\ERP_ASPIRE_APP\\erp-frontend-vite\\src\\test\\e2e\\smoke.spec.ts:10:8",
+                        "location": {
+                          "file": "C:\\Projects\\ERP_ASPIRE_APP\\erp-frontend-vite\\src\\test\\e2e\\smoke.spec.ts",
+                          "column": 8,
+                          "line": 10
+                        },
+                        "snippet": "\u001b[0m \u001b[90m  8 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m'Application Smoke Tests'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n \u001b[90m  9 |\u001b[39m   \n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 10 |\u001b[39m   test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 11 |\u001b[39m     \u001b[90m// Give Firefox extra time for slow startups\u001b[39m\n \u001b[90m 12 |\u001b[39m     test\u001b[33m.\u001b[39msetTimeout(\u001b[35m90000\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 13 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Projects\\ERP_ASPIRE_APP\\erp-frontend-vite\\src\\test\\e2e\\smoke.spec.ts",
+                            "column": 8,
+                            "line": 10
+                          },
+                          "message": "\u001b[31mTest timeout of 90000ms exceeded while running \"beforeEach\" hook.\u001b[39m\n\n\u001b[0m \u001b[90m  8 |\u001b[39m test\u001b[33m.\u001b[39mdescribe(\u001b[32m'Application Smoke Tests'\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m {\n \u001b[90m  9 |\u001b[39m   \n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 10 |\u001b[39m   test\u001b[33m.\u001b[39mbeforeEach(\u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m    |\u001b[39m        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 11 |\u001b[39m     \u001b[90m// Give Firefox extra time for slow startups\u001b[39m\n \u001b[90m 12 |\u001b[39m     test\u001b[33m.\u001b[39msetTimeout(\u001b[35m90000\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 13 |\u001b[39m\u001b[0m\n\u001b[2m    at C:\\Projects\\ERP_ASPIRE_APP\\erp-frontend-vite\\src\\test\\e2e\\smoke.spec.ts:10:8\u001b[22m"
+                        },
+                        {
+                          "message": "Error: browserContext.newPage: Test timeout of 90000ms exceeded."
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-12T10:26:48.078Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "C:\\Projects\\ERP_ASPIRE_APP\\erp-frontend-vite\\src\\test\\e2e\\smoke.spec.ts",
+                        "column": 8,
+                        "line": 10
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "4219922fea2e2bd3c691-4534c559e7222b2dc7f9",
+              "file": "smoke.spec.ts",
+              "line": 58,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-01-12T10:26:43.901Z",
+    "duration": 94280.31399999978,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

@@ -6,16 +6,26 @@ import { rolesService } from "@/api/services/roles.service";
 import { Role } from "@/types/api.types";
 
 type FilterProps = {
-  filters: Record<string, string>
-  onFilterChange: (filters: Record<string, string>) => void
+  /** Controlled filters object; if omitted the component will manage state internally */
+  filters?: Record<string, string>
+  /** Called with the full filters object whenever a field changes */
+  onFilterChange?: (filters: Record<string, string>) => void
 }
 
-export const PermissionFilterHeader = ({ filters, onFilterChange }: FilterProps) => {
+export const PermissionFilterHeader = ({ filters: controlledFilters, onFilterChange }: FilterProps) => {
+  const [internalFilters, setInternalFilters] = useState<Record<string, string>>({ search: "", role: "" });
   const [roles, setRoles] = useState<Role[]>([]);
+  const isControlled = typeof controlledFilters !== 'undefined'
+  const filters = isControlled ? controlledFilters! : internalFilters
 
   const handleChange = (key: string, value: string) => {
-    const updated = { ...filters, [key]: value };
-    onFilterChange(updated);
+    const updated = { ...filters, [key]: value }
+    if (isControlled) {
+      onFilterChange?.(updated)
+    } else {
+      setInternalFilters(updated)
+      onFilterChange?.(updated)
+    }
   }
 
   useEffect(() => {
@@ -39,12 +49,12 @@ export const PermissionFilterHeader = ({ filters, onFilterChange }: FilterProps)
         onChange={e => handleChange("search", e.target.value)}
       />
       <Select.Root
-        value={filters.role || "all"}
-        onValueChange={value => handleChange("role", value === "all" ? "" : value)}
+        value={filters.role}
+        onValueChange={value => handleChange("role", value)}
       >
         <Select.Trigger className="w-[200px]" />
         <Select.Content>
-          <Select.Item value="all">Tots els rols</Select.Item>
+          <Select.Item value="">Tots els rols</Select.Item>
           {roles.map(role => (
             <Select.Item key={role.id} value={role.id}>
               {role.name}

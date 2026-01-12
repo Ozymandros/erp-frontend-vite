@@ -32,6 +32,29 @@ export class AxiosApiClient implements ApiClient {
     // Request interceptor
     this.client.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
+        // #region agent log
+        fetch(
+          "http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              location: "axios-client.ts:interceptor",
+              message: "request interceptor",
+              data: {
+                url: config.url,
+                method: config.method,
+                hasAuth: !!this.authToken,
+                headers: config.headers ? Object.keys(config.headers) : [],
+              },
+              timestamp: Date.now(),
+              sessionId: "debug-session",
+              runId: "run1",
+              hypothesisId: "C",
+            }),
+          }
+        ).catch(() => {});
+        // #endregion
         if (this.authToken && config.headers) {
           config.headers.Authorization = `Bearer ${this.authToken}`;
         }
@@ -93,7 +116,9 @@ export class AxiosApiClient implements ApiClient {
 
       // Special handling for 403 Forbidden (authorization/permission errors)
       if (status === 403) {
-        message = errorData?.detail || errorData?.title || 
+        message =
+          errorData?.detail ||
+          errorData?.title ||
           "Access denied. You don't have permission to access this resource. Please contact your administrator if you believe this is an error.";
         // Don't show toast for 403 - let components handle it gracefully
       }
@@ -157,12 +182,8 @@ export class AxiosApiClient implements ApiClient {
       const fullUrl = this.client.defaults.baseURL + url;
       console.debug("[AxiosApiClient] GET", url, "→ Full URL:", fullUrl);
     }
-    try {
-      const response = await this.client.get<T>(url, config);
-      return response.data;
-    } catch (error: any) {
-      throw error;
-    }
+    const response = await this.client.get<T>(url, config);
+    return response.data;
   }
 
   async post<T = any>(
@@ -170,11 +191,47 @@ export class AxiosApiClient implements ApiClient {
     data?: any,
     config?: RequestConfig
   ): Promise<T> {
+    // #region agent log
+    fetch("http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        location: "axios-client.ts:post",
+        message: "POST request",
+        data: {
+          url: url,
+          baseURL: this.client.defaults.baseURL,
+          hasData: !!data,
+          dataKeys: data ? Object.keys(data) : [],
+          headers: config?.headers ? Object.keys(config.headers) : [],
+        },
+        timestamp: Date.now(),
+        sessionId: "debug-session",
+        runId: "run1",
+        hypothesisId: "B",
+      }),
+    }).catch(() => {});
+    // #endregion
     if (import.meta.env.DEV) {
       const fullUrl = this.client.defaults.baseURL + url;
       console.debug("[AxiosApiClient] POST", url, "→ Full URL:", fullUrl);
     }
     const response = await this.client.post<T>(url, data, config);
+    // #region agent log
+    fetch("http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        location: "axios-client.ts:post:after",
+        message: "POST response",
+        data: { status: response.status, url: url },
+        timestamp: Date.now(),
+        sessionId: "debug-session",
+        runId: "run1",
+        hypothesisId: "B",
+      }),
+    }).catch(() => {});
+    // #endregion
     return response.data;
   }
 

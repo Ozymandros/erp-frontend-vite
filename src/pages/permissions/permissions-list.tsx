@@ -13,14 +13,13 @@ import { CreatePermissionDialog } from "@/components/permissions/create-permissi
 import { EditPermissionDialog } from "@/components/permissions/edit-permission-dialog"
 import { DeletePermissionDialog } from "@/components/permissions/delete-permission-dialog"
 import { formatDateTime } from "@/lib/utils"
-import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling"
 import { PermissionFilterHeader } from "@/components/permissions/permission-filter-header"
 
 export function PermissionsListPage() {
   const [permissions, setPermissions] = useState<PaginatedResponse<Permission> | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [filters, setFilters] = useState<Record<string, string>>({ search: "", role: "" })
+  const [searchQuery, setSearchQuery] = useState("")
   const [page, setPage] = useState(1)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [editingPermission, setEditingPermission] = useState<Permission | null>(null)
@@ -33,7 +32,7 @@ export function PermissionsListPage() {
       const data = await permissionsService.getPermissionsPaginated({
         page,
         pageSize: 10,
-        search: filters.search || undefined,
+        search: searchQuery || undefined,
       })
       setPermissions(data)
     } catch (err: any) {
@@ -45,10 +44,10 @@ export function PermissionsListPage() {
 
   useEffect(() => {
     fetchPermissions()
-  }, [page, filters])
+  }, [page, searchQuery])
 
-  const handleFilterChange = (newFilters: Record<string, string>) => {
-    setFilters(newFilters)
+  const handleSearch = (filters: Record<string, string>) => {
+    setSearchQuery(filters.search || "")
     setPage(1)
   }
 
@@ -88,7 +87,7 @@ export function PermissionsListPage() {
         <CardContent>
           <div className="mb-4">
             <div className="relative">
-              <PermissionFilterHeader filters={filters} onFilterChange={handleFilterChange} />
+              <PermissionFilterHeader onFilterChange={handleSearch} />
             </div>
           </div>
 

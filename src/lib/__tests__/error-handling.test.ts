@@ -53,7 +53,9 @@ describe("Error Handling Utilities", () => {
     });
 
     it("should preserve statusCode and other properties from ApiClientError", () => {
-      const error = new ApiClientError("Forbidden", 403, "FORBIDDEN", { detail: "test" });
+      const error = new ApiClientError("Forbidden", 403, "FORBIDDEN", {
+        detail: "test",
+      });
       const result = handleApiError(error);
       expect(result.statusCode).toBe(403);
       expect(result.code).toBe("FORBIDDEN");
@@ -71,7 +73,7 @@ describe("Error Handling Utilities", () => {
       const error404 = new ApiClientError("Not Found", 404);
       const error500 = new ApiClientError("Server Error", 500);
       const error401 = new ApiClientError("Unauthorized", 401);
-      
+
       expect(isForbiddenError(error404)).toBe(false);
       expect(isForbiddenError(error500)).toBe(false);
       expect(isForbiddenError(error401)).toBe(false);
