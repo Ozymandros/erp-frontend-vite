@@ -1,3 +1,6 @@
+![CI Pipeline](https://github.com/Ozymandros/erp-frontend-vite/actions/workflows/ci.yml/badge.svg)
+[![codecov](https://codecov.io/gh/Ozymandros/erp-frontend-vite/branch/main/graph/badge.svg)](https://codecov.io/gh/Ozymandros/erp-frontend-vite)
+
 # ERP Frontend Application
 
 A modern ERP admin portal built with React, TypeScript, Vite, and TailwindCSS.
