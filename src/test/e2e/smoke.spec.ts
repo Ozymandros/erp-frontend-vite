@@ -128,9 +128,10 @@ test.describe('Application Smoke Tests', () => {
     
     // Check if we got to dashboard or stayed on login
     const currentUrl = page.url();
-    const _loggedIn = currentUrl.includes('dashboard') || 
-                      currentUrl.includes('inventory') ||
-                      !currentUrl.includes('login');
+    // Check if logged in (for debugging if needed)
+    currentUrl.includes('dashboard') || 
+    currentUrl.includes('inventory') ||
+    !currentUrl.includes('login');
     
     // Either we logged in or we're still on login (both are valid test states)
     expect(currentUrl).toBeTruthy();
@@ -164,7 +165,7 @@ test.describe('Application Smoke Tests', () => {
     
     // Check that CSS is loaded
     const styles = await page.locator('style, link[rel="stylesheet"]');
-    const _styleCount = await styles.count();
+    await styles.count();
     
     // Should have some styles (could be inline or external)
     const pageHtml = await page.content();

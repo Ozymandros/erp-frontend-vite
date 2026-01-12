@@ -117,8 +117,9 @@ describe("SuppliersService", () => {
         page: 1,
         pageSize: 20,
         total: 0,
-        hasNext: false,
-        hasPrevious: false,
+        hasNextPage: false,
+        hasPreviousPage: false,
+        totalPages: 0,
       };
 
       mockApiClient.get.mockResolvedValue(mockResponse);

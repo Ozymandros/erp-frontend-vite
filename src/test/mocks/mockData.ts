@@ -6,9 +6,14 @@ export const mockUser: User = {
   email: "test@example.com",
   firstName: "Test",
   lastName: "User",
+  emailConfirmed: false,
+  isExternalLogin: false,
   isActive: true,
+  isAdmin: false,
   roles: [],
+  permissions: [],
   createdAt: "2024-01-01T00:00:00Z",
+  createdBy: "system",
   updatedAt: "2024-01-01T00:00:00Z",
 }
 
@@ -18,6 +23,7 @@ export const mockPermission: Permission = {
   action: "read",
   description: "Read users",
   createdAt: "2024-01-01T00:00:00Z",
+  createdBy: "system",
   updatedAt: "2024-01-01T00:00:00Z",
 }
 
@@ -27,6 +33,7 @@ export const mockRole: Role = {
   description: "Administrator role",
   permissions: [mockPermission],
   createdAt: "2024-01-01T00:00:00Z",
+  createdBy: "system",
   updatedAt: "2024-01-01T00:00:00Z",
 }
 

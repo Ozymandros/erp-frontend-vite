@@ -59,8 +59,9 @@ describe("UsersService", () => {
         page: 1,
         pageSize: 10,
         total: 0,
-        hasNext: false,
-        hasPrevious: false,
+        hasNextPage: false,
+        hasPreviousPage: false,
+        totalPages: 0,
       };
 
       mockApiClient.get.mockResolvedValue(mockResponse);
@@ -80,8 +81,9 @@ describe("UsersService", () => {
         page: 1,
         pageSize: 10,
         total: 0,
-        hasNext: false,
-        hasPrevious: false,
+        hasNextPage: false,
+        hasPreviousPage: false,
+        totalPages: 0,
       };
 
       mockApiClient.get.mockResolvedValue(mockResponse);
@@ -108,8 +110,9 @@ describe("UsersService", () => {
         page: 1,
         pageSize: 20,
         total: 0,
-        hasNext: false,
-        hasPrevious: false,
+        hasNextPage: false,
+        hasPreviousPage: false,
+        totalPages: 0,
       };
 
       mockApiClient.get.mockResolvedValue(mockResponse);
@@ -187,7 +190,15 @@ describe("UsersService", () => {
       const mockUser: User = {
         id: "2",
         ...newUser,
-      } as User;
+        emailConfirmed: false,
+        isExternalLogin: false,
+        isActive: true,
+        isAdmin: false,
+        roles: [],
+        permissions: [],
+        createdAt: "2024-01-01",
+        createdBy: "user1",
+      };
 
       mockApiClient.post.mockResolvedValue(mockUser);
 

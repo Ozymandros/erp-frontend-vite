@@ -3,7 +3,6 @@ import { type ApiClient, type ApiClientConfig, type RequestConfig, ApiClientErro
 import { showToastError } from '@/contexts/toast.service'
 
 export class DaprHttpClient implements ApiClient {
-  private baseURL: string
   private timeout: number
   private defaultHeaders: Record<string, string>
   private authToken: string | null = null
@@ -11,7 +10,6 @@ export class DaprHttpClient implements ApiClient {
   private daprPort: number
 
   constructor(config: ApiClientConfig & { daprAppId?: string; daprPort?: number }) {
-    this.baseURL = config.baseURL
     this.timeout = config.timeout || 30000
     this.defaultHeaders = {
       "Content-Type": "application/json",

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { stockOperationsService } from "@/api/services/stock-operations.service";
+import { AdjustmentType } from "@/types/api.types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -264,7 +265,7 @@ function AdjustStockForm() {
       warehouseId: formData.get("warehouseId") as string,
       quantity: parseInt(formData.get("quantity") as string),
       reason: formData.get("reason") as string,
-      adjustmentType: formData.get("adjustmentType") as "Increase" | "Decrease" | "Found" | "Lost" | "Damaged",
+      adjustmentType: formData.get("adjustmentType") as AdjustmentType,
     };
 
     try {

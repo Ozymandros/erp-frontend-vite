@@ -52,7 +52,7 @@ export function CustomersListPage() {
     fetchCustomers();
   };
 
-  const totalPages = customers ? Math.ceil(customers.total / querySpec.pageSize) : 0;
+  const totalPages = customers ? Math.ceil(customers.total / (querySpec.pageSize ?? 20)) : 0;
 
   return (
     <div className="space-y-6">
@@ -125,8 +125,8 @@ export function CustomersListPage() {
                 <div className="flex items-center justify-between mt-4">
                   <p className="text-sm text-muted-foreground">Page {querySpec.page} of {totalPages}</p>
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={() => setQuerySpec(prev => ({ ...prev, page: prev.page - 1 }))} disabled={!customers.hasPrevious}>Previous</Button>
-                    <Button variant="outline" size="sm" onClick={() => setQuerySpec(prev => ({ ...prev, page: prev.page + 1 }))} disabled={!customers.hasNext}>Next</Button>
+                    <Button variant="outline" size="sm" onClick={() => setQuerySpec(prev => ({ ...prev, page: (prev.page ?? 1) - 1 }))} disabled={!customers.hasPreviousPage}>Previous</Button>
+                    <Button variant="outline" size="sm" onClick={() => setQuerySpec(prev => ({ ...prev, page: (prev.page ?? 1) + 1 }))} disabled={!customers.hasNextPage}>Next</Button>
                   </div>
                 </div>
               )}

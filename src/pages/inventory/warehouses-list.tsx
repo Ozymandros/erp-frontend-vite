@@ -99,7 +99,7 @@ export function WarehousesListPage() {
   };
 
   const totalPages = warehouses
-    ? Math.ceil(warehouses.total / querySpec.pageSize)
+    ? Math.ceil(warehouses.total / (querySpec.pageSize ?? 20))
     : 0;
 
   return (
@@ -241,16 +241,16 @@ export function WarehousesListPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(querySpec.page - 1)}
-                      disabled={!warehouses.hasPrevious}
+                      onClick={() => handlePageChange((querySpec.page ?? 1) - 1)}
+                      disabled={!warehouses.hasPreviousPage}
                     >
                       Previous
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(querySpec.page + 1)}
-                      disabled={!warehouses.hasNext}
+                      onClick={() => handlePageChange((querySpec.page ?? 1) + 1)}
+                      disabled={!warehouses.hasNextPage}
                     >
                       Next
                     </Button>

@@ -36,6 +36,8 @@ describe("AuthService", () => {
       const mockResponse: AuthResponse = {
         accessToken: "access-token",
         refreshToken: "refresh-token",
+        expiresIn: 3600,
+        tokenType: "Bearer",
         user: {
           id: "1",
           email: "test@example.com",
@@ -61,6 +63,7 @@ describe("AuthService", () => {
         email: "newuser@example.com",
         username: "newuser",
         password: "password123",
+        passwordConfirm: "password123",
         firstName: "New",
         lastName: "User",
       };
@@ -68,6 +71,8 @@ describe("AuthService", () => {
       const mockResponse: AuthResponse = {
         accessToken: "access-token",
         refreshToken: "refresh-token",
+        expiresIn: 3600,
+        tokenType: "Bearer",
         user: {
           id: "2",
           email: "newuser@example.com",
@@ -95,6 +100,8 @@ describe("AuthService", () => {
       const mockResponse: AuthResponse = {
         accessToken: "new-access-token",
         refreshToken: "new-refresh-token",
+        expiresIn: 3600,
+        tokenType: "Bearer",
         user: {
           id: "1",
           email: "test@example.com",
@@ -146,7 +153,7 @@ describe("AuthService", () => {
       const action = "create";
 
       const mockResponse: PermissionCheckResponse = {
-        hasPermission: true,
+        allowed: true,
       };
 
       mockApiClient.post.mockResolvedValue(mockResponse);

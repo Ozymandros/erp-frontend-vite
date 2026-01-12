@@ -4,8 +4,8 @@ import type {
   CreateUpdateInventoryTransactionDto,
   PaginatedResponse,
   QuerySpec,
-  TransactionType,
 } from "@/types/api.types";
+import { TransactionType } from "@/types/api.types";
 
 const mockApiClient = {
   get: vi.fn(),
@@ -55,8 +55,9 @@ describe("InventoryTransactionsService", () => {
         page: 1,
         pageSize: 10,
         total: 0,
-        hasNext: false,
-        hasPrevious: false,
+        hasNextPage: false,
+        hasPreviousPage: false,
+        totalPages: 0,
       };
 
       mockApiClient.get.mockResolvedValue(mockResponse);
@@ -79,8 +80,9 @@ describe("InventoryTransactionsService", () => {
         page: 1,
         pageSize: 10,
         total: 0,
-        hasNext: false,
-        hasPrevious: false,
+        hasNextPage: false,
+        hasPreviousPage: false,
+        totalPages: 0,
       };
 
       mockApiClient.get.mockResolvedValue(mockResponse);
@@ -107,8 +109,9 @@ describe("InventoryTransactionsService", () => {
         page: 1,
         pageSize: 20,
         total: 0,
-        hasNext: false,
-        hasPrevious: false,
+        hasNextPage: false,
+        hasPreviousPage: false,
+        totalPages: 0,
       };
 
       mockApiClient.get.mockResolvedValue(mockResponse);
@@ -190,18 +193,24 @@ describe("InventoryTransactionsService", () => {
       const mockTransactions: InventoryTransactionDto[] = [
         {
           id: "1",
-          type: "In" as TransactionType,
-        } as InventoryTransactionDto,
+          transactionType: TransactionType.Purchase,
+          productId: "prod1",
+          warehouseId: "wh1",
+          quantity: 10,
+          transactionDate: "2024-01-01",
+          createdAt: "2024-01-01",
+          createdBy: "user1",
+        },
       ];
 
       mockApiClient.get.mockResolvedValue(mockTransactions);
 
       const result = await inventoryTransactionsService.getTransactionsByType(
-        "In"
+        TransactionType.Purchase
       );
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        "/inventory/api/inventory/transactions/type/In"
+        "/inventory/api/inventory/transactions/type/Purchase"
       );
       expect(result).toEqual(mockTransactions);
     });
@@ -213,8 +222,9 @@ describe("InventoryTransactionsService", () => {
         productId: "prod1",
         warehouseId: "wh1",
         quantity: 10,
-        type: "In" as TransactionType,
-      } as CreateUpdateInventoryTransactionDto;
+        transactionType: TransactionType.Purchase,
+        transactionDate: "2024-01-01",
+      };
 
       const mockTransaction: InventoryTransactionDto = {
         id: "2",

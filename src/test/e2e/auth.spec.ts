@@ -138,8 +138,8 @@ test.describe("Authentication Flow", () => {
     // Setup authenticated session
     await setupAuthenticatedSession(page);
 
-    // Store current URL
-    const _urlBeforeReload = page.url();
+    // Store current URL (for debugging if needed)
+    page.url();
 
     // Reload page
     await page.reload({ waitUntil: "networkidle" });

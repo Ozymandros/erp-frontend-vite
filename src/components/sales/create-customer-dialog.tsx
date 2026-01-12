@@ -45,7 +45,7 @@ export function CreateCustomerDialog({ open, onOpenChange, onSuccess }: CreateCu
     const validation = CreateCustomerSchema.safeParse(formData);
     if (!validation.success) {
       const errors: Record<string, string> = {};
-      validation.error.errors.forEach((err) => {
+      validation.error.issues.forEach((err) => {
         if (err.path[0]) errors[err.path[0].toString()] = err.message;
       });
       setFieldErrors(errors);
@@ -55,7 +55,15 @@ export function CreateCustomerDialog({ open, onOpenChange, onSuccess }: CreateCu
 
     setIsLoading(true);
     try {
-      await customersService.createCustomer({ ...formData, email: formData.email || undefined, phone: formData.phone || undefined, address: formData.address || undefined, city: formData.city || undefined, country: formData.country || undefined, postalCode: formData.postalCode || undefined });
+      await customersService.createCustomer({ 
+        ...formData, 
+        email: formData.email || undefined, 
+        phone: formData.phone || undefined, 
+        address: formData.address || undefined, 
+        city: formData.city || undefined, 
+        country: formData.country || undefined, 
+        postalCode: formData.postalCode || undefined 
+      } as any);
       onSuccess();
       setFormData({ name: "", email: "", phone: "", address: "", city: "", country: "", postalCode: "", isActive: true });
       onOpenChange(false);

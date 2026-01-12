@@ -22,7 +22,7 @@ export const StockAdjustmentSchema = z.object({
   quantity: z.number().int().min(1, "Quantity must be at least 1"),
   reason: z.string().min(1, "Reason is required"),
   adjustmentType: z.enum(["Increase", "Decrease", "Found", "Lost", "Damaged"], {
-    required_error: "Adjustment type is required",
+    message: "Adjustment type is required",
   }),
 });
 

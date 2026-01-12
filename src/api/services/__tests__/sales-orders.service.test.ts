@@ -7,6 +7,7 @@ import type {
   ConfirmQuoteResponseDto,
   StockAvailabilityCheckDto,
 } from "@/types/api.types";
+import { SalesOrderStatus } from "@/types/api.types";
 
 const mockApiClient = {
   get: vi.fn(),
@@ -34,7 +35,7 @@ describe("SalesOrdersService", () => {
           id: "1",
           orderNumber: "SO-001",
           customerId: "customer-1",
-          status: "Draft",
+          status: SalesOrderStatus.Draft,
           orderDate: "2024-01-01",
           totalAmount: 499.95,
           orderLines: [],
@@ -72,8 +73,12 @@ describe("SalesOrdersService", () => {
         id: "1",
         orderNumber: "SO-001",
         ...newOrder,
-        status: "Draft",
+        status: SalesOrderStatus.Draft,
         totalAmount: 499.95,
+        orderLines: newOrder.orderLines.map(line => ({
+          ...line,
+          totalPrice: (line.quantity || 0) * (line.unitPrice || 0),
+        })),
         createdAt: "2024-01-01",
         updatedAt: "2024-01-01",
         createdBy: "user1",
@@ -110,7 +115,7 @@ describe("SalesOrdersService", () => {
         id: "1",
         orderNumber: "QUOTE-001",
         customerId: quoteData.customerId,
-        status: "Quote",
+        status: SalesOrderStatus.Quote,
         orderDate: "2024-01-01",
         totalAmount: 499.95,
         orderLines: [],
@@ -145,7 +150,7 @@ describe("SalesOrdersService", () => {
           id: "order-1",
           orderNumber: "SO-001",
           customerId: "customer-1",
-          status: "Confirmed",
+          status: SalesOrderStatus.Confirmed,
           orderDate: "2024-01-01",
           totalAmount: 499.95,
           orderLines: [],

@@ -77,7 +77,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await authService.refreshToken(refreshToken)
+      const accessToken = getAccessToken()
+      if (!accessToken) {
+        throw new Error("No access token available")
+      }
+      const response = await authService.refreshToken(accessToken, refreshToken)
       storeTokens(response.accessToken, response.refreshToken, response.expiresIn)
       setUser(response.user)
       return response.accessToken
@@ -135,18 +139,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Logout function
   const logout = useCallback(async () => {
-    const refreshToken = getRefreshToken()
-    if (refreshToken) {
-      try {
-        await authService.logout(refreshToken)
-      } catch (error) {
-        console.error("[Auth] Logout API call failed:", error)
-      }
+    try {
+      await authService.logout()
+    } catch (error) {
+      console.error("[Auth] Logout API call failed:", error)
     }
     clearTokens()
     setUser(null)
     navigate("/login")
-  }, [getRefreshToken, clearTokens, navigate])
+  }, [clearTokens, navigate])
 
   // Check permission
   const checkPermission = useCallback(async (module: string, action: string): Promise<boolean> => {

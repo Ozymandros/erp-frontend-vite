@@ -128,7 +128,7 @@ export function PurchaseOrdersListPage() {
   };
 
   const totalPages = purchaseOrders
-    ? Math.ceil(purchaseOrders.total / querySpec.pageSize)
+    ? Math.ceil(purchaseOrders.total / (querySpec.pageSize ?? 20))
     : 0;
 
   return (
@@ -270,16 +270,16 @@ export function PurchaseOrdersListPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(querySpec.page - 1)}
-                      disabled={!purchaseOrders.hasPrevious}
+                      onClick={() => handlePageChange((querySpec.page ?? 1) - 1)}
+                      disabled={!purchaseOrders.hasPreviousPage}
                     >
                       Previous
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(querySpec.page + 1)}
-                      disabled={!purchaseOrders.hasNext}
+                      onClick={() => handlePageChange((querySpec.page ?? 1) + 1)}
+                      disabled={!purchaseOrders.hasNextPage}
                     >
                       Next
                     </Button>

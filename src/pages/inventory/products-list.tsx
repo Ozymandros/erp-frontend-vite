@@ -74,8 +74,9 @@ export function ProductsListPage() {
         page: 1,
         pageSize: data.length,
         total: data.length,
-        hasNext: false,
-        hasPrevious: false,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPreviousPage: false,
       });
     } catch (error: unknown) {
       const apiError = handleApiError(error);
@@ -139,7 +140,7 @@ export function ProductsListPage() {
   };
 
   const totalPages = products
-    ? Math.ceil(products.total / querySpec.pageSize)
+    ? Math.ceil(products.total / (querySpec.pageSize ?? 20))
     : 0;
 
   return (
@@ -317,16 +318,16 @@ export function ProductsListPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(querySpec.page - 1)}
-                      disabled={!products.hasPrevious}
+                      onClick={() => handlePageChange((querySpec.page ?? 1) - 1)}
+                      disabled={!products.hasPreviousPage}
                     >
                       Previous
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(querySpec.page + 1)}
-                      disabled={!products.hasNext}
+                      onClick={() => handlePageChange((querySpec.page ?? 1) + 1)}
+                      disabled={!products.hasNextPage}
                     >
                       Next
                     </Button>

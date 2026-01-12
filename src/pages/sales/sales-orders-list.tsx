@@ -128,7 +128,7 @@ export function SalesOrdersListPage() {
   };
 
   const totalPages = salesOrders
-    ? Math.ceil(salesOrders.total / querySpec.pageSize)
+    ? Math.ceil(salesOrders.total / (querySpec.pageSize ?? 20))
     : 0;
 
   return (
@@ -264,16 +264,16 @@ export function SalesOrdersListPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(querySpec.page - 1)}
-                      disabled={!salesOrders.hasPrevious}
+                      onClick={() => handlePageChange((querySpec.page ?? 1) - 1)}
+                      disabled={!salesOrders.hasPreviousPage}
                     >
                       Previous
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(querySpec.page + 1)}
-                      disabled={!salesOrders.hasNext}
+                      onClick={() => handlePageChange((querySpec.page ?? 1) + 1)}
+                      disabled={!salesOrders.hasNextPage}
                     >
                       Next
                     </Button>

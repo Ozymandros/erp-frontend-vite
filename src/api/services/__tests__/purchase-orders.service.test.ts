@@ -4,6 +4,7 @@ import type {
   ApprovePurchaseOrderDto,
   ReceivePurchaseOrderDto,
 } from "@/types/api.types";
+import { PurchaseOrderStatus } from "@/types/api.types";
 
 const mockApiClient = {
   get: vi.fn(),
@@ -32,7 +33,7 @@ describe("PurchaseOrdersService", () => {
           id: "1",
           orderNumber: "PO-001",
           supplierId: "supplier-1",
-          status: "Draft",
+          status: PurchaseOrderStatus.Draft,
           orderDate: "2024-01-01",
           totalAmount: 499.90,
           orderLines: [],
@@ -64,7 +65,7 @@ describe("PurchaseOrdersService", () => {
         id: "po-1",
         orderNumber: "PO-001",
         supplierId: "supplier-1",
-        status: "Approved",
+        status: PurchaseOrderStatus.Approved,
         orderDate: "2024-01-01",
         totalAmount: 499.90,
         orderLines: [],
@@ -105,7 +106,7 @@ describe("PurchaseOrdersService", () => {
         id: "po-1",
         orderNumber: "PO-001",
         supplierId: "supplier-1",
-        status: "Received",
+        status: PurchaseOrderStatus.Received,
         orderDate: "2024-01-01",
         totalAmount: 499.90,
         orderLines: [],
