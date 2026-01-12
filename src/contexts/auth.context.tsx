@@ -91,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null)
       throw error
     }
-  }, [getRefreshToken, storeTokens, clearTokens])
+  }, [getRefreshToken, storeTokens, clearTokens, getAccessToken])
 
   // Fetch current user data
   const fetchUserData = useCallback(async () => {
