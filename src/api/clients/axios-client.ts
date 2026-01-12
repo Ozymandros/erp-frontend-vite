@@ -12,6 +12,19 @@ import {
 } from "./types";
 import { showToastError } from "@/contexts/toast.service";
 
+// Helper to silently log analytics (only in non-test environments)
+const silentAnalyticsLog = (data: any) => {
+  // Skip in test environments (CI, vitest, etc.)
+  if (import.meta.env.MODE === 'test' || import.meta.env.CI || typeof process !== 'undefined' && (process.env.CI || process.env.VITEST)) {
+    return;
+  }
+  fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  }).catch(() => {});
+};
+
 export class AxiosApiClient implements ApiClient {
   private client: AxiosInstance;
   private authToken: string | null = null;
@@ -34,27 +47,20 @@ export class AxiosApiClient implements ApiClient {
     this.client.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
         // #region agent log
-        fetch(
-          "http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              location: "axios-client.ts:interceptor",
-              message: "request interceptor",
-              data: {
-                url: config.url,
-                method: config.method,
-                hasAuth: !!this.authToken,
-                headers: config.headers ? Object.keys(config.headers) : [],
-              },
-              timestamp: Date.now(),
-              sessionId: "debug-session",
-              runId: "run1",
-              hypothesisId: "C",
-            }),
-          }
-        ).catch(() => {});
+        silentAnalyticsLog({
+          location: "axios-client.ts:interceptor",
+          message: "request interceptor",
+          data: {
+            url: config.url,
+            method: config.method,
+            hasAuth: !!this.authToken,
+            headers: config.headers ? Object.keys(config.headers) : [],
+          },
+          timestamp: Date.now(),
+          sessionId: "debug-session",
+          runId: "run1",
+          hypothesisId: "C",
+        });
         // #endregion
         if (this.authToken && config.headers) {
           config.headers.Authorization = `Bearer ${this.authToken}`;
@@ -193,25 +199,21 @@ export class AxiosApiClient implements ApiClient {
     config?: RequestConfig
   ): Promise<T> {
     // #region agent log
-    fetch("http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        location: "axios-client.ts:post",
-        message: "POST request",
-        data: {
-          url: url,
-          baseURL: this.client.defaults.baseURL,
-          hasData: !!data,
-          dataKeys: data ? Object.keys(data) : [],
-          headers: config?.headers ? Object.keys(config.headers) : [],
-        },
-        timestamp: Date.now(),
-        sessionId: "debug-session",
-        runId: "run1",
-        hypothesisId: "B",
-      }),
-    }).catch(() => {});
+    silentAnalyticsLog({
+      location: "axios-client.ts:post",
+      message: "POST request",
+      data: {
+        url: url,
+        baseURL: this.client.defaults.baseURL,
+        hasData: !!data,
+        dataKeys: data ? Object.keys(data) : [],
+        headers: config?.headers ? Object.keys(config.headers) : [],
+      },
+      timestamp: Date.now(),
+      sessionId: "debug-session",
+      runId: "run1",
+      hypothesisId: "B",
+    });
     // #endregion
     if (import.meta.env.DEV) {
       const fullUrl = this.client.defaults.baseURL + url;
@@ -219,19 +221,15 @@ export class AxiosApiClient implements ApiClient {
     }
     const response = await this.client.post<T>(url, data, config);
     // #region agent log
-    fetch("http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        location: "axios-client.ts:post:after",
-        message: "POST response",
-        data: { status: response.status, url: url },
-        timestamp: Date.now(),
-        sessionId: "debug-session",
-        runId: "run1",
-        hypothesisId: "B",
-      }),
-    }).catch(() => {});
+    silentAnalyticsLog({
+      location: "axios-client.ts:post:after",
+      message: "POST response",
+      data: { status: response.status, url: url },
+      timestamp: Date.now(),
+      sessionId: "debug-session",
+      runId: "run1",
+      hypothesisId: "B",
+    });
     // #endregion
     return response.data;
   }
