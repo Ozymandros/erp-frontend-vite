@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { stockOperationsService } from "@/api/services/stock-operations.service";
-import { productsService } from "@/api/services/products.service";
-import { warehousesService } from "@/api/services/warehouses.service";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,8 +11,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Package, Warehouse, ArrowRight, Plus, Minus } from "lucide-react";
-import { handleApiError, isForbiddenError, getErrorMessage } from "@/lib/error-handling";
+import { Package, ArrowRight, Minus } from "lucide-react";
+import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 
 export function StockOperationsPage() {
   return (

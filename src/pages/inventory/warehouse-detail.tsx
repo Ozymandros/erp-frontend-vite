@@ -17,7 +17,6 @@ import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { EditWarehouseDialog } from "@/components/inventory/edit-warehouse-dialog";
 import { DeleteWarehouseDialog } from "@/components/inventory/delete-warehouse-dialog";
 import { formatDateTime } from "@/lib/utils";
-import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
 
 export function WarehouseDetailPage() {
   const { id } = useParams<{ id: string }>();
