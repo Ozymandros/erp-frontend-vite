@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { customersService } from "@/api/services/customers.service";
 import type { CustomerDto, PaginatedResponse, QuerySpec } from "@/types/api.types";
+import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Search, Pencil, Trash2, Eye } from "lucide-react";
+import { Plus, Search, Eye } from "lucide-react";
 import { CreateCustomerDialog } from "@/components/sales/create-customer-dialog";
 
 export function CustomersListPage() {
