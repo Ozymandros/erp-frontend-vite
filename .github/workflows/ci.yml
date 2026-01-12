@@ -1,10 +1,8 @@
 name: CI Pipeline
 
 on:
-  push:
-    branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -117,7 +115,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'javascript' ]
+        language: ["javascript"]
     steps:
       - uses: actions/checkout@v4
       - uses: github/codeql-action/init@v3
@@ -275,7 +273,7 @@ jobs:
           [ "${{ needs.codeql.result }}" == "failure" ] && FAILED=1
           [ "${{ needs.tests.result }}" == "failure" ] && FAILED=1
           [ "${{ needs.playwright.result }}" == "failure" ] && FAILED=1
-          
+
           if [ "$FAILED" -eq 1 ]; then
             echo "❌ CI Failed: One or more checks failed" >> "$GITHUB_STEP_SUMMARY"
             exit 1
