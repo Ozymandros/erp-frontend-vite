@@ -157,12 +157,8 @@ export class AxiosApiClient implements ApiClient {
       const fullUrl = this.client.defaults.baseURL + url;
       console.debug("[AxiosApiClient] GET", url, "→ Full URL:", fullUrl);
     }
-    try {
-      const response = await this.client.get<T>(url, config);
-      return response.data;
-    } catch (error: any) {
-      throw error;
-    }
+    const response = await this.client.get<T>(url, config);
+    return response.data;
   }
 
   async post<T = any>(
