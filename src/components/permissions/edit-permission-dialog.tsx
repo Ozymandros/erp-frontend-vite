@@ -55,8 +55,8 @@ export function EditPermissionDialog({ permission, open, onOpenChange, onSuccess
     try {
       await permissionsService.updatePermission(permission.id, formData)
       onSuccess()
-    } catch (err: any) {
-      setError(err.message || "Failed to update permission")
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to update permission")
     } finally {
       setIsLoading(false)
     }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { rolesService } from "@/api/services/roles.service"
 import type { Role } from "@/types/api.types"
@@ -22,7 +22,7 @@ export function RoleDetailPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
-  const fetchRole = async () => {
+  const fetchRole = useCallback(async () => {
     if (!id) return
     setIsLoading(true)
     setError(null)
@@ -40,11 +40,11 @@ export function RoleDetailPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [id])
 
   useEffect(() => {
     fetchRole()
-  }, [id])
+  }, [fetchRole])
 
   const handleRoleUpdated = () => {
     setIsEditDialogOpen(false)

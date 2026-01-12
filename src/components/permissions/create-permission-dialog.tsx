@@ -50,8 +50,8 @@ export function CreatePermissionDialog({ open, onOpenChange, onSuccess }: Create
       })
       onSuccess()
       setFormData({ module: "", action: "", description: "" })
-    } catch (err: any) {
-      setError(err.message || "Failed to create permission")
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to create permission")
     } finally {
       setIsLoading(false)
     }

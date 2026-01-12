@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { purchaseOrdersService } from "@/api/services/purchase-orders.service";
 import { suppliersService } from "@/api/services/suppliers.service";
@@ -62,7 +62,7 @@ export function PurchaseOrdersListPage() {
     }
   };
 
-  const fetchPurchaseOrders = async () => {
+  const fetchPurchaseOrders = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -79,7 +79,7 @@ export function PurchaseOrdersListPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [querySpec]);
 
   useEffect(() => {
     fetchSuppliers();
@@ -87,7 +87,7 @@ export function PurchaseOrdersListPage() {
 
   useEffect(() => {
     fetchPurchaseOrders();
-  }, [querySpec]);
+  }, [fetchPurchaseOrders]);
 
   const handleSearch = (value: string) => {
     setQuerySpec((prev) => ({ ...prev, searchTerm: value, page: 1 }));

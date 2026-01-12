@@ -1,10 +1,8 @@
-import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import type {
   LoginRequest,
   RegisterRequest,
   AuthResponse,
-  RefreshTokenRequest,
-  PermissionCheckRequest,
   PermissionCheckResponse,
   User,
 } from "@/types/api.types";

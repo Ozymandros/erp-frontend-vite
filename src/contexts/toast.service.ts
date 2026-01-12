@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ToastApi } from './toast.context'
 
 let _toastApi: ToastApi | null = null

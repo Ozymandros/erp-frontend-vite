@@ -64,7 +64,7 @@ export function EditWarehouseDialog({
     }
   }, [warehouse]);
 
-  const handleChange = (field: keyof UpdateWarehouseFormData, value: any) => {
+  const handleChange = (field: keyof UpdateWarehouseFormData, value: string | number | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (fieldErrors[field]) {
       setFieldErrors((prev) => {
@@ -108,8 +108,8 @@ export function EditWarehouseDialog({
       });
       onSuccess();
       onOpenChange(false);
-    } catch (err: any) {
-      setError(err.message || "Failed to update warehouse");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to update warehouse");
     } finally {
       setIsLoading(false);
     }

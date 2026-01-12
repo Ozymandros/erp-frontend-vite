@@ -40,8 +40,8 @@ export function DeleteProductDialog({
       await productsService.deleteProduct(product.id);
       onSuccess();
       onOpenChange(false);
-    } catch (err: any) {
-      setError(err.message || "Failed to delete product");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to delete product");
     } finally {
       setIsLoading(false);
     }

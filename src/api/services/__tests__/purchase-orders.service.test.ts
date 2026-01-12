@@ -1,10 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type {
   PurchaseOrderDto,
-  CreateUpdatePurchaseOrderDto,
   ApprovePurchaseOrderDto,
   ReceivePurchaseOrderDto,
-  PurchaseOrderStatus,
 } from "@/types/api.types";
 
 const mockApiClient = {

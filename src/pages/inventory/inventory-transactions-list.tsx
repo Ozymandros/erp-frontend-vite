@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { inventoryTransactionsService } from "@/api/services/inventory-transactions.service";
 import { productsService } from "@/api/services/products.service";
@@ -47,8 +47,8 @@ export function InventoryTransactionsListPage() {
   const [transactions, setTransactions] = useState<
     PaginatedResponse<InventoryTransactionDto> | null
   >(null);
-  const [products, setProducts] = useState<any[]>([]);
-  const [warehouses, setWarehouses] = useState<any[]>([]);
+  const [products, setProducts] = useState<Array<{ id: string; name: string }>>([]);
+  const [warehouses, setWarehouses] = useState<Array<{ id: string; name: string }>>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [querySpec, setQuerySpec] = useState<QuerySpec>({
@@ -63,7 +63,7 @@ export function InventoryTransactionsListPage() {
   const [filterWarehouse, setFilterWarehouse] = useState<string>("");
   const [filterType, setFilterType] = useState<TransactionType | "">("");
 
-  const fetchProducts = async () => {
+  const _fetchProducts = async () => {
     try {
       const data = await productsService.getProducts();
       setProducts(data);
@@ -77,7 +77,7 @@ export function InventoryTransactionsListPage() {
     }
   };
 
-  const fetchWarehouses = async () => {
+  const _fetchWarehouses = async () => {
     try {
       const data = await warehousesService.getWarehouses();
       setWarehouses(data);
@@ -91,7 +91,7 @@ export function InventoryTransactionsListPage() {
     }
   };
 
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -150,16 +150,11 @@ export function InventoryTransactionsListPage() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-    fetchWarehouses();
-  }, []);
+  }, [querySpec, filterProduct, filterWarehouse, filterType]);
 
   useEffect(() => {
     fetchTransactions();
-  }, [querySpec, filterProduct, filterWarehouse, filterType]);
+  }, [fetchTransactions]);
 
   const handleSearch = (value: string) => {
     setQuerySpec((prev) => ({ ...prev, searchTerm: value, page: 1 }));

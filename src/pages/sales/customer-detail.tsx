@@ -9,7 +9,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
-import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
 
 export function CustomerDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -25,8 +24,8 @@ export function CustomerDetailPage() {
       try {
         const data = await customersService.getCustomerById(id);
         setCustomer(data);
-      } catch (err: any) {
-        setError(err.message || "Failed to fetch customer");
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Failed to fetch customer");
       } finally {
         setIsLoading(false);
       }

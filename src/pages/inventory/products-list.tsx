@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { productsService } from "@/api/services/products.service";
 import type { ProductDto, PaginatedResponse, QuerySpec } from "@/types/api.types";
@@ -45,7 +45,7 @@ export function ProductsListPage() {
   const [deletingProduct, setDeletingProduct] = useState<ProductDto | null>(null);
   const [showLowStock, setShowLowStock] = useState(false);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -62,9 +62,9 @@ export function ProductsListPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [querySpec]);
 
-  const fetchLowStockProducts = async () => {
+  const fetchLowStockProducts = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -88,7 +88,7 @@ export function ProductsListPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (showLowStock) {
@@ -96,7 +96,7 @@ export function ProductsListPage() {
     } else {
       fetchProducts();
     }
-  }, [querySpec, showLowStock]);
+  }, [querySpec, showLowStock, fetchProducts, fetchLowStockProducts]);
 
   const handleSearch = (value: string) => {
     setQuerySpec((prev) => ({ ...prev, searchTerm: value, page: 1 }));

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { customersService } from "@/api/services/customers.service";
 import type { CustomerDto, PaginatedResponse, QuerySpec } from "@/types/api.types";
@@ -20,7 +20,7 @@ export function CustomersListPage() {
   const [querySpec, setQuerySpec] = useState<QuerySpec>({ page: 1, pageSize: 10, searchTerm: "", searchFields: "name,email,city,country", sortBy: "createdAt", sortDesc: true });
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
-  const fetchCustomers = async () => {
+  const fetchCustomers = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -37,11 +37,11 @@ export function CustomersListPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [querySpec]);
 
   useEffect(() => {
     fetchCustomers();
-  }, [querySpec]);
+  }, [fetchCustomers]);
 
   const handleSearch = (value: string) => {
     setQuerySpec((prev) => ({ ...prev, searchTerm: value, page: 1 }));

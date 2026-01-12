@@ -1,14 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { permissionsService } from "@/api/services/permissions.service"
 import type { Permission, PaginatedResponse } from "@/types/api.types"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Search, Pencil, Trash2 } from "lucide-react"
+import { Plus, Pencil, Trash2 } from "lucide-react"
 import { CreatePermissionDialog } from "@/components/permissions/create-permission-dialog"
 import { EditPermissionDialog } from "@/components/permissions/edit-permission-dialog"
 import { DeletePermissionDialog } from "@/components/permissions/delete-permission-dialog"
@@ -25,7 +24,7 @@ export function PermissionsListPage() {
   const [editingPermission, setEditingPermission] = useState<Permission | null>(null)
   const [deletingPermission, setDeletingPermission] = useState<Permission | null>(null)
 
-  const fetchPermissions = async () => {
+  const fetchPermissions = useCallback(async () => {
     setIsLoading(true)
     setError(null)
     try {
@@ -35,16 +34,16 @@ export function PermissionsListPage() {
         search: searchQuery || undefined,
       })
       setPermissions(data)
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch permissions")
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to fetch permissions")
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [page, searchQuery])
 
   useEffect(() => {
     fetchPermissions()
-  }, [page, searchQuery])
+  }, [fetchPermissions])
 
   const handleSearch = (filters: Record<string, string>) => {
     setSearchQuery(filters.search || "")

@@ -57,8 +57,8 @@ export function EditUserDialog({ user, open, onOpenChange, onSuccess }: EditUser
     try {
       await usersService.updateUser(user.id, formData)
       onSuccess()
-    } catch (err: any) {
-      setError(err.message || "Failed to update user")
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to update user")
     } finally {
       setIsLoading(false)
     }

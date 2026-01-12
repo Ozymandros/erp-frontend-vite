@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type ApiClient, type ApiClientConfig, type RequestConfig, ApiClientError } from "./types"
 import { showToastError } from '@/contexts/toast.service'
 

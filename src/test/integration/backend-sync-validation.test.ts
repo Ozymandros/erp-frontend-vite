@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from 'vitest'
-import { z } from 'zod'
 import {
   LoginSchema,
   RegisterSchema,
@@ -13,11 +13,7 @@ import type {
   PaginatedResponse,
   QuerySpec,
   ProductDto,
-  WarehouseDto,
   OrderDto,
-  SalesOrderDto,
-  PurchaseOrderDto,
-  SupplierDto,
 } from '@/types/api.types'
 
 describe('Backend Synchronization Validation', () => {

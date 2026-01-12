@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Page, Route } from '@playwright/test';
 import { AUTH_SERVICE_BASE, INVENTORY_SERVICE_BASE, SALES_SERVICE_BASE, PURCHASING_SERVICE_BASE } from '../../api/constants/endpoints';
 

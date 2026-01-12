@@ -4,7 +4,6 @@ import type React from "react"
 
 import { useState } from "react"
 import { usersService } from "@/api/services/users.service"
-import type { CreateUserRequest } from "@/types/api.types"
 import { CreateUserSchema, type CreateUserFormData } from "@/lib/validation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

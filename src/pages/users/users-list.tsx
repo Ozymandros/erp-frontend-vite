@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { usersService } from "@/api/services/users.service";
 import type { User, PaginatedResponse, QuerySpec } from "@/types/api.types";
@@ -50,7 +50,7 @@ export function UsersListPage() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -67,11 +67,11 @@ export function UsersListPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [querySpec]);
 
   useEffect(() => {
     fetchUsers();
-  }, [querySpec]);
+  }, [fetchUsers]);
 
   const handleSearch = (value: string) => {
     setQuerySpec(prev => ({ ...prev, searchTerm: value, page: 1 }));

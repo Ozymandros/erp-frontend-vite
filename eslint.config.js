@@ -56,12 +56,19 @@ export default [
                 caughtErrors: 'none',
             }],
             'no-empty': ['error', { allowEmptyCatch: true }],
+            'react-hooks/exhaustive-deps': 'warn',
         },
     },
     {
         files: ['**/__tests__/**', '**/*.test.ts', '**/*.test.tsx'],
         rules: {
             'no-constant-binary-expression': 'off',
+        },
+    },
+    {
+        files: ['src/components/ui/**', 'src/contexts/**', 'src/test/utils/**'],
+        rules: {
+            'react-refresh/only-export-components': 'off',
         },
     },
 ]

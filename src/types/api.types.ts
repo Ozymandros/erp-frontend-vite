@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // API Response Types based on OpenAPI spec
 
 export interface ApiResponse<T = any> {

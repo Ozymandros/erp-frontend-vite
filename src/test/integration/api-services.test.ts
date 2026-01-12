@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi } from "vitest"
-import * as apiClients from "@/api/clients"
 
 const mockApiClient = {
   get: vi.fn(),
