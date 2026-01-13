@@ -5,10 +5,12 @@ This document explains how to configure SonarQube/SonarCloud Quality Gate to onl
 ## 🎯 Philosophy
 
 The CI pipeline should **only fail** when there are:
+
 - **Real errors**: Tests failing, build errors, linting errors, confirmed vulnerabilities
 - **Critical Quality Gate violations**: Bugs, Vulnerabilities, Critical Code Smells, Coverage below minimum
 
 The pipeline should **NOT fail** for:
+
 - Security Hotspots (review suggestions, not vulnerabilities)
 - Minor Code Smells
 - Maintenance suggestions
@@ -69,6 +71,7 @@ The workflow is configured to:
 3. **Report results** in the CI summary without blocking
 
 This means:
+
 - ✅ Critical issues (bugs, vulnerabilities) will still be reported
 - ✅ The pipeline won't be blocked by suggestions or minor issues
 - ✅ You can review Security Hotspots manually without blocking development

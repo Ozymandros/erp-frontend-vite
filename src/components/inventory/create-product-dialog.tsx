@@ -47,10 +47,13 @@ export function CreateProductDialog({
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (field: keyof CreateProductFormData, value: string | number | boolean) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleChange = (
+    field: keyof CreateProductFormData,
+    value: string | number | boolean
+  ) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
     if (fieldErrors[field]) {
-      setFieldErrors((prev) => {
+      setFieldErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors[field];
         return newErrors;
@@ -66,7 +69,7 @@ export function CreateProductDialog({
     const validation = CreateProductSchema.safeParse(formData);
     if (!validation.success) {
       const errors: Record<string, string> = {};
-      validation.error.issues.forEach((err) => {
+      validation.error.issues.forEach(err => {
         if (err.path[0]) {
           errors[err.path[0].toString()] = err.message;
         }
@@ -126,7 +129,7 @@ export function CreateProductDialog({
                 <Input
                   id="sku"
                   value={formData.sku}
-                  onChange={(e) => handleChange("sku", e.target.value)}
+                  onChange={e => handleChange("sku", e.target.value)}
                   required
                   disabled={isLoading}
                   className={fieldErrors.sku ? "border-red-500" : ""}
@@ -141,7 +144,7 @@ export function CreateProductDialog({
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => handleChange("name", e.target.value)}
+                  onChange={e => handleChange("name", e.target.value)}
                   required
                   disabled={isLoading}
                   className={fieldErrors.name ? "border-red-500" : ""}
@@ -157,12 +160,14 @@ export function CreateProductDialog({
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => handleChange("description", e.target.value)}
+                onChange={e => handleChange("description", e.target.value)}
                 disabled={isLoading}
                 className={fieldErrors.description ? "border-red-500" : ""}
               />
               {fieldErrors.description && (
-                <p className="text-sm text-red-500">{fieldErrors.description}</p>
+                <p className="text-sm text-red-500">
+                  {fieldErrors.description}
+                </p>
               )}
             </div>
 
@@ -171,7 +176,7 @@ export function CreateProductDialog({
               <Input
                 id="category"
                 value={formData.category}
-                onChange={(e) => handleChange("category", e.target.value)}
+                onChange={e => handleChange("category", e.target.value)}
                 disabled={isLoading}
                 className={fieldErrors.category ? "border-red-500" : ""}
               />
@@ -189,15 +194,20 @@ export function CreateProductDialog({
                   step="0.01"
                   min="0"
                   value={formData.unitPrice}
-                  onChange={(e) =>
-                    handleChange("unitPrice", parseFloat(e.target.value) || 0)
+                  onChange={e =>
+                    handleChange(
+                      "unitPrice",
+                      Number.parseFloat(e.target.value) || 0
+                    )
                   }
                   required
                   disabled={isLoading}
                   className={fieldErrors.unitPrice ? "border-red-500" : ""}
                 />
                 {fieldErrors.unitPrice && (
-                  <p className="text-sm text-red-500">{fieldErrors.unitPrice}</p>
+                  <p className="text-sm text-red-500">
+                    {fieldErrors.unitPrice}
+                  </p>
                 )}
               </div>
 
@@ -208,8 +218,11 @@ export function CreateProductDialog({
                   type="number"
                   min="0"
                   value={formData.reorderLevel}
-                  onChange={(e) =>
-                    handleChange("reorderLevel", parseInt(e.target.value) || 0)
+                  onChange={e =>
+                    handleChange(
+                      "reorderLevel",
+                      Number.parseInt(e.target.value) || 0
+                    )
                   }
                   required
                   disabled={isLoading}
@@ -227,7 +240,7 @@ export function CreateProductDialog({
               <Switch
                 id="isActive"
                 checked={formData.isActive}
-                onCheckedChange={(checked) => handleChange("isActive", checked)}
+                onCheckedChange={checked => handleChange("isActive", checked)}
                 disabled={isLoading}
               />
               <Label htmlFor="isActive">Active</Label>

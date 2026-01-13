@@ -78,9 +78,9 @@ function ReserveStockForm() {
     const data = {
       productId: formData.get("productId") as string,
       warehouseId: formData.get("warehouseId") as string,
-      quantity: parseInt(formData.get("quantity") as string),
+      quantity: Number.parseInt(formData.get("quantity") as string),
       orderId: formData.get("orderId") as string,
-      expiresAt: formData.get("expiresAt") as string || undefined,
+      expiresAt: (formData.get("expiresAt") as string) || undefined,
     };
 
     try {
@@ -171,7 +171,7 @@ function TransferStockForm() {
       productId: formData.get("productId") as string,
       fromWarehouseId: formData.get("fromWarehouseId") as string,
       toWarehouseId: formData.get("toWarehouseId") as string,
-      quantity: parseInt(formData.get("quantity") as string),
+      quantity: Number.parseInt(formData.get("quantity") as string),
       reason: formData.get("reason") as string,
     };
 
@@ -237,7 +237,9 @@ function TransferStockForm() {
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
       {success && (
-        <p className="text-green-500 text-sm">Stock transferred successfully!</p>
+        <p className="text-green-500 text-sm">
+          Stock transferred successfully!
+        </p>
       )}
 
       <Button type="submit" disabled={isLoading}>
@@ -263,7 +265,7 @@ function AdjustStockForm() {
     const data = {
       productId: formData.get("productId") as string,
       warehouseId: formData.get("warehouseId") as string,
-      quantity: parseInt(formData.get("quantity") as string),
+      quantity: Number.parseInt(formData.get("quantity") as string),
       reason: formData.get("reason") as string,
       adjustmentType: formData.get("adjustmentType") as AdjustmentType,
     };
@@ -388,7 +390,9 @@ function ReleaseReservationForm() {
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
       {success && (
-        <p className="text-green-500 text-sm">Reservation released successfully!</p>
+        <p className="text-green-500 text-sm">
+          Reservation released successfully!
+        </p>
       )}
 
       <Button type="submit" disabled={isLoading} variant="destructive">
