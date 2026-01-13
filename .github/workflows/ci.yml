@@ -133,6 +133,8 @@ jobs:
       CI: true
     permissions:
       contents: read
+      checks: write        # Add this line
+      pull-requests: write  # Add this too for the lcov-reporter-action on line 166
     steps:
       - uses: actions/checkout@v4
       - name: Install pnpm
@@ -198,6 +200,8 @@ jobs:
       CI: true
     permissions:
       contents: read
+      checks: write        # Add this line
+      pull-requests: write  # Add this too for the lcov-reporter-action on line 166
     steps:
       - uses: actions/checkout@v4
       - name: Install pnpm
