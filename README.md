@@ -1,10 +1,48 @@
+# ERP Frontend Application
+
+## 🔍 Project Quality Status
+
+### 🧪 Tests & CI/CD
+
 ![CI Pipeline](https://github.com/Ozymandros/erp-frontend-vite/actions/workflows/ci.yml/badge.svg)
 [![codecov](https://codecov.io/gh/Ozymandros/erp-frontend-vite/branch/main/graph/badge.svg)](https://codecov.io/gh/Ozymandros/erp-frontend-vite)
-![Dependabot](https://img.shields.io/badge/Dependabot-enabled-brightgreen?logo=dependabot)
-[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=erp-frontend-vite&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=erp-frontend-vite)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=erp-frontend-vite&metric=coverage)](https://sonarcloud.io/summary/new_code?id=erp-frontend-vite)
 
-# ERP Frontend Application
+> **Note:** The CI badge includes unit tests (Vitest), E2E tests (Playwright), CodeQL security analysis, linting, and build verification.
+
+### 🔐 Security
+
+![CodeQL](https://github.com/Ozymandros/erp-frontend-vite/actions/workflows/ci.yml/badge.svg?event=push&label=CodeQL)
+
+### 📊 Code Quality (SonarCloud)
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Ozymandros_erp-frontend-vite&metric=alert_status)](...)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Ozymandros_erp-frontend-vite&metric=coverage)](https://sonarcloud.io/summary/overall?id=Ozymandros_erp-frontend-vite)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Ozymandros_erp-frontend-vite&metric=bugs)](https://sonarcloud.io/summary/overall?id=Ozymandros_erp-frontend-vite)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Ozymandros_erp-frontend-vite&metric=code_smells)](https://sonarcloud.io/summary/overall?id=Ozymandros_erp-frontend-vite)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Ozymandros_erp-frontend-vite&metric=security_rating)](https://sonarcloud.io/summary/overall?id=Ozymandros_erp-frontend-vite)
+
+### 🔄 Dependencies
+
+![Dependabot](https://img.shields.io/badge/Dependabot-enabled-brightgreen?logo=dependabot)
+
+### 🛠️ Tech Stack
+
+![Node](https://img.shields.io/badge/node-20.x-green)
+![pnpm](https://img.shields.io/badge/pnpm-9.x-blue)
+
+![React](https://img.shields.io/badge/React-18.3-blue?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)
+![Vite](https://img.shields.io/badge/Vite-7.3-blue?logo=vite)
+
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-blue?logo=tailwindcss)
+![Radix UI](https://img.shields.io/badge/Radix%20UI-1.1-blue?logo=radix-ui)
+
+![Vitest](https://img.shields.io/badge/Vitest-4.0-blue?logo=vitest)
+![Playwright](https://img.shields.io/badge/Playwright-1.57-blue?logo=playwright)
+
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
+---
 
 A modern, type-safe ERP admin portal built with React, TypeScript, and Vite. Features comprehensive authentication, user management, inventory tracking, sales, and purchasing modules.
 
