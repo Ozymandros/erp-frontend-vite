@@ -99,24 +99,33 @@ function ReserveStockForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Product ID</label>
+          <label htmlFor="reserve-productId" className="text-sm font-medium">
+            Product ID
+          </label>
           <input
+            id="reserve-productId"
             name="productId"
             required
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Warehouse ID</label>
+          <label htmlFor="reserve-warehouseId" className="text-sm font-medium">
+            Warehouse ID
+          </label>
           <input
+            id="reserve-warehouseId"
             name="warehouseId"
             required
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Quantity</label>
+          <label htmlFor="reserve-quantity" className="text-sm font-medium">
+            Quantity
+          </label>
           <input
+            id="reserve-quantity"
             name="quantity"
             type="number"
             required
@@ -125,16 +134,22 @@ function ReserveStockForm() {
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Order ID</label>
+          <label htmlFor="reserve-orderId" className="text-sm font-medium">
+            Order ID
+          </label>
           <input
+            id="reserve-orderId"
             name="orderId"
             required
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Expires At (optional)</label>
+          <label htmlFor="reserve-expiresAt" className="text-sm font-medium">
+            Expires At (optional)
+          </label>
           <input
+            id="reserve-expiresAt"
             name="expiresAt"
             type="datetime-local"
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -191,16 +206,22 @@ function TransferStockForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Product ID</label>
+          <label htmlFor="transfer-productId" className="text-sm font-medium">
+            Product ID
+          </label>
           <input
+            id="transfer-productId"
             name="productId"
             required
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Quantity</label>
+          <label htmlFor="transfer-quantity" className="text-sm font-medium">
+            Quantity
+          </label>
           <input
+            id="transfer-quantity"
             name="quantity"
             type="number"
             required
@@ -209,24 +230,39 @@ function TransferStockForm() {
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">From Warehouse</label>
+          <label
+            htmlFor="transfer-fromWarehouseId"
+            className="text-sm font-medium"
+          >
+            From Warehouse
+          </label>
           <input
+            id="transfer-fromWarehouseId"
             name="fromWarehouseId"
             required
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">To Warehouse</label>
+          <label
+            htmlFor="transfer-toWarehouseId"
+            className="text-sm font-medium"
+          >
+            To Warehouse
+          </label>
           <input
+            id="transfer-toWarehouseId"
             name="toWarehouseId"
             required
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
         </div>
         <div className="space-y-2 col-span-2">
-          <label className="text-sm font-medium">Reason</label>
+          <label htmlFor="transfer-reason" className="text-sm font-medium">
+            Reason
+          </label>
           <textarea
+            id="transfer-reason"
             name="reason"
             required
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -286,24 +322,33 @@ function AdjustStockForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Product ID</label>
+          <label htmlFor="adjust-productId" className="text-sm font-medium">
+            Product ID
+          </label>
           <input
+            id="adjust-productId"
             name="productId"
             required
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Warehouse ID</label>
+          <label htmlFor="adjust-warehouseId" className="text-sm font-medium">
+            Warehouse ID
+          </label>
           <input
+            id="adjust-warehouseId"
             name="warehouseId"
             required
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Quantity</label>
+          <label htmlFor="adjust-quantity" className="text-sm font-medium">
+            Quantity
+          </label>
           <input
+            id="adjust-quantity"
             name="quantity"
             type="number"
             required
@@ -312,8 +357,14 @@ function AdjustStockForm() {
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Adjustment Type</label>
+          <label
+            htmlFor="adjust-adjustmentType"
+            className="text-sm font-medium"
+          >
+            Adjustment Type
+          </label>
           <select
+            id="adjust-adjustmentType"
             name="adjustmentType"
             required
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -327,8 +378,11 @@ function AdjustStockForm() {
           </select>
         </div>
         <div className="space-y-2 col-span-2">
-          <label className="text-sm font-medium">Reason</label>
+          <label htmlFor="adjust-reason" className="text-sm font-medium">
+            Reason
+          </label>
           <textarea
+            id="adjust-reason"
             name="reason"
             required
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -379,8 +433,11 @@ function ReleaseReservationForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <label className="text-sm font-medium">Reservation ID</label>
+        <label htmlFor="release-reservationId" className="text-sm font-medium">
+          Reservation ID
+        </label>
         <input
+          id="release-reservationId"
           name="reservationId"
           required
           className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"

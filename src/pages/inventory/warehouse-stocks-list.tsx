@@ -4,7 +4,11 @@ import { useState, useEffect, useCallback } from "react";
 import { warehouseStocksService } from "@/api/services/warehouse-stocks.service";
 import { productsService } from "@/api/services/products.service";
 import { warehousesService } from "@/api/services/warehouses.service";
-import type { WarehouseStockDto, ProductDto, WarehouseDto } from "@/types/api.types";
+import type {
+  WarehouseStockDto,
+  ProductDto,
+  WarehouseDto,
+} from "@/types/api.types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,7 +27,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AlertTriangle, Package, Warehouse } from "lucide-react";
-import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
+import {
+  handleApiError,
+  isForbiddenError,
+  getForbiddenMessage,
+  getErrorMessage,
+} from "@/lib/error-handling";
 
 export function WarehouseStocksListPage() {
   const [stocks, setStocks] = useState<WarehouseStockDto[]>([]);
@@ -31,7 +40,9 @@ export function WarehouseStocksListPage() {
   const [warehouses, setWarehouses] = useState<WarehouseDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filterType, setFilterType] = useState<"all" | "product" | "warehouse" | "low">("all");
+  const [filterType, setFilterType] = useState<
+    "all" | "product" | "warehouse" | "low"
+  >("all");
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<string>("");
 
@@ -68,20 +79,24 @@ export function WarehouseStocksListPage() {
     setError(null);
     try {
       let data: WarehouseStockDto[] = [];
-      
+
       if (filterType === "low") {
         data = await warehouseStocksService.getLowStocks();
       } else if (filterType === "product" && selectedProductId) {
-        data = await warehouseStocksService.getStocksByProduct(selectedProductId);
+        data = await warehouseStocksService.getStocksByProduct(
+          selectedProductId
+        );
       } else if (filterType === "warehouse" && selectedWarehouseId) {
-        data = await warehouseStocksService.getStocksByWarehouse(selectedWarehouseId);
+        data = await warehouseStocksService.getStocksByWarehouse(
+          selectedWarehouseId
+        );
       } else {
         // For "all", we'd need to fetch from all products/warehouses
         // Since there's no "get all" endpoint, show low stock by default
         data = await warehouseStocksService.getLowStocks();
         setFilterType("low");
       }
-      
+
       setStocks(data);
     } catch (error: unknown) {
       const apiError = handleApiError(error);
@@ -106,12 +121,12 @@ export function WarehouseStocksListPage() {
   }, [fetchStocks]);
 
   const getProductName = (productId: string) => {
-    const product = products.find((p) => p.id === productId);
+    const product = products.find(p => p.id === productId);
     return product?.name || productId;
   };
 
   const getWarehouseName = (warehouseId: string) => {
-    const warehouse = warehouses.find((w) => w.id === warehouseId);
+    const warehouse = warehouses.find(w => w.id === warehouseId);
     return warehouse?.name || warehouseId;
   };
 
@@ -125,7 +140,9 @@ export function WarehouseStocksListPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Warehouse Stocks</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Warehouse Stocks
+          </h1>
           <p className="text-muted-foreground mt-1">
             View inventory stock levels across warehouses
           </p>
@@ -174,11 +191,17 @@ export function WarehouseStocksListPage() {
 
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Filter by Product</label>
+              <label
+                htmlFor="filter-stock-product"
+                className="text-sm font-medium"
+              >
+                Filter by Product
+              </label>
               <select
+                id="filter-stock-product"
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 value={selectedProductId}
-                onChange={(e) => {
+                onChange={e => {
                   setSelectedProductId(e.target.value);
                   if (e.target.value) {
                     setFilterType("product");
@@ -187,7 +210,7 @@ export function WarehouseStocksListPage() {
                 }}
               >
                 <option value="">Select a product...</option>
-                {products.map((product) => (
+                {products.map(product => (
                   <option key={product.id} value={product.id}>
                     {product.name} ({product.sku})
                   </option>
@@ -196,11 +219,17 @@ export function WarehouseStocksListPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Filter by Warehouse</label>
+              <label
+                htmlFor="filter-stock-warehouse"
+                className="text-sm font-medium"
+              >
+                Filter by Warehouse
+              </label>
               <select
+                id="filter-stock-warehouse"
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 value={selectedWarehouseId}
-                onChange={(e) => {
+                onChange={e => {
                   setSelectedWarehouseId(e.target.value);
                   if (e.target.value) {
                     setFilterType("warehouse");
@@ -209,7 +238,7 @@ export function WarehouseStocksListPage() {
                 }}
               >
                 <option value="">Select a warehouse...</option>
-                {warehouses.map((warehouse) => (
+                {warehouses.map(warehouse => (
                   <option key={warehouse.id} value={warehouse.id}>
                     {warehouse.name}
                   </option>
@@ -257,7 +286,7 @@ export function WarehouseStocksListPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {stocks.map((stock) => {
+                  {stocks.map(stock => {
                     const available = availableQuantity(stock);
                     const low = isLowStock(stock);
                     return (
@@ -265,7 +294,9 @@ export function WarehouseStocksListPage() {
                         <TableCell className="font-medium">
                           {getProductName(stock.productId)}
                         </TableCell>
-                        <TableCell>{getWarehouseName(stock.warehouseId)}</TableCell>
+                        <TableCell>
+                          {getWarehouseName(stock.warehouseId)}
+                        </TableCell>
                         <TableCell>{stock.quantity}</TableCell>
                         <TableCell className="text-orange-600">
                           {stock.reservedQuantity}
