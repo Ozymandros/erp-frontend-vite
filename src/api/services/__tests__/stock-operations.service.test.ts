@@ -5,6 +5,7 @@ import type {
   StockTransferDto,
   StockAdjustmentDto,
 } from "@/types/api.types";
+import { AdjustmentType } from "@/types/api.types";
 
 const mockApiClient = {
   post: vi.fn(),
@@ -95,7 +96,7 @@ describe("StockOperationsService", () => {
         warehouseId: "warehouse-1",
         quantity: 5,
         reason: "Found during inventory",
-        adjustmentType: "Found",
+        adjustmentType: AdjustmentType.Found,
       };
 
       mockApiClient.post.mockResolvedValue(undefined);

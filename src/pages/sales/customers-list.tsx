@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { customersService } from "@/api/services/customers.service";
 import type { CustomerDto, PaginatedResponse, QuerySpec } from "@/types/api.types";
+import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Search, Pencil, Trash2, Eye } from "lucide-react";
+import { Plus, Search, Eye } from "lucide-react";
 import { CreateCustomerDialog } from "@/components/sales/create-customer-dialog";
 
 export function CustomersListPage() {
@@ -19,7 +20,7 @@ export function CustomersListPage() {
   const [querySpec, setQuerySpec] = useState<QuerySpec>({ page: 1, pageSize: 10, searchTerm: "", searchFields: "name,email,city,country", sortBy: "createdAt", sortDesc: true });
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
-  const fetchCustomers = async () => {
+  const fetchCustomers = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -36,11 +37,11 @@ export function CustomersListPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [querySpec]);
 
   useEffect(() => {
     fetchCustomers();
-  }, [querySpec]);
+  }, [fetchCustomers]);
 
   const handleSearch = (value: string) => {
     setQuerySpec((prev) => ({ ...prev, searchTerm: value, page: 1 }));
@@ -51,7 +52,7 @@ export function CustomersListPage() {
     fetchCustomers();
   };
 
-  const totalPages = customers ? Math.ceil(customers.total / querySpec.pageSize) : 0;
+  const totalPages = customers ? Math.ceil(customers.total / (querySpec.pageSize ?? 20)) : 0;
 
   return (
     <div className="space-y-6">
@@ -124,8 +125,8 @@ export function CustomersListPage() {
                 <div className="flex items-center justify-between mt-4">
                   <p className="text-sm text-muted-foreground">Page {querySpec.page} of {totalPages}</p>
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={() => setQuerySpec(prev => ({ ...prev, page: prev.page - 1 }))} disabled={!customers.hasPrevious}>Previous</Button>
-                    <Button variant="outline" size="sm" onClick={() => setQuerySpec(prev => ({ ...prev, page: prev.page + 1 }))} disabled={!customers.hasNext}>Next</Button>
+                    <Button variant="outline" size="sm" onClick={() => setQuerySpec(prev => ({ ...prev, page: (prev.page ?? 1) - 1 }))} disabled={!customers.hasPreviousPage}>Previous</Button>
+                    <Button variant="outline" size="sm" onClick={() => setQuerySpec(prev => ({ ...prev, page: (prev.page ?? 1) + 1 }))} disabled={!customers.hasNextPage}>Next</Button>
                   </div>
                 </div>
               )}

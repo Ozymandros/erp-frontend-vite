@@ -1,0 +1,786 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="282" failures="6" errors="0" time="2.3808188">
+    <testsuite name="src/lib/__tests__/error-handling.test.ts" timestamp="2026-01-12T16:13:24.619Z" hostname="Andreu" tests="20" failures="0" errors="0" skipped="0" time="0.0085931">
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; handleApiError &gt; should return ApiClientError instance as-is" time="0.0015018">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; handleApiError &gt; should convert Error instance to ApiClientError" time="0.0004846">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; handleApiError &gt; should handle unknown error types with default message" time="0.0002756">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; handleApiError &gt; should handle null error" time="0.0001824">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; handleApiError &gt; should handle undefined error" time="0.0001608">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; handleApiError &gt; should handle string error" time="0.0001404">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; handleApiError &gt; should preserve statusCode and other properties from ApiClientError" time="0.001007">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; isForbiddenError &gt; should return true for 403 status code" time="0.0001857">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; isForbiddenError &gt; should return false for other status codes" time="0.0002586">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; isForbiddenError &gt; should return false when statusCode is undefined" time="0.00015">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; getForbiddenMessage &gt; should generate message for singular resource" time="0.0002263">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; getForbiddenMessage &gt; should generate message for plural resource" time="0.0001781">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; getForbiddenMessage &gt; should generate message for resource with spaces" time="0.0001467">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; getForbiddenMessage &gt; should generate message for empty string resource" time="0.0002216">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; getErrorMessage &gt; should return error message for non-403 errors" time="0.0002063">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; getErrorMessage &gt; should return default message when error message is empty for non-403 errors" time="0.0001533">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; getErrorMessage &gt; should return error message for 403 errors when message exists" time="0.0001555">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; getErrorMessage &gt; should return default message for 403 errors when error message is empty" time="0.000139">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; getErrorMessage &gt; should return default message for 403 errors when error message is undefined" time="0.0001678">
+        </testcase>
+        <testcase classname="src/lib/__tests__/error-handling.test.ts" name="Error Handling Utilities &gt; getErrorMessage &gt; should handle errors without statusCode" time="0.0001308">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/__tests__/utils.test.ts" timestamp="2026-01-12T16:13:24.624Z" hostname="Andreu" tests="11" failures="0" errors="0" skipped="0" time="0.0384615">
+        <testcase classname="src/lib/__tests__/utils.test.ts" name="Utility Functions &gt; cn &gt; should merge class names" time="0.0081148">
+        </testcase>
+        <testcase classname="src/lib/__tests__/utils.test.ts" name="Utility Functions &gt; cn &gt; should handle conditional classes" time="0.0002738">
+        </testcase>
+        <testcase classname="src/lib/__tests__/utils.test.ts" name="Utility Functions &gt; cn &gt; should handle undefined and null" time="0.0001744">
+        </testcase>
+        <testcase classname="src/lib/__tests__/utils.test.ts" name="Utility Functions &gt; cn &gt; should handle empty strings" time="0.000146">
+        </testcase>
+        <testcase classname="src/lib/__tests__/utils.test.ts" name="Utility Functions &gt; formatDate &gt; should format ISO date string" time="0.023748">
+        </testcase>
+        <testcase classname="src/lib/__tests__/utils.test.ts" name="Utility Functions &gt; formatDate &gt; should return empty string for undefined" time="0.0001801">
+        </testcase>
+        <testcase classname="src/lib/__tests__/utils.test.ts" name="Utility Functions &gt; formatDate &gt; should handle Date object" time="0.0003843">
+        </testcase>
+        <testcase classname="src/lib/__tests__/utils.test.ts" name="Utility Functions &gt; formatDateTime &gt; should format ISO date string with time" time="0.0012533">
+        </testcase>
+        <testcase classname="src/lib/__tests__/utils.test.ts" name="Utility Functions &gt; formatDateTime &gt; should handle different date formats" time="0.0004541">
+        </testcase>
+        <testcase classname="src/lib/__tests__/utils.test.ts" name="Utility Functions &gt; formatDateTime &gt; should return empty string for undefined" time="0.0002847">
+        </testcase>
+        <testcase classname="src/lib/__tests__/utils.test.ts" name="Utility Functions &gt; formatDateTime &gt; should handle Date object" time="0.0005071">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/e2e/auth.spec.ts" timestamp="2026-01-12T16:13:24.626Z" hostname="Andreu" tests="1" failures="1" errors="0" skipped="0" time="0">
+        <testcase classname="src/test/e2e/auth.spec.ts" name="src/test/e2e/auth.spec.ts" time="0">
+            <failure message="Playwright Test did not expect test.describe() to be called here.
+Most common reasons include:
+- You are calling test.describe() in a configuration file.
+- You are calling test.describe() in a file that is imported by the configuration file.
+- You have two different versions of @playwright/test. This usually happens
+  when one of the dependencies in your package.json depends on @playwright/test." type="Error">
+Error: Playwright Test did not expect test.describe() to be called here.
+Most common reasons include:
+- You are calling test.describe() in a configuration file.
+- You are calling test.describe() in a file that is imported by the configuration file.
+- You have two different versions of @playwright/test. This usually happens
+  when one of the dependencies in your package.json depends on @playwright/test.
+ ❯ TestTypeImpl._currentSuite node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/common/testType.js:75:13
+ ❯ TestTypeImpl._describe node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/common/testType.js:115:24
+ ❯ Function.describe node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/transform/transform.js:275:12
+ ❯ src/test/e2e/auth.spec.ts:9:6
+            </failure>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/e2e/inventory.spec.ts" timestamp="2026-01-12T16:13:24.629Z" hostname="Andreu" tests="1" failures="1" errors="0" skipped="0" time="0">
+        <testcase classname="src/test/e2e/inventory.spec.ts" name="src/test/e2e/inventory.spec.ts" time="0">
+            <failure message="Playwright Test did not expect test.describe() to be called here.
+Most common reasons include:
+- You are calling test.describe() in a configuration file.
+- You are calling test.describe() in a file that is imported by the configuration file.
+- You have two different versions of @playwright/test. This usually happens
+  when one of the dependencies in your package.json depends on @playwright/test." type="Error">
+Error: Playwright Test did not expect test.describe() to be called here.
+Most common reasons include:
+- You are calling test.describe() in a configuration file.
+- You are calling test.describe() in a file that is imported by the configuration file.
+- You have two different versions of @playwright/test. This usually happens
+  when one of the dependencies in your package.json depends on @playwright/test.
+ ❯ TestTypeImpl._currentSuite node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/common/testType.js:75:13
+ ❯ TestTypeImpl._describe node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/common/testType.js:115:24
+ ❯ Function.describe node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/transform/transform.js:275:12
+ ❯ src/test/e2e/inventory.spec.ts:9:6
+            </failure>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/e2e/purchasing.spec.ts" timestamp="2026-01-12T16:13:24.630Z" hostname="Andreu" tests="1" failures="1" errors="0" skipped="0" time="0">
+        <testcase classname="src/test/e2e/purchasing.spec.ts" name="src/test/e2e/purchasing.spec.ts" time="0">
+            <failure message="Playwright Test did not expect test.describe() to be called here.
+Most common reasons include:
+- You are calling test.describe() in a configuration file.
+- You are calling test.describe() in a file that is imported by the configuration file.
+- You have two different versions of @playwright/test. This usually happens
+  when one of the dependencies in your package.json depends on @playwright/test." type="Error">
+Error: Playwright Test did not expect test.describe() to be called here.
+Most common reasons include:
+- You are calling test.describe() in a configuration file.
+- You are calling test.describe() in a file that is imported by the configuration file.
+- You have two different versions of @playwright/test. This usually happens
+  when one of the dependencies in your package.json depends on @playwright/test.
+ ❯ TestTypeImpl._currentSuite node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/common/testType.js:75:13
+ ❯ TestTypeImpl._describe node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/common/testType.js:115:24
+ ❯ Function.describe node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/transform/transform.js:275:12
+ ❯ src/test/e2e/purchasing.spec.ts:9:6
+            </failure>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/e2e/sales.spec.ts" timestamp="2026-01-12T16:13:24.631Z" hostname="Andreu" tests="1" failures="1" errors="0" skipped="0" time="0">
+        <testcase classname="src/test/e2e/sales.spec.ts" name="src/test/e2e/sales.spec.ts" time="0">
+            <failure message="Playwright Test did not expect test.describe() to be called here.
+Most common reasons include:
+- You are calling test.describe() in a configuration file.
+- You are calling test.describe() in a file that is imported by the configuration file.
+- You have two different versions of @playwright/test. This usually happens
+  when one of the dependencies in your package.json depends on @playwright/test." type="Error">
+Error: Playwright Test did not expect test.describe() to be called here.
+Most common reasons include:
+- You are calling test.describe() in a configuration file.
+- You are calling test.describe() in a file that is imported by the configuration file.
+- You have two different versions of @playwright/test. This usually happens
+  when one of the dependencies in your package.json depends on @playwright/test.
+ ❯ TestTypeImpl._currentSuite node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/common/testType.js:75:13
+ ❯ TestTypeImpl._describe node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/common/testType.js:115:24
+ ❯ Function.describe node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/transform/transform.js:275:12
+ ❯ src/test/e2e/sales.spec.ts:9:6
+            </failure>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/e2e/smoke.spec.ts" timestamp="2026-01-12T16:13:24.632Z" hostname="Andreu" tests="1" failures="1" errors="0" skipped="0" time="0">
+        <testcase classname="src/test/e2e/smoke.spec.ts" name="src/test/e2e/smoke.spec.ts" time="0">
+            <failure message="Playwright Test did not expect test.describe() to be called here.
+Most common reasons include:
+- You are calling test.describe() in a configuration file.
+- You are calling test.describe() in a file that is imported by the configuration file.
+- You have two different versions of @playwright/test. This usually happens
+  when one of the dependencies in your package.json depends on @playwright/test." type="Error">
+Error: Playwright Test did not expect test.describe() to be called here.
+Most common reasons include:
+- You are calling test.describe() in a configuration file.
+- You are calling test.describe() in a file that is imported by the configuration file.
+- You have two different versions of @playwright/test. This usually happens
+  when one of the dependencies in your package.json depends on @playwright/test.
+ ❯ TestTypeImpl._currentSuite node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/common/testType.js:75:13
+ ❯ TestTypeImpl._describe node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/common/testType.js:115:24
+ ❯ Function.describe node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/transform/transform.js:275:12
+ ❯ src/test/e2e/smoke.spec.ts:8:6
+            </failure>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/e2e/users.spec.ts" timestamp="2026-01-12T16:13:24.633Z" hostname="Andreu" tests="1" failures="1" errors="0" skipped="0" time="0">
+        <testcase classname="src/test/e2e/users.spec.ts" name="src/test/e2e/users.spec.ts" time="0">
+            <failure message="Playwright Test did not expect test.describe() to be called here.
+Most common reasons include:
+- You are calling test.describe() in a configuration file.
+- You are calling test.describe() in a file that is imported by the configuration file.
+- You have two different versions of @playwright/test. This usually happens
+  when one of the dependencies in your package.json depends on @playwright/test." type="Error">
+Error: Playwright Test did not expect test.describe() to be called here.
+Most common reasons include:
+- You are calling test.describe() in a configuration file.
+- You are calling test.describe() in a file that is imported by the configuration file.
+- You have two different versions of @playwright/test. This usually happens
+  when one of the dependencies in your package.json depends on @playwright/test.
+ ❯ TestTypeImpl._currentSuite node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/common/testType.js:75:13
+ ❯ TestTypeImpl._describe node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/common/testType.js:115:24
+ ❯ Function.describe node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/transform/transform.js:275:12
+ ❯ src/test/e2e/users.spec.ts:9:6
+            </failure>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/integration/api-services.test.ts" timestamp="2026-01-12T16:13:24.634Z" hostname="Andreu" tests="4" failures="0" errors="0" skipped="0" time="0.0099999">
+        <testcase classname="src/test/integration/api-services.test.ts" name="API Services Integration &gt; UsersService &gt; should fetch users with pagination" time="0.0045052">
+        </testcase>
+        <testcase classname="src/test/integration/api-services.test.ts" name="API Services Integration &gt; UsersService &gt; should create a new user" time="0.0006608">
+        </testcase>
+        <testcase classname="src/test/integration/api-services.test.ts" name="API Services Integration &gt; RolesService &gt; should fetch roles" time="0.0004141">
+        </testcase>
+        <testcase classname="src/test/integration/api-services.test.ts" name="API Services Integration &gt; PermissionsService &gt; should fetch permissions" time="0.0003382">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/test/integration/backend-sync-validation.test.ts" timestamp="2026-01-12T16:13:24.635Z" hostname="Andreu" tests="22" failures="0" errors="0" skipped="0" time="1.6913757">
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Type Definitions &gt; should have correct User interface with all backend fields" time="0.0017392">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Type Definitions &gt; should have correct PaginatedResponse interface matching backend" time="0.000315">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Type Definitions &gt; should have QuerySpec interface for search/filter/sort" time="0.0001888">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Type Definitions &gt; should have Inventory DTOs defined" time="0.0001691">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Type Definitions &gt; should have Orders DTOs defined" time="0.0001363">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Validation Schemas &gt; should validate LoginDto with correct rules" time="0.0038141">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Validation Schemas &gt; should validate RegisterDto with password confirmation" time="0.0052075">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Validation Schemas &gt; should validate CreateUserDto with 8 char minimum" time="0.001252">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Validation Schemas &gt; should validate UpdateUserDto with all optional fields" time="0.0018669">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Validation Schemas &gt; should validate CreateRoleDto" time="0.0010697">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Validation Schemas &gt; should validate CreatePermissionDto" time="0.0008067">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Service Endpoint Mapping &gt; should have all auth service methods" time="1.4044746">
+            <system-out>
+[API Client] Base URL configured: http://localhost:5000
+[API Client] VITE_API_BASE_URL from env: http://localhost:5000/api
+
+[API Client] Using Axios
+
+            </system-out>
+            <system-err>
+[API Client] Removed /api suffix from VITE_API_BASE_URL. The base URL should not include /api as endpoints already have full gateway paths.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Service Endpoint Mapping &gt; should have all users service methods" time="0.00152">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Service Endpoint Mapping &gt; should have all roles service methods" time="0.0014223">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Service Endpoint Mapping &gt; should have all permissions service methods" time="0.0015231">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Service Endpoint Mapping &gt; should have products service methods" time="0.0399213">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Service Endpoint Mapping &gt; should have warehouses service methods" time="0.0582813">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Service Endpoint Mapping &gt; should have orders service methods" time="0.0416263">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Service Endpoint Mapping &gt; should have sales orders service methods" time="0.0018731">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Service Endpoint Mapping &gt; should have purchase orders service methods" time="0.0685922">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; Service Endpoint Mapping &gt; should have suppliers service methods" time="0.0508178">
+        </testcase>
+        <testcase classname="src/test/integration/backend-sync-validation.test.ts" name="Backend Synchronization Validation &gt; DateTime Handling &gt; should use ISO-8601 string format for DateTime fields" time="0.001135">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/clients/__tests__/axios-client.test.ts" timestamp="2026-01-12T16:13:24.638Z" hostname="Andreu" tests="7" failures="0" errors="0" skipped="0" time="0.0290444">
+        <testcase classname="src/api/clients/__tests__/axios-client.test.ts" name="AxiosApiClient &gt; HTTP Methods &gt; should make GET request" time="0.0054638">
+            <system-out>
+[AxiosApiClient] GET /test → Full URL: http://localhost:8080/test
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/api/clients/__tests__/axios-client.test.ts" name="AxiosApiClient &gt; HTTP Methods &gt; should make POST request" time="0.016791">
+            <system-out>
+[AxiosApiClient] POST /test → Full URL: http://localhost:8080/test
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/api/clients/__tests__/axios-client.test.ts" name="AxiosApiClient &gt; HTTP Methods &gt; should make PUT request" time="0.0007199">
+        </testcase>
+        <testcase classname="src/api/clients/__tests__/axios-client.test.ts" name="AxiosApiClient &gt; HTTP Methods &gt; should make DELETE request" time="0.0005294">
+        </testcase>
+        <testcase classname="src/api/clients/__tests__/axios-client.test.ts" name="AxiosApiClient &gt; Authentication &gt; should set auth token" time="0.0004868">
+        </testcase>
+        <testcase classname="src/api/clients/__tests__/axios-client.test.ts" name="AxiosApiClient &gt; Authentication &gt; should clear auth token" time="0.0003452">
+        </testcase>
+        <testcase classname="src/api/clients/__tests__/axios-client.test.ts" name="AxiosApiClient &gt; Error Handling &gt; should handle network errors" time="0.0021608">
+            <system-out>
+[AxiosApiClient] GET /test → Full URL: http://localhost:8080/test
+
+            </system-out>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/clients/__tests__/dapr-client.test.ts" timestamp="2026-01-12T16:13:24.640Z" hostname="Andreu" tests="5" failures="0" errors="0" skipped="0" time="0.0160525">
+        <testcase classname="src/api/clients/__tests__/dapr-client.test.ts" name="DaprHttpClient &gt; HTTP Methods &gt; should make GET request through Dapr" time="0.0066771">
+        </testcase>
+        <testcase classname="src/api/clients/__tests__/dapr-client.test.ts" name="DaprHttpClient &gt; HTTP Methods &gt; should make POST request through Dapr" time="0.0008085">
+        </testcase>
+        <testcase classname="src/api/clients/__tests__/dapr-client.test.ts" name="DaprHttpClient &gt; Authentication &gt; should include auth token in headers" time="0.0009424">
+        </testcase>
+        <testcase classname="src/api/clients/__tests__/dapr-client.test.ts" name="DaprHttpClient &gt; Error Handling &gt; should handle HTTP errors" time="0.0040943">
+            <system-out>
+[DaprHttpClient] emitting error toast Resource not found
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/api/clients/__tests__/dapr-client.test.ts" name="DaprHttpClient &gt; Error Handling &gt; should handle network errors" time="0.0008885">
+            <system-out>
+[DaprHttpClient] emitting network toast Network Error
+
+            </system-out>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/constants/__tests__/endpoints.test.ts" timestamp="2026-01-12T16:13:24.641Z" hostname="Andreu" tests="19" failures="0" errors="0" skipped="0" time="0.0075042">
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; AUTH_ENDPOINTS &gt; should have correct login endpoint" time="0.0014715">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; AUTH_ENDPOINTS &gt; should have correct register endpoint" time="0.0002906">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; AUTH_ENDPOINTS &gt; should have correct refresh endpoint" time="0.0002304">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; AUTH_ENDPOINTS &gt; should have correct logout endpoint" time="0.0001818">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; USERS_ENDPOINTS &gt; should have correct ME endpoint" time="0.0002765">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; USERS_ENDPOINTS &gt; should generate correct BY_ID endpoint" time="0.0001713">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; USERS_ENDPOINTS &gt; should have correct CREATE endpoint" time="0.0001308">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; USERS_ENDPOINTS &gt; should have correct SEARCH endpoint" time="0.0001307">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; PRODUCTS_ENDPOINTS &gt; should have correct base endpoint" time="0.000273">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; PRODUCTS_ENDPOINTS &gt; should generate correct BY_ID endpoint" time="0.0001816">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; PRODUCTS_ENDPOINTS &gt; should have correct SEARCH endpoint" time="0.0001098">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; WAREHOUSES_ENDPOINTS &gt; should have correct base endpoint" time="0.0001166">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; WAREHOUSES_ENDPOINTS &gt; should generate correct BY_ID endpoint" time="0.0001267">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; CUSTOMERS_ENDPOINTS &gt; should have correct base endpoint" time="0.0001347">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; CUSTOMERS_ENDPOINTS &gt; should generate correct BY_ID endpoint" time="0.0002617">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; SALES_ORDERS_ENDPOINTS &gt; should have correct base endpoint" time="0.0001411">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; SALES_ORDERS_ENDPOINTS &gt; should have correct QUOTES endpoint" time="0.000143">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; PURCHASE_ORDERS_ENDPOINTS &gt; should have correct base endpoint" time="0.0001365">
+        </testcase>
+        <testcase classname="src/api/constants/__tests__/endpoints.test.ts" name="API Endpoints Constants &gt; PURCHASE_ORDERS_ENDPOINTS &gt; should generate correct BY_ID endpoint" time="0.0001443">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/validation/__tests__/auth.schemas.test.ts" timestamp="2026-01-12T16:13:24.644Z" hostname="Andreu" tests="10" failures="0" errors="0" skipped="0" time="0.0108644">
+        <testcase classname="src/lib/validation/__tests__/auth.schemas.test.ts" name="Auth Validation Schemas &gt; LoginSchema &gt; should validate correct login data" time="0.0038284">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/auth.schemas.test.ts" name="Auth Validation Schemas &gt; LoginSchema &gt; should reject invalid email" time="0.0007848">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/auth.schemas.test.ts" name="Auth Validation Schemas &gt; LoginSchema &gt; should reject empty email" time="0.0004098">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/auth.schemas.test.ts" name="Auth Validation Schemas &gt; LoginSchema &gt; should reject short password" time="0.0004915">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/auth.schemas.test.ts" name="Auth Validation Schemas &gt; LoginSchema &gt; should reject password exceeding max length" time="0.0003446">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/auth.schemas.test.ts" name="Auth Validation Schemas &gt; RegisterSchema &gt; should validate correct registration data" time="0.0010231">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/auth.schemas.test.ts" name="Auth Validation Schemas &gt; RegisterSchema &gt; should validate with optional fields empty" time="0.0002248">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/auth.schemas.test.ts" name="Auth Validation Schemas &gt; RegisterSchema &gt; should reject when passwords do not match" time="0.0004483">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/auth.schemas.test.ts" name="Auth Validation Schemas &gt; RegisterSchema &gt; should reject short username" time="0.0003203">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/auth.schemas.test.ts" name="Auth Validation Schemas &gt; RegisterSchema &gt; should reject long username" time="0.0002776">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/validation/__tests__/permission.schemas.test.ts" timestamp="2026-01-12T16:13:24.645Z" hostname="Andreu" tests="14" failures="0" errors="0" skipped="0" time="0.0111315">
+        <testcase classname="src/lib/validation/__tests__/permission.schemas.test.ts" name="Permission Validation Schemas &gt; CreatePermissionSchema &gt; should validate correct permission data" time="0.0040219">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/permission.schemas.test.ts" name="Permission Validation Schemas &gt; CreatePermissionSchema &gt; should validate with minimal required fields" time="0.0003162">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/permission.schemas.test.ts" name="Permission Validation Schemas &gt; CreatePermissionSchema &gt; should validate with empty string description" time="0.0002222">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/permission.schemas.test.ts" name="Permission Validation Schemas &gt; CreatePermissionSchema &gt; should validate with undefined description" time="0.0001977">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/permission.schemas.test.ts" name="Permission Validation Schemas &gt; CreatePermissionSchema &gt; should reject empty module" time="0.0008056">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/permission.schemas.test.ts" name="Permission Validation Schemas &gt; CreatePermissionSchema &gt; should reject empty action" time="0.0003898">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/permission.schemas.test.ts" name="Permission Validation Schemas &gt; CreatePermissionSchema &gt; should reject missing module" time="0.0004882">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/permission.schemas.test.ts" name="Permission Validation Schemas &gt; CreatePermissionSchema &gt; should reject missing action" time="0.000211">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/permission.schemas.test.ts" name="Permission Validation Schemas &gt; CreatePermissionSchema &gt; should reject non-string module" time="0.000221">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/permission.schemas.test.ts" name="Permission Validation Schemas &gt; CreatePermissionSchema &gt; should reject non-string action" time="0.0002062">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/permission.schemas.test.ts" name="Permission Validation Schemas &gt; UpdatePermissionSchema &gt; should validate correct update data" time="0.0004325">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/permission.schemas.test.ts" name="Permission Validation Schemas &gt; UpdatePermissionSchema &gt; should validate with minimal fields" time="0.0001908">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/permission.schemas.test.ts" name="Permission Validation Schemas &gt; UpdatePermissionSchema &gt; should reject empty module" time="0.0002107">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/permission.schemas.test.ts" name="Permission Validation Schemas &gt; UpdatePermissionSchema &gt; should reject empty action" time="0.0001996">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/validation/__tests__/product.schemas.test.ts" timestamp="2026-01-12T16:13:24.647Z" hostname="Andreu" tests="9" failures="0" errors="0" skipped="0" time="0.0106713">
+        <testcase classname="src/lib/validation/__tests__/product.schemas.test.ts" name="Product Validation Schemas &gt; CreateProductSchema &gt; should validate correct product data" time="0.0046171">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/product.schemas.test.ts" name="Product Validation Schemas &gt; CreateProductSchema &gt; should validate with optional fields" time="0.0004558">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/product.schemas.test.ts" name="Product Validation Schemas &gt; CreateProductSchema &gt; should reject empty SKU" time="0.0007394">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/product.schemas.test.ts" name="Product Validation Schemas &gt; CreateProductSchema &gt; should reject SKU exceeding max length" time="0.0003823">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/product.schemas.test.ts" name="Product Validation Schemas &gt; CreateProductSchema &gt; should reject negative unit price" time="0.000512">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/product.schemas.test.ts" name="Product Validation Schemas &gt; CreateProductSchema &gt; should reject negative reorder level" time="0.0002626">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/product.schemas.test.ts" name="Product Validation Schemas &gt; CreateProductSchema &gt; should reject non-integer reorder level" time="0.0005112">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/product.schemas.test.ts" name="Product Validation Schemas &gt; CreateProductSchema &gt; should reject description exceeding max length" time="0.0002902">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/product.schemas.test.ts" name="Product Validation Schemas &gt; UpdateProductSchema &gt; should validate correct update data" time="0.000231">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/validation/__tests__/purchase-order.schemas.test.ts" timestamp="2026-01-12T16:13:24.648Z" hostname="Andreu" tests="8" failures="0" errors="0" skipped="0" time="0.0087636">
+        <testcase classname="src/lib/validation/__tests__/purchase-order.schemas.test.ts" name="Purchase Order Validation Schemas &gt; PurchaseOrderLineSchema &gt; should validate correct order line data" time="0.002963">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/purchase-order.schemas.test.ts" name="Purchase Order Validation Schemas &gt; PurchaseOrderLineSchema &gt; should reject quantity less than 1" time="0.000634">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/purchase-order.schemas.test.ts" name="Purchase Order Validation Schemas &gt; CreatePurchaseOrderSchema &gt; should validate correct purchase order data" time="0.0008177">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/purchase-order.schemas.test.ts" name="Purchase Order Validation Schemas &gt; CreatePurchaseOrderSchema &gt; should validate without optional expectedDeliveryDate" time="0.0002365">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/purchase-order.schemas.test.ts" name="Purchase Order Validation Schemas &gt; CreatePurchaseOrderSchema &gt; should reject empty order lines" time="0.0003534">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/purchase-order.schemas.test.ts" name="Purchase Order Validation Schemas &gt; ApprovePurchaseOrderSchema &gt; should validate correct approval data" time="0.0004343">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/purchase-order.schemas.test.ts" name="Purchase Order Validation Schemas &gt; ReceivePurchaseOrderSchema &gt; should validate correct receive data" time="0.0006603">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/purchase-order.schemas.test.ts" name="Purchase Order Validation Schemas &gt; ReceivePurchaseOrderSchema &gt; should reject empty received items" time="0.000251">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/validation/__tests__/role.schemas.test.ts" timestamp="2026-01-12T16:13:24.649Z" hostname="Andreu" tests="12" failures="0" errors="0" skipped="0" time="0.0113378">
+        <testcase classname="src/lib/validation/__tests__/role.schemas.test.ts" name="Role Validation Schemas &gt; CreateRoleSchema &gt; should validate correct role data" time="0.0048012">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/role.schemas.test.ts" name="Role Validation Schemas &gt; CreateRoleSchema &gt; should validate with minimal required fields" time="0.0003194">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/role.schemas.test.ts" name="Role Validation Schemas &gt; CreateRoleSchema &gt; should validate with empty string description" time="0.0002673">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/role.schemas.test.ts" name="Role Validation Schemas &gt; CreateRoleSchema &gt; should validate with undefined description" time="0.0001695">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/role.schemas.test.ts" name="Role Validation Schemas &gt; CreateRoleSchema &gt; should validate with empty permissionIds array" time="0.0002337">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/role.schemas.test.ts" name="Role Validation Schemas &gt; CreateRoleSchema &gt; should reject empty name" time="0.000774">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/role.schemas.test.ts" name="Role Validation Schemas &gt; CreateRoleSchema &gt; should reject missing name" time="0.0005369">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/role.schemas.test.ts" name="Role Validation Schemas &gt; CreateRoleSchema &gt; should reject non-string name" time="0.0002544">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/role.schemas.test.ts" name="Role Validation Schemas &gt; CreateRoleSchema &gt; should reject invalid permissionIds type" time="0.0002845">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/role.schemas.test.ts" name="Role Validation Schemas &gt; UpdateRoleSchema &gt; should validate correct update data (same as CreateRoleSchema)" time="0.0003057">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/role.schemas.test.ts" name="Role Validation Schemas &gt; UpdateRoleSchema &gt; should validate with minimal fields" time="0.0001545">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/role.schemas.test.ts" name="Role Validation Schemas &gt; UpdateRoleSchema &gt; should reject empty name" time="0.000195">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/validation/__tests__/sales-order.schemas.test.ts" timestamp="2026-01-12T16:13:24.651Z" hostname="Andreu" tests="8" failures="0" errors="0" skipped="0" time="0.0096644">
+        <testcase classname="src/lib/validation/__tests__/sales-order.schemas.test.ts" name="Sales Order Validation Schemas &gt; SalesOrderLineSchema &gt; should validate correct order line data" time="0.0032228">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/sales-order.schemas.test.ts" name="Sales Order Validation Schemas &gt; SalesOrderLineSchema &gt; should reject quantity less than 1" time="0.0007213">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/sales-order.schemas.test.ts" name="Sales Order Validation Schemas &gt; SalesOrderLineSchema &gt; should reject negative unit price" time="0.0003572">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/sales-order.schemas.test.ts" name="Sales Order Validation Schemas &gt; CreateSalesOrderSchema &gt; should validate correct sales order data" time="0.0006743">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/sales-order.schemas.test.ts" name="Sales Order Validation Schemas &gt; CreateSalesOrderSchema &gt; should reject empty order lines" time="0.0005418">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/sales-order.schemas.test.ts" name="Sales Order Validation Schemas &gt; CreateQuoteSchema &gt; should validate correct quote data" time="0.0005515">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/sales-order.schemas.test.ts" name="Sales Order Validation Schemas &gt; CreateQuoteSchema &gt; should reject missing validUntil" time="0.0003577">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/sales-order.schemas.test.ts" name="Sales Order Validation Schemas &gt; ConfirmQuoteSchema &gt; should validate correct confirm quote data" time="0.0004612">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/validation/__tests__/stock-operations.schemas.test.ts" timestamp="2026-01-12T16:13:24.652Z" hostname="Andreu" tests="11" failures="0" errors="0" skipped="0" time="0.0141091">
+        <testcase classname="src/lib/validation/__tests__/stock-operations.schemas.test.ts" name="Stock Operations Validation Schemas &gt; ReserveStockSchema &gt; should validate correct reserve stock data" time="0.0031936">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/stock-operations.schemas.test.ts" name="Stock Operations Validation Schemas &gt; ReserveStockSchema &gt; should validate without optional expiresAt" time="0.0003039">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/stock-operations.schemas.test.ts" name="Stock Operations Validation Schemas &gt; ReserveStockSchema &gt; should reject missing productId" time="0.0009174">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/stock-operations.schemas.test.ts" name="Stock Operations Validation Schemas &gt; ReserveStockSchema &gt; should reject quantity less than 1" time="0.0021821">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/stock-operations.schemas.test.ts" name="Stock Operations Validation Schemas &gt; StockTransferSchema &gt; should validate correct transfer data" time="0.000745">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/stock-operations.schemas.test.ts" name="Stock Operations Validation Schemas &gt; StockTransferSchema &gt; should reject same from and to warehouse" time="0.0003849">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/stock-operations.schemas.test.ts" name="Stock Operations Validation Schemas &gt; StockTransferSchema &gt; should reject empty reason" time="0.0005146">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/stock-operations.schemas.test.ts" name="Stock Operations Validation Schemas &gt; StockAdjustmentSchema &gt; should validate correct adjustment data with Increase" time="0.0006979">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/stock-operations.schemas.test.ts" name="Stock Operations Validation Schemas &gt; StockAdjustmentSchema &gt; should validate with Decrease type" time="0.0004318">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/stock-operations.schemas.test.ts" name="Stock Operations Validation Schemas &gt; StockAdjustmentSchema &gt; should validate with Found type" time="0.0004468">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/stock-operations.schemas.test.ts" name="Stock Operations Validation Schemas &gt; StockAdjustmentSchema &gt; should reject invalid adjustment type" time="0.0006875">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/validation/__tests__/user.schemas.test.ts" timestamp="2026-01-12T16:13:24.653Z" hostname="Andreu" tests="7" failures="0" errors="0" skipped="0" time="0.0107314">
+        <testcase classname="src/lib/validation/__tests__/user.schemas.test.ts" name="User Validation Schemas &gt; CreateUserSchema &gt; should validate correct user data" time="0.0045895">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/user.schemas.test.ts" name="User Validation Schemas &gt; CreateUserSchema &gt; should reject invalid email" time="0.0009506">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/user.schemas.test.ts" name="User Validation Schemas &gt; CreateUserSchema &gt; should reject short username" time="0.0004604">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/user.schemas.test.ts" name="User Validation Schemas &gt; CreateUserSchema &gt; should reject weak password" time="0.0003609">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/user.schemas.test.ts" name="User Validation Schemas &gt; UpdateUserSchema &gt; should validate correct update data without password" time="0.0007503">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/user.schemas.test.ts" name="User Validation Schemas &gt; UpdateUserSchema &gt; should validate with optional password" time="0.0002174">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/user.schemas.test.ts" name="User Validation Schemas &gt; UpdateUserSchema &gt; should reject invalid email" time="0.0004839">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/lib/validation/__tests__/warehouse.schemas.test.ts" timestamp="2026-01-12T16:13:24.654Z" hostname="Andreu" tests="5" failures="0" errors="0" skipped="0" time="0.0045675">
+        <testcase classname="src/lib/validation/__tests__/warehouse.schemas.test.ts" name="Warehouse Validation Schemas &gt; CreateWarehouseSchema &gt; should validate correct warehouse data" time="0.0020063">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/warehouse.schemas.test.ts" name="Warehouse Validation Schemas &gt; CreateWarehouseSchema &gt; should validate with minimal required fields" time="0.0002427">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/warehouse.schemas.test.ts" name="Warehouse Validation Schemas &gt; CreateWarehouseSchema &gt; should reject empty name" time="0.0004207">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/warehouse.schemas.test.ts" name="Warehouse Validation Schemas &gt; CreateWarehouseSchema &gt; should reject name exceeding max length" time="0.0001903">
+        </testcase>
+        <testcase classname="src/lib/validation/__tests__/warehouse.schemas.test.ts" name="Warehouse Validation Schemas &gt; UpdateWarehouseSchema &gt; should validate correct update data" time="0.0001255">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/services/__tests__/auth.service.test.ts" timestamp="2026-01-12T16:13:24.655Z" hostname="Andreu" tests="6" failures="0" errors="0" skipped="0" time="0.0264796">
+        <testcase classname="src/api/services/__tests__/auth.service.test.ts" name="AuthService &gt; login &gt; should login with credentials" time="0.0216898">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/auth.service.test.ts" name="AuthService &gt; register &gt; should register a new user" time="0.0005663">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/auth.service.test.ts" name="AuthService &gt; refreshToken &gt; should refresh access token" time="0.0006448">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/auth.service.test.ts" name="AuthService &gt; logout &gt; should logout user" time="0.0002989">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/auth.service.test.ts" name="AuthService &gt; getCurrentUser &gt; should get current user" time="0.0003078">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/auth.service.test.ts" name="AuthService &gt; checkPermission &gt; should check permission" time="0.0004017">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/services/__tests__/customers.service.test.ts" timestamp="2026-01-12T16:13:24.655Z" hostname="Andreu" tests="3" failures="0" errors="0" skipped="0" time="0.0079343">
+        <testcase classname="src/api/services/__tests__/customers.service.test.ts" name="CustomersService &gt; getCustomers &gt; should fetch all customers" time="0.0040016">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/customers.service.test.ts" name="CustomersService &gt; searchCustomers &gt; should search customers with query spec" time="0.0012531">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/customers.service.test.ts" name="CustomersService &gt; createCustomer &gt; should create a new customer" time="0.0004351">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/services/__tests__/inventory-transactions.service.test.ts" timestamp="2026-01-12T16:13:24.656Z" hostname="Andreu" tests="11" failures="0" errors="0" skipped="0" time="0.0113052">
+        <testcase classname="src/api/services/__tests__/inventory-transactions.service.test.ts" name="InventoryTransactionsService &gt; getTransactions &gt; should fetch all transactions" time="0.0039255">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/inventory-transactions.service.test.ts" name="InventoryTransactionsService &gt; getTransactionsPaginated &gt; should fetch paginated transactions" time="0.00106">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/inventory-transactions.service.test.ts" name="InventoryTransactionsService &gt; getTransactionsPaginated &gt; should use default pagination parameters" time="0.0003139">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/inventory-transactions.service.test.ts" name="InventoryTransactionsService &gt; searchTransactions &gt; should search transactions with query spec" time="0.0003537">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/inventory-transactions.service.test.ts" name="InventoryTransactionsService &gt; getTransactionById &gt; should fetch transaction by ID" time="0.0003101">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/inventory-transactions.service.test.ts" name="InventoryTransactionsService &gt; getTransactionsByProduct &gt; should fetch transactions by product ID" time="0.0003044">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/inventory-transactions.service.test.ts" name="InventoryTransactionsService &gt; getTransactionsByWarehouse &gt; should fetch transactions by warehouse ID" time="0.0004019">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/inventory-transactions.service.test.ts" name="InventoryTransactionsService &gt; getTransactionsByType &gt; should fetch transactions by type" time="0.0003596">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/inventory-transactions.service.test.ts" name="InventoryTransactionsService &gt; createTransaction &gt; should create a new transaction" time="0.0004237">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/inventory-transactions.service.test.ts" name="InventoryTransactionsService &gt; updateTransaction &gt; should update an existing transaction" time="0.00036">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/inventory-transactions.service.test.ts" name="InventoryTransactionsService &gt; deleteTransaction &gt; should delete a transaction" time="0.0002627">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/services/__tests__/orders.service.test.ts" timestamp="2026-01-12T16:13:24.658Z" hostname="Andreu" tests="8" failures="0" errors="0" skipped="0" time="0.0094152">
+        <testcase classname="src/api/services/__tests__/orders.service.test.ts" name="OrdersService &gt; getOrders &gt; should fetch all orders" time="0.003666">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/orders.service.test.ts" name="OrdersService &gt; getOrderById &gt; should fetch order by ID" time="0.0005791">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/orders.service.test.ts" name="OrdersService &gt; createOrder &gt; should create a new order" time="0.0008196">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/orders.service.test.ts" name="OrdersService &gt; updateOrder &gt; should update an existing order" time="0.0003134">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/orders.service.test.ts" name="OrdersService &gt; deleteOrder &gt; should delete an order" time="0.0002302">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/orders.service.test.ts" name="OrdersService &gt; createOrderWithReservation &gt; should create order with reservation" time="0.0002876">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/orders.service.test.ts" name="OrdersService &gt; fulfillOrder &gt; should fulfill an order" time="0.0002931">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/orders.service.test.ts" name="OrdersService &gt; cancelOrder &gt; should cancel an order" time="0.0004749">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/services/__tests__/permissions.service.test.ts" timestamp="2026-01-12T16:13:24.659Z" hostname="Andreu" tests="10" failures="0" errors="0" skipped="0" time="0.0184157">
+        <testcase classname="src/api/services/__tests__/permissions.service.test.ts" name="PermissionsService &gt; getPermissions &gt; should fetch all permissions" time="0.0037772">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/permissions.service.test.ts" name="PermissionsService &gt; getPermissionsPaginated &gt; should fetch paginated permissions" time="0.0011787">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/permissions.service.test.ts" name="PermissionsService &gt; getPermissionsPaginated &gt; should fetch paginated permissions without params" time="0.0009237">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/permissions.service.test.ts" name="PermissionsService &gt; searchPermissions &gt; should search permissions with query spec" time="0.000466">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/permissions.service.test.ts" name="PermissionsService &gt; getPermissionById &gt; should fetch permission by ID" time="0.0003026">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/permissions.service.test.ts" name="PermissionsService &gt; getPermissionByModuleAction &gt; should fetch permission by module and action" time="0.0016588">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/permissions.service.test.ts" name="PermissionsService &gt; checkPermission &gt; should check permission and return boolean" time="0.0006298">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/permissions.service.test.ts" name="PermissionsService &gt; createPermission &gt; should create a new permission" time="0.0003875">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/permissions.service.test.ts" name="PermissionsService &gt; updatePermission &gt; should update an existing permission" time="0.0004405">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/permissions.service.test.ts" name="PermissionsService &gt; deletePermission &gt; should delete a permission" time="0.0046807">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/services/__tests__/products.service.test.ts" timestamp="2026-01-12T16:13:24.660Z" hostname="Andreu" tests="6" failures="0" errors="0" skipped="0" time="0.0085749">
+        <testcase classname="src/api/services/__tests__/products.service.test.ts" name="ProductsService &gt; getProducts &gt; should fetch all products" time="0.0034988">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/products.service.test.ts" name="ProductsService &gt; getProductById &gt; should fetch product by ID" time="0.0006172">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/products.service.test.ts" name="ProductsService &gt; searchProducts &gt; should search products with query spec" time="0.001047">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/products.service.test.ts" name="ProductsService &gt; createProduct &gt; should create a new product" time="0.0004119">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/products.service.test.ts" name="ProductsService &gt; updateProduct &gt; should update an existing product" time="0.0003667">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/products.service.test.ts" name="ProductsService &gt; deleteProduct &gt; should delete a product" time="0.0002467">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/services/__tests__/purchase-orders.service.test.ts" timestamp="2026-01-12T16:13:24.661Z" hostname="Andreu" tests="3" failures="0" errors="0" skipped="0" time="0.0075656">
+        <testcase classname="src/api/services/__tests__/purchase-orders.service.test.ts" name="PurchaseOrdersService &gt; getPurchaseOrders &gt; should fetch all purchase orders" time="0.0036082">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/purchase-orders.service.test.ts" name="PurchaseOrdersService &gt; approvePurchaseOrder &gt; should approve a purchase order" time="0.0009908">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/purchase-orders.service.test.ts" name="PurchaseOrdersService &gt; receivePurchaseOrder &gt; should receive a purchase order" time="0.0004604">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/services/__tests__/roles.service.test.ts" timestamp="2026-01-12T16:13:24.662Z" hostname="Andreu" tests="12" failures="0" errors="0" skipped="0" time="0.0214248">
+        <testcase classname="src/api/services/__tests__/roles.service.test.ts" name="RolesService &gt; getRoles &gt; should fetch all roles" time="0.0112949">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/roles.service.test.ts" name="RolesService &gt; getRolesPaginated &gt; should fetch paginated roles" time="0.0013742">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/roles.service.test.ts" name="RolesService &gt; searchRoles &gt; should search roles with query spec" time="0.0005839">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/roles.service.test.ts" name="RolesService &gt; getRoleById &gt; should fetch role by ID" time="0.0004177">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/roles.service.test.ts" name="RolesService &gt; getRoleByName &gt; should fetch role by name" time="0.0003046">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/roles.service.test.ts" name="RolesService &gt; createRole &gt; should create a new role" time="0.0004835">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/roles.service.test.ts" name="RolesService &gt; updateRole &gt; should update an existing role" time="0.0004615">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/roles.service.test.ts" name="RolesService &gt; deleteRole &gt; should delete a role" time="0.0002734">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/roles.service.test.ts" name="RolesService &gt; getUsersInRole &gt; should get users in a role" time="0.0003703">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/roles.service.test.ts" name="RolesService &gt; addPermissionToRole &gt; should add permission to a role" time="0.0003708">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/roles.service.test.ts" name="RolesService &gt; removePermissionFromRole &gt; should remove permission from a role" time="0.0003897">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/roles.service.test.ts" name="RolesService &gt; getRolePermissions &gt; should get permissions for a role" time="0.0005154">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/services/__tests__/sales-orders.service.test.ts" timestamp="2026-01-12T16:13:24.663Z" hostname="Andreu" tests="5" failures="0" errors="0" skipped="0" time="0.0089375">
+        <testcase classname="src/api/services/__tests__/sales-orders.service.test.ts" name="SalesOrdersService &gt; getSalesOrders &gt; should fetch all sales orders" time="0.0042093">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/sales-orders.service.test.ts" name="SalesOrdersService &gt; createSalesOrder &gt; should create a new sales order" time="0.0010928">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/sales-orders.service.test.ts" name="SalesOrdersService &gt; createQuote &gt; should create a quote" time="0.0004835">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/sales-orders.service.test.ts" name="SalesOrdersService &gt; confirmQuote &gt; should confirm a quote" time="0.0003937">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/sales-orders.service.test.ts" name="SalesOrdersService &gt; checkStockAvailability &gt; should check stock availability for order lines" time="0.000265">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/services/__tests__/stock-operations.service.test.ts" timestamp="2026-01-12T16:13:24.664Z" hostname="Andreu" tests="4" failures="0" errors="0" skipped="0" time="0.0077822">
+        <testcase classname="src/api/services/__tests__/stock-operations.service.test.ts" name="StockOperationsService &gt; reserveStock &gt; should reserve stock" time="0.0041669">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/stock-operations.service.test.ts" name="StockOperationsService &gt; releaseReservation &gt; should release a reservation" time="0.0004444">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/stock-operations.service.test.ts" name="StockOperationsService &gt; transferStock &gt; should transfer stock between warehouses" time="0.000414">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/stock-operations.service.test.ts" name="StockOperationsService &gt; adjustStock &gt; should adjust stock" time="0.0003396">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/services/__tests__/suppliers.service.test.ts" timestamp="2026-01-12T16:13:24.665Z" hostname="Andreu" tests="8" failures="0" errors="0" skipped="0" time="0.0114273">
+        <testcase classname="src/api/services/__tests__/suppliers.service.test.ts" name="SuppliersService &gt; getSuppliers &gt; should fetch all suppliers" time="0.0035354">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/suppliers.service.test.ts" name="SuppliersService &gt; getSupplierById &gt; should fetch supplier by ID" time="0.0005975">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/suppliers.service.test.ts" name="SuppliersService &gt; getSupplierByEmail &gt; should fetch supplier by email" time="0.0003777">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/suppliers.service.test.ts" name="SuppliersService &gt; searchSuppliersByName &gt; should search suppliers by name" time="0.0021246">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/suppliers.service.test.ts" name="SuppliersService &gt; advancedSearchSuppliers &gt; should advanced search suppliers with query spec" time="0.0010795">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/suppliers.service.test.ts" name="SuppliersService &gt; createSupplier &gt; should create a new supplier" time="0.0004008">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/suppliers.service.test.ts" name="SuppliersService &gt; updateSupplier &gt; should update an existing supplier" time="0.0003283">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/suppliers.service.test.ts" name="SuppliersService &gt; deleteSupplier &gt; should delete a supplier" time="0.000266">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/services/__tests__/users.service.test.ts" timestamp="2026-01-12T16:13:24.666Z" hostname="Andreu" tests="13" failures="0" errors="0" skipped="0" time="0.0171345">
+        <testcase classname="src/api/services/__tests__/users.service.test.ts" name="UsersService &gt; getUsers &gt; should fetch all users" time="0.0057568">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/users.service.test.ts" name="UsersService &gt; getUsersPaginated &gt; should fetch paginated users" time="0.0016693">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/users.service.test.ts" name="UsersService &gt; getUsersPaginated &gt; should fetch paginated users without params" time="0.0004326">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/users.service.test.ts" name="UsersService &gt; searchUsers &gt; should search users with query spec" time="0.0005043">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/users.service.test.ts" name="UsersService &gt; getUserById &gt; should fetch user by ID" time="0.0004479">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/users.service.test.ts" name="UsersService &gt; getUserByEmail &gt; should fetch user by email" time="0.0005168">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/users.service.test.ts" name="UsersService &gt; getCurrentUser &gt; should get current user" time="0.0010371">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/users.service.test.ts" name="UsersService &gt; createUser &gt; should create a new user" time="0.000525">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/users.service.test.ts" name="UsersService &gt; updateUser &gt; should update an existing user" time="0.0003932">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/users.service.test.ts" name="UsersService &gt; deleteUser &gt; should delete a user" time="0.00031">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/users.service.test.ts" name="UsersService &gt; assignRole &gt; should assign a role to a user" time="0.0002926">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/users.service.test.ts" name="UsersService &gt; removeRole &gt; should remove a role from a user" time="0.0002482">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/users.service.test.ts" name="UsersService &gt; getUserRoles &gt; should get roles for a user" time="0.0002903">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/services/__tests__/warehouse-stocks.service.test.ts" timestamp="2026-01-12T16:13:24.667Z" hostname="Andreu" tests="5" failures="0" errors="0" skipped="0" time="0.0081973">
+        <testcase classname="src/api/services/__tests__/warehouse-stocks.service.test.ts" name="WarehouseStocksService &gt; getStockByProductAndWarehouse &gt; should fetch stock by product and warehouse" time="0.0039971">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/warehouse-stocks.service.test.ts" name="WarehouseStocksService &gt; getStocksByProduct &gt; should fetch stocks by product ID" time="0.000588">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/warehouse-stocks.service.test.ts" name="WarehouseStocksService &gt; getStocksByWarehouse &gt; should fetch stocks by warehouse ID" time="0.0003833">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/warehouse-stocks.service.test.ts" name="WarehouseStocksService &gt; getProductAvailability &gt; should fetch product availability" time="0.0003662">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/warehouse-stocks.service.test.ts" name="WarehouseStocksService &gt; getLowStocks &gt; should fetch low stock items" time="0.0003334">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/api/services/__tests__/warehouses.service.test.ts" timestamp="2026-01-12T16:13:24.669Z" hostname="Andreu" tests="2" failures="0" errors="0" skipped="0" time="0.0070383">
+        <testcase classname="src/api/services/__tests__/warehouses.service.test.ts" name="WarehousesService &gt; getWarehouses &gt; should fetch all warehouses" time="0.0036046">
+        </testcase>
+        <testcase classname="src/api/services/__tests__/warehouses.service.test.ts" name="WarehousesService &gt; createWarehouse &gt; should create a new warehouse" time="0.0009524">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/users/__tests__/create-user-dialog.test.tsx" timestamp="2026-01-12T16:13:24.669Z" hostname="Andreu" tests="4" failures="0" errors="0" skipped="0" time="0.192333">
+        <testcase classname="src/components/users/__tests__/create-user-dialog.test.tsx" name="CreateUserDialog &gt; should render create user form when open" time="0.0819083">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/users/__tests__/create-user-dialog.test.tsx" name="CreateUserDialog &gt; should not render when closed" time="0.0025522">
+        </testcase>
+        <testcase classname="src/components/users/__tests__/create-user-dialog.test.tsx" name="CreateUserDialog &gt; should handle successful user creation" time="0.0609807">
+        </testcase>
+        <testcase classname="src/components/users/__tests__/create-user-dialog.test.tsx" name="CreateUserDialog &gt; should display error on creation failure" time="0.0448915">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/pages/auth/__tests__/login.test.tsx" timestamp="2026-01-12T16:13:24.670Z" hostname="Andreu" tests="4" failures="0" errors="0" skipped="0" time="0.1239811">
+        <testcase classname="src/pages/auth/__tests__/login.test.tsx" name="LoginPage &gt; should render login form" time="0.0663933">
+            <system-err>
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/pages/auth/__tests__/login.test.tsx" name="LoginPage &gt; should handle form submission" time="0.025505">
+        </testcase>
+        <testcase classname="src/pages/auth/__tests__/login.test.tsx" name="LoginPage &gt; should display error message on login failure" time="0.0180027">
+        </testcase>
+        <testcase classname="src/pages/auth/__tests__/login.test.tsx" name="LoginPage &gt; should disable form during submission" time="0.0118233">
+        </testcase>
+    </testsuite>
+</testsuites>

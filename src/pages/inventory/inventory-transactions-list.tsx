@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { inventoryTransactionsService } from "@/api/services/inventory-transactions.service";
 import { productsService } from "@/api/services/products.service";
@@ -33,22 +33,24 @@ import { Search, ArrowUpDown, Package, Warehouse, Eye } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
 
+import { TransactionType as TransactionTypeEnum } from "@/types/api.types";
+
 const TRANSACTION_TYPES: { value: TransactionType; label: string }[] = [
-  { value: "Purchase", label: "Purchase" },
-  { value: "Sale", label: "Sale" },
-  { value: "Adjustment", label: "Adjustment" },
-  { value: "Transfer", label: "Transfer" },
-  { value: "Return", label: "Return" },
-  { value: "Damage", label: "Damage" },
-  { value: "Loss", label: "Loss" },
+  { value: TransactionTypeEnum.Purchase, label: "Purchase" },
+  { value: TransactionTypeEnum.Sale, label: "Sale" },
+  { value: TransactionTypeEnum.Adjustment, label: "Adjustment" },
+  { value: TransactionTypeEnum.Transfer, label: "Transfer" },
+  { value: TransactionTypeEnum.Return, label: "Return" },
+  { value: TransactionTypeEnum.Damage, label: "Damage" },
+  { value: TransactionTypeEnum.Loss, label: "Loss" },
 ];
 
 export function InventoryTransactionsListPage() {
   const [transactions, setTransactions] = useState<
     PaginatedResponse<InventoryTransactionDto> | null
   >(null);
-  const [products, setProducts] = useState<any[]>([]);
-  const [warehouses, setWarehouses] = useState<any[]>([]);
+  const [products, setProducts] = useState<Array<{ id: string; name: string }>>([]);
+  const [warehouses, setWarehouses] = useState<Array<{ id: string; name: string }>>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [querySpec, setQuerySpec] = useState<QuerySpec>({
@@ -91,7 +93,7 @@ export function InventoryTransactionsListPage() {
     }
   };
 
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -106,8 +108,9 @@ export function InventoryTransactionsListPage() {
           page: 1,
           pageSize: txns.length,
           total: txns.length,
-          hasNext: false,
-          hasPrevious: false,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPreviousPage: false,
         };
       } else if (filterWarehouse) {
         const txns =
@@ -119,8 +122,9 @@ export function InventoryTransactionsListPage() {
           page: 1,
           pageSize: txns.length,
           total: txns.length,
-          hasNext: false,
-          hasPrevious: false,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPreviousPage: false,
         };
       } else if (filterType) {
         const txns = await inventoryTransactionsService.getTransactionsByType(
@@ -131,8 +135,9 @@ export function InventoryTransactionsListPage() {
           page: 1,
           pageSize: txns.length,
           total: txns.length,
-          hasNext: false,
-          hasPrevious: false,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPreviousPage: false,
         };
       } else {
         data = await inventoryTransactionsService.searchTransactions(querySpec);
@@ -150,16 +155,16 @@ export function InventoryTransactionsListPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [querySpec, filterProduct, filterWarehouse, filterType]);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, [fetchTransactions]);
 
   useEffect(() => {
     fetchProducts();
     fetchWarehouses();
   }, []);
-
-  useEffect(() => {
-    fetchTransactions();
-  }, [querySpec, filterProduct, filterWarehouse, filterType]);
 
   const handleSearch = (value: string) => {
     setQuerySpec((prev) => ({ ...prev, searchTerm: value, page: 1 }));
@@ -206,7 +211,7 @@ export function InventoryTransactionsListPage() {
   };
 
   const totalPages = transactions
-    ? Math.ceil(transactions.total / querySpec.pageSize)
+    ? Math.ceil(transactions.total / (querySpec.pageSize ?? 20))
     : 0;
 
   return (
@@ -258,7 +263,7 @@ export function InventoryTransactionsListPage() {
                   <option value="">All Products</option>
                   {products.map((product) => (
                     <option key={product.id} value={product.id}>
-                      {product.name} ({product.sku})
+                      {product.name}
                     </option>
                   ))}
                 </select>
@@ -413,16 +418,16 @@ export function InventoryTransactionsListPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(querySpec.page - 1)}
-                      disabled={!transactions.hasPrevious}
+                      onClick={() => handlePageChange((querySpec.page ?? 1) - 1)}
+                      disabled={!transactions.hasPreviousPage}
                     >
                       Previous
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(querySpec.page + 1)}
-                      disabled={!transactions.hasNext}
+                      onClick={() => handlePageChange((querySpec.page ?? 1) + 1)}
+                      disabled={!transactions.hasNextPage}
                     >
                       Next
                     </Button>

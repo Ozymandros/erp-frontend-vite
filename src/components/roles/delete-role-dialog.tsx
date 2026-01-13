@@ -32,8 +32,8 @@ export function DeleteRoleDialog({ role, open, onOpenChange, onSuccess }: Delete
     try {
       await rolesService.deleteRole(role.id)
       onSuccess()
-    } catch (err: any) {
-      setError(err.message || "Failed to delete role")
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to delete role")
     } finally {
       setIsLoading(false)
     }

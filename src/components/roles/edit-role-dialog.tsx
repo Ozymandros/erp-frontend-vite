@@ -53,8 +53,8 @@ export function EditRoleDialog({ role, open, onOpenChange, onSuccess }: EditRole
     try {
       await rolesService.updateRole(role.id, formData)
       onSuccess()
-    } catch (err: any) {
-      setError(err.message || "Failed to update role")
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to update role")
     } finally {
       setIsLoading(false)
     }

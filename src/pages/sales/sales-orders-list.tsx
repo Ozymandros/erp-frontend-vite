@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { salesOrdersService } from "@/api/services/sales-orders.service";
 import { customersService } from "@/api/services/customers.service";
@@ -62,7 +62,7 @@ export function SalesOrdersListPage() {
     }
   };
 
-  const fetchSalesOrders = async () => {
+  const fetchSalesOrders = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -79,7 +79,7 @@ export function SalesOrdersListPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [querySpec]);
 
   useEffect(() => {
     fetchCustomers();
@@ -87,7 +87,7 @@ export function SalesOrdersListPage() {
 
   useEffect(() => {
     fetchSalesOrders();
-  }, [querySpec]);
+  }, [fetchSalesOrders]);
 
   const handleSearch = (value: string) => {
     setQuerySpec((prev) => ({ ...prev, searchTerm: value, page: 1 }));
@@ -128,7 +128,7 @@ export function SalesOrdersListPage() {
   };
 
   const totalPages = salesOrders
-    ? Math.ceil(salesOrders.total / querySpec.pageSize)
+    ? Math.ceil(salesOrders.total / (querySpec.pageSize ?? 20))
     : 0;
 
   return (
@@ -264,16 +264,16 @@ export function SalesOrdersListPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(querySpec.page - 1)}
-                      disabled={!salesOrders.hasPrevious}
+                      onClick={() => handlePageChange((querySpec.page ?? 1) - 1)}
+                      disabled={!salesOrders.hasPreviousPage}
                     >
                       Previous
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(querySpec.page + 1)}
-                      disabled={!salesOrders.hasNext}
+                      onClick={() => handlePageChange((querySpec.page ?? 1) + 1)}
+                      disabled={!salesOrders.hasNextPage}
                     >
                       Next
                     </Button>

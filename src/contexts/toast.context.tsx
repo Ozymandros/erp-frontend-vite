@@ -84,6 +84,7 @@ export const ToastContextProvider: React.FC<React.PropsWithChildren> = ({ childr
       if (client) {
         // Don't override existing onError if consumer set it; wrap it to also show toast
         const prev = client.onError
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         client.onError = (err: any) => {
           try {
             // api error shape expected: ApiClientError with message and status

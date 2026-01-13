@@ -47,10 +47,13 @@ export function CreateWarehouseDialog({
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (field: keyof CreateWarehouseFormData, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleChange = (
+    field: keyof CreateWarehouseFormData,
+    value: string | number | boolean
+  ) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
     if (fieldErrors[field]) {
-      setFieldErrors((prev) => {
+      setFieldErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors[field];
         return newErrors;
@@ -66,7 +69,7 @@ export function CreateWarehouseDialog({
     const validation = CreateWarehouseSchema.safeParse(formData);
     if (!validation.success) {
       const errors: Record<string, string> = {};
-      validation.error.errors.forEach((err) => {
+      validation.error.issues.forEach(err => {
         if (err.path[0]) {
           errors[err.path[0].toString()] = err.message;
         }
@@ -98,8 +101,10 @@ export function CreateWarehouseDialog({
         isActive: true,
       });
       onOpenChange(false);
-    } catch (err: any) {
-      setError(err.message || "Failed to create warehouse");
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error ? err.message : "Failed to create warehouse"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -128,7 +133,7 @@ export function CreateWarehouseDialog({
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => handleChange("name", e.target.value)}
+                onChange={e => handleChange("name", e.target.value)}
                 required
                 disabled={isLoading}
                 className={fieldErrors.name ? "border-red-500" : ""}
@@ -143,7 +148,7 @@ export function CreateWarehouseDialog({
               <Input
                 id="location"
                 value={formData.location}
-                onChange={(e) => handleChange("location", e.target.value)}
+                onChange={e => handleChange("location", e.target.value)}
                 disabled={isLoading}
                 className={fieldErrors.location ? "border-red-500" : ""}
               />
@@ -157,7 +162,7 @@ export function CreateWarehouseDialog({
               <Textarea
                 id="address"
                 value={formData.address}
-                onChange={(e) => handleChange("address", e.target.value)}
+                onChange={e => handleChange("address", e.target.value)}
                 disabled={isLoading}
                 className={fieldErrors.address ? "border-red-500" : ""}
               />
@@ -172,7 +177,7 @@ export function CreateWarehouseDialog({
                 <Input
                   id="city"
                   value={formData.city}
-                  onChange={(e) => handleChange("city", e.target.value)}
+                  onChange={e => handleChange("city", e.target.value)}
                   disabled={isLoading}
                   className={fieldErrors.city ? "border-red-500" : ""}
                 />
@@ -186,12 +191,14 @@ export function CreateWarehouseDialog({
                 <Input
                   id="postalCode"
                   value={formData.postalCode}
-                  onChange={(e) => handleChange("postalCode", e.target.value)}
+                  onChange={e => handleChange("postalCode", e.target.value)}
                   disabled={isLoading}
                   className={fieldErrors.postalCode ? "border-red-500" : ""}
                 />
                 {fieldErrors.postalCode && (
-                  <p className="text-sm text-red-500">{fieldErrors.postalCode}</p>
+                  <p className="text-sm text-red-500">
+                    {fieldErrors.postalCode}
+                  </p>
                 )}
               </div>
             </div>
@@ -201,7 +208,7 @@ export function CreateWarehouseDialog({
               <Input
                 id="country"
                 value={formData.country}
-                onChange={(e) => handleChange("country", e.target.value)}
+                onChange={e => handleChange("country", e.target.value)}
                 disabled={isLoading}
                 className={fieldErrors.country ? "border-red-500" : ""}
               />
@@ -214,7 +221,7 @@ export function CreateWarehouseDialog({
               <Switch
                 id="isActive"
                 checked={formData.isActive}
-                onCheckedChange={(checked) => handleChange("isActive", checked)}
+                onCheckedChange={checked => handleChange("isActive", checked)}
                 disabled={isLoading}
               />
               <Label htmlFor="isActive">Active</Label>

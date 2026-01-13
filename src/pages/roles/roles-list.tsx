@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Link } from "react-router-dom"
 import { rolesService } from "@/api/services/roles.service"
 import type { Role, PaginatedResponse } from "@/types/api.types"
@@ -26,7 +26,7 @@ export function RolesListPage() {
   const [editingRole, setEditingRole] = useState<Role | null>(null)
   const [deletingRole, setDeletingRole] = useState<Role | null>(null)
 
-  const fetchRoles = async () => {
+  const fetchRoles = useCallback(async () => {
     setIsLoading(true)
     setError(null)
     try {
@@ -47,11 +47,11 @@ export function RolesListPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [page, searchQuery])
 
   useEffect(() => {
     fetchRoles()
-  }, [page, searchQuery])
+  }, [fetchRoles])
 
   const handleSearch = (value: string) => {
     setSearchQuery(value)

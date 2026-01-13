@@ -64,7 +64,7 @@ export function EditProductDialog({
     }
   }, [product]);
 
-  const handleChange = (field: keyof UpdateProductFormData, value: any) => {
+  const handleChange = (field: keyof UpdateProductFormData, value: string | number | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (fieldErrors[field]) {
       setFieldErrors((prev) => {
@@ -85,7 +85,7 @@ export function EditProductDialog({
     const validation = UpdateProductSchema.safeParse(formData);
     if (!validation.success) {
       const errors: Record<string, string> = {};
-      validation.error.errors.forEach((err) => {
+      validation.error.issues.forEach((err) => {
         if (err.path[0]) {
           errors[err.path[0].toString()] = err.message;
         }
@@ -105,8 +105,8 @@ export function EditProductDialog({
       });
       onSuccess();
       onOpenChange(false);
-    } catch (err: any) {
-      setError(err.message || "Failed to update product");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to update product");
     } finally {
       setIsLoading(false);
     }

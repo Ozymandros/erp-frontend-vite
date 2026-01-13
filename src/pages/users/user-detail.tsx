@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { usersService } from "@/api/services/users.service"
 import type { User } from "@/types/api.types"
@@ -21,23 +21,23 @@ export function UserDetailPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     if (!id) return
     setIsLoading(true)
     setError(null)
     try {
       const data = await usersService.getUserById(id)
       setUser(data)
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch user")
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to fetch user")
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [id])
 
   useEffect(() => {
     fetchUser()
-  }, [id])
+  }, [fetchUser])
 
   const handleUserUpdated = () => {
     setIsEditDialogOpen(false)

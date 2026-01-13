@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { warehousesService } from "@/api/services/warehouses.service";
 import type { WarehouseDto } from "@/types/api.types";
@@ -17,7 +17,6 @@ import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { EditWarehouseDialog } from "@/components/inventory/edit-warehouse-dialog";
 import { DeleteWarehouseDialog } from "@/components/inventory/delete-warehouse-dialog";
 import { formatDateTime } from "@/lib/utils";
-import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
 
 export function WarehouseDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -28,23 +27,23 @@ export function WarehouseDetailPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const fetchWarehouse = async () => {
+  const fetchWarehouse = useCallback(async () => {
     if (!id) return;
     setIsLoading(true);
     setError(null);
     try {
       const data = await warehousesService.getWarehouseById(id);
       setWarehouse(data);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch warehouse");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to fetch warehouse");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchWarehouse();
-  }, [id]);
+  }, [fetchWarehouse]);
 
   const handleWarehouseUpdated = () => {
     setIsEditDialogOpen(false);

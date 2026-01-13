@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { warehousesService } from "@/api/services/warehouses.service";
 import type { WarehouseDto, PaginatedResponse, QuerySpec } from "@/types/api.types";
@@ -26,7 +26,6 @@ import { Plus, Search, Pencil, Trash2, Eye, ArrowUpDown } from "lucide-react";
 import { CreateWarehouseDialog } from "@/components/inventory/create-warehouse-dialog";
 import { EditWarehouseDialog } from "@/components/inventory/edit-warehouse-dialog";
 import { DeleteWarehouseDialog } from "@/components/inventory/delete-warehouse-dialog";
-import { formatDateTime } from "@/lib/utils";
 import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
 
 export function WarehousesListPage() {
@@ -45,7 +44,7 @@ export function WarehousesListPage() {
   const [editingWarehouse, setEditingWarehouse] = useState<WarehouseDto | null>(null);
   const [deletingWarehouse, setDeletingWarehouse] = useState<WarehouseDto | null>(null);
 
-  const fetchWarehouses = async () => {
+  const fetchWarehouses = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -62,11 +61,11 @@ export function WarehousesListPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [querySpec]);
 
   useEffect(() => {
     fetchWarehouses();
-  }, [querySpec]);
+  }, [fetchWarehouses]);
 
   const handleSearch = (value: string) => {
     setQuerySpec((prev) => ({ ...prev, searchTerm: value, page: 1 }));
@@ -100,7 +99,7 @@ export function WarehousesListPage() {
   };
 
   const totalPages = warehouses
-    ? Math.ceil(warehouses.total / querySpec.pageSize)
+    ? Math.ceil(warehouses.total / (querySpec.pageSize ?? 20))
     : 0;
 
   return (
@@ -242,16 +241,16 @@ export function WarehousesListPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(querySpec.page - 1)}
-                      disabled={!warehouses.hasPrevious}
+                      onClick={() => handlePageChange((querySpec.page ?? 1) - 1)}
+                      disabled={!warehouses.hasPreviousPage}
                     >
                       Previous
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(querySpec.page + 1)}
-                      disabled={!warehouses.hasNext}
+                      onClick={() => handlePageChange((querySpec.page ?? 1) + 1)}
+                      disabled={!warehouses.hasNextPage}
                     >
                       Next
                     </Button>

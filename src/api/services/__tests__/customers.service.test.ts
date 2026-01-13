@@ -58,8 +58,9 @@ describe("CustomersService", () => {
         page: 1,
         pageSize: 20,
         total: 0,
-        hasNext: false,
-        hasPrevious: false,
+        totalPages: 0,
+        hasNextPage: false,
+        hasPreviousPage: false,
       };
 
       mockApiClient.get.mockResolvedValue(mockResponse);

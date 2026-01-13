@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { stockOperationsService } from "@/api/services/stock-operations.service";
-import { productsService } from "@/api/services/products.service";
-import { warehousesService } from "@/api/services/warehouses.service";
+import { AdjustmentType } from "@/types/api.types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,8 +12,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Package, Warehouse, ArrowRight, Plus, Minus } from "lucide-react";
-import { handleApiError, isForbiddenError, getErrorMessage } from "@/lib/error-handling";
+import { Package, ArrowRight, Minus } from "lucide-react";
+import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 
 export function StockOperationsPage() {
   return (
@@ -266,7 +265,7 @@ function AdjustStockForm() {
       warehouseId: formData.get("warehouseId") as string,
       quantity: parseInt(formData.get("quantity") as string),
       reason: formData.get("reason") as string,
-      adjustmentType: formData.get("adjustmentType") as "Increase" | "Decrease" | "Found" | "Lost" | "Damaged",
+      adjustmentType: formData.get("adjustmentType") as AdjustmentType,
     };
 
     try {

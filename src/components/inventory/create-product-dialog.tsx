@@ -47,7 +47,7 @@ export function CreateProductDialog({
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (field: keyof CreateProductFormData, value: any) => {
+  const handleChange = (field: keyof CreateProductFormData, value: string | number | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (fieldErrors[field]) {
       setFieldErrors((prev) => {
@@ -66,7 +66,7 @@ export function CreateProductDialog({
     const validation = CreateProductSchema.safeParse(formData);
     if (!validation.success) {
       const errors: Record<string, string> = {};
-      validation.error.errors.forEach((err) => {
+      validation.error.issues.forEach((err) => {
         if (err.path[0]) {
           errors[err.path[0].toString()] = err.message;
         }
@@ -95,8 +95,8 @@ export function CreateProductDialog({
         isActive: true,
       });
       onOpenChange(false);
-    } catch (err: any) {
-      setError(err.message || "Failed to create product");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to create product");
     } finally {
       setIsLoading(false);
     }

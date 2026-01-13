@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ToastApi } from './toast.context'
 
 let _toastApi: ToastApi | null = null
@@ -17,7 +18,6 @@ export function registerToastApi(api: ToastApi | null) {
     while (_queue.length) {
       const item = _queue.shift()!
       try {
-        // @ts-expect-error - safe dynamic call
         (api as any)[item.method](...item.args)
       } catch (e) {
         // ignore
@@ -39,7 +39,6 @@ export function getToastApi(): ToastApi | null {
 function enqueue(method: Queued['method'], ...args: any[]) {
   if (_toastApi) {
     try {
-      // @ts-expect-error - safe dynamic call
       (_toastApi as any)[method](...args)
       return
     } catch (e) {
