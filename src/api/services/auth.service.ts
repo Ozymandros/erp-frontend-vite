@@ -17,12 +17,16 @@ import type {
 // Helper to silently log analytics (only in non-test environments)
 const silentAnalyticsLog = (data: unknown) => {
   // Skip in test environments (CI, vitest, etc.)
-  if (import.meta.env.MODE === 'test' || import.meta.env.CI || typeof process !== 'undefined' && (process.env.CI || process.env.VITEST)) {
+  if (
+    import.meta.env.MODE === "test" ||
+    import.meta.env.CI ||
+    (typeof process !== "undefined" && (process.env.CI || process.env.VITEST))
+  ) {
     return;
   }
-  fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  fetch("http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   }).catch(() => {});
 };
@@ -34,25 +38,32 @@ class AuthService {
     const endpoint = AUTH_ENDPOINTS.LOGIN;
     // #region agent log
     silentAnalyticsLog({
-      location: 'auth.service.ts:21',
-      message: 'login called',
-      data: { endpoint: endpoint, hasEmail: !!credentials.email, hasPassword: !!credentials.password },
+      location: "auth.service.ts:21",
+      message: "login called",
+      data: {
+        endpoint: endpoint,
+        hasEmail: !!credentials.email,
+        hasPassword: !!credentials.password,
+      },
       timestamp: Date.now(),
-      sessionId: 'debug-session',
-      runId: 'run1',
-      hypothesisId: 'A',
+      sessionId: "debug-session",
+      runId: "run1",
+      hypothesisId: "A",
     });
     // #endregion
-    const result = await this.apiClient.post<AuthResponse>(endpoint, credentials);
+    const result = await this.apiClient.post<AuthResponse>(
+      endpoint,
+      credentials
+    );
     // #region agent log
     silentAnalyticsLog({
-      location: 'auth.service.ts:23',
-      message: 'login success',
+      location: "auth.service.ts:23",
+      message: "login success",
       data: { hasAccessToken: !!result.accessToken },
       timestamp: Date.now(),
-      sessionId: 'debug-session',
-      runId: 'run1',
-      hypothesisId: 'A',
+      sessionId: "debug-session",
+      runId: "run1",
+      hypothesisId: "A",
     });
     // #endregion
     return result;

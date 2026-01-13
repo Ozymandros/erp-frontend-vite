@@ -15,12 +15,16 @@ import { showToastError } from "@/contexts/toast.service";
 // Helper to silently log analytics (only in non-test environments)
 const silentAnalyticsLog = (data: any) => {
   // Skip in test environments (CI, vitest, etc.)
-  if (import.meta.env.MODE === 'test' || import.meta.env.CI || typeof process !== 'undefined' && (process.env.CI || process.env.VITEST)) {
+  if (
+    import.meta.env.MODE === "test" ||
+    import.meta.env.CI ||
+    (typeof process !== "undefined" && (process.env.CI || process.env.VITEST))
+  ) {
     return;
   }
-  fetch('http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  fetch("http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   }).catch(() => {});
 };
