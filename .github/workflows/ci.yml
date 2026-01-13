@@ -175,6 +175,8 @@ jobs:
       CI: true
     permissions:
       contents: read
+      checks: write        # Add this line
+      pull-requests: write  # Add this too for the lcov-reporter-action on line 166
     steps:
       - uses: actions/checkout@v4
       - name: Install pnpm
@@ -198,11 +200,12 @@ jobs:
           path: junit.xml
           retention-days: 7
       - name: Publish unit test results
-        if: always()
+        if:  always()
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
           files: junit.xml
           check_name: Unit Tests
+          github_token: ${{ secrets.TEST_REPORTER_TOKEN }}
       - name: Comment coverage on PR
         if: github.event_name == 'pull_request' && always()
         uses: romeovs/lcov-reporter-action@v0.3.1
@@ -240,6 +243,8 @@ jobs:
       CI: true
     permissions:
       contents: read
+      checks: write        # Add this line
+      pull-requests: write  # Add this too for the lcov-reporter-action on line 166
     steps:
       - uses: actions/checkout@v4
       - name: Install pnpm
@@ -258,11 +263,12 @@ jobs:
       - name: Run Playwright tests (headless via xvfb)
         run: xvfb-run --auto-servernum pnpm exec playwright test --reporter=junit,line --output=test-results
       - name: Publish Playwright test results
-        if: always()
+        if:  always()
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
-          files: test-results/junit.xml
+          files:  test-results/junit.xml
           check_name: Playwright E2E Tests
+          github_token: ${{ secrets.TEST_REPORTER_TOKEN }}
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
