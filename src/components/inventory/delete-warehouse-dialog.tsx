@@ -40,8 +40,8 @@ export function DeleteWarehouseDialog({
       await warehousesService.deleteWarehouse(warehouse.id);
       onSuccess();
       onOpenChange(false);
-    } catch (err: any) {
-      setError(err.message || "Failed to delete warehouse");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to delete warehouse");
     } finally {
       setIsLoading(false);
     }

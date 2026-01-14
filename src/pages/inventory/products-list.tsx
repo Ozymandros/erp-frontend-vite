@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { productsService } from "@/api/services/products.service";
 import type { ProductDto, PaginatedResponse, QuerySpec } from "@/types/api.types";
@@ -45,7 +45,7 @@ export function ProductsListPage() {
   const [deletingProduct, setDeletingProduct] = useState<ProductDto | null>(null);
   const [showLowStock, setShowLowStock] = useState(false);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -62,9 +62,9 @@ export function ProductsListPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [querySpec]);
 
-  const fetchLowStockProducts = async () => {
+  const fetchLowStockProducts = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -74,8 +74,9 @@ export function ProductsListPage() {
         page: 1,
         pageSize: data.length,
         total: data.length,
-        hasNext: false,
-        hasPrevious: false,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPreviousPage: false,
       });
     } catch (error: unknown) {
       const apiError = handleApiError(error);
@@ -88,7 +89,7 @@ export function ProductsListPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (showLowStock) {
@@ -96,7 +97,7 @@ export function ProductsListPage() {
     } else {
       fetchProducts();
     }
-  }, [querySpec, showLowStock]);
+  }, [querySpec, showLowStock, fetchProducts, fetchLowStockProducts]);
 
   const handleSearch = (value: string) => {
     setQuerySpec((prev) => ({ ...prev, searchTerm: value, page: 1 }));
@@ -139,7 +140,7 @@ export function ProductsListPage() {
   };
 
   const totalPages = products
-    ? Math.ceil(products.total / querySpec.pageSize)
+    ? Math.ceil(products.total / (querySpec.pageSize ?? 20))
     : 0;
 
   return (
@@ -317,16 +318,16 @@ export function ProductsListPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(querySpec.page - 1)}
-                      disabled={!products.hasPrevious}
+                      onClick={() => handlePageChange((querySpec.page ?? 1) - 1)}
+                      disabled={!products.hasPreviousPage}
                     >
                       Previous
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(querySpec.page + 1)}
-                      disabled={!products.hasNext}
+                      onClick={() => handlePageChange((querySpec.page ?? 1) + 1)}
+                      disabled={!products.hasNextPage}
                     >
                       Next
                     </Button>

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import type {
   WarehouseStockDto,
   StockAvailabilityDto,
@@ -94,9 +94,9 @@ describe("WarehouseStocksService", () => {
     it("should fetch product availability", async () => {
       const mockAvailability: StockAvailabilityDto = {
         productId: "prod1",
-        totalQuantity: 200,
-        availableQuantity: 150,
-      } as StockAvailabilityDto;
+        totalAvailable: 150,
+        warehouseStocks: [],
+      };
 
       mockApiClient.get.mockResolvedValue(mockAvailability);
 

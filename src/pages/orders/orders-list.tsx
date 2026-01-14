@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ordersService } from "@/api/services/orders.service";
 import { customersService } from "@/api/services/customers.service";
-import type { OrderDto, CustomerDto, OrderLineDto } from "@/types/api.types";
+import type { OrderDto, CustomerDto } from "@/types/api.types";
 import { Button } from "@/components/ui/button";
 import {
   Card,

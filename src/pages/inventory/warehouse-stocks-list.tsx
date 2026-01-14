@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { warehouseStocksService } from "@/api/services/warehouse-stocks.service";
 import { productsService } from "@/api/services/products.service";
 import { warehousesService } from "@/api/services/warehouses.service";
 import type { WarehouseStockDto, ProductDto, WarehouseDto } from "@/types/api.types";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -64,7 +63,7 @@ export function WarehouseStocksListPage() {
     }
   };
 
-  const fetchStocks = async () => {
+  const fetchStocks = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -95,7 +94,7 @@ export function WarehouseStocksListPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filterType, selectedProductId, selectedWarehouseId]);
 
   useEffect(() => {
     fetchProducts();
@@ -104,7 +103,7 @@ export function WarehouseStocksListPage() {
 
   useEffect(() => {
     fetchStocks();
-  }, [filterType, selectedProductId, selectedWarehouseId]);
+  }, [fetchStocks]);
 
   const getProductName = (productId: string) => {
     const product = products.find((p) => p.id === productId);

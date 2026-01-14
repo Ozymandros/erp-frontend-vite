@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { productsService } from "@/api/services/products.service";
 import type { ProductDto } from "@/types/api.types";
@@ -28,7 +28,7 @@ export function ProductDetailPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     if (!id) return;
     setIsLoading(true);
     setError(null);
@@ -46,11 +46,11 @@ export function ProductDetailPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchProduct();
-  }, [id]);
+  }, [fetchProduct]);
 
   const handleProductUpdated = () => {
     setIsEditDialogOpen(false);

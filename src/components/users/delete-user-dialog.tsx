@@ -32,8 +32,8 @@ export function DeleteUserDialog({ user, open, onOpenChange, onSuccess }: Delete
     try {
       await usersService.deleteUser(user.id)
       onSuccess()
-    } catch (err: any) {
-      setError(err.message || "Failed to delete user")
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to delete user")
     } finally {
       setIsLoading(false)
     }

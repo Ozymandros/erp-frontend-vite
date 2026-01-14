@@ -46,6 +46,8 @@ export default [
             ...react.configs.recommended.rules,
             ...react.configs['jsx-runtime'].rules,
             ...reactHooks.configs.recommended.rules,
+            'react/jsx-uses-react': 'off',
+            'react/react-in-jsx-scope': 'off',
             'react-refresh/only-export-components': [
                 'warn',
                 { allowConstantExport: true },
@@ -59,12 +61,19 @@ export default [
             'no-empty': ['error', { allowEmptyCatch: true }],
             'react/prop-types': 'off',
             'react/no-unescaped-entities': 'off',
+            'react-hooks/exhaustive-deps': 'warn',
         },
     },
     {
         files: ['**/__tests__/**', '**/*.test.ts', '**/*.test.tsx'],
         rules: {
             'no-constant-binary-expression': 'off',
+        },
+    },
+    {
+        files: ['src/components/ui/**', 'src/contexts/**', 'src/test/utils/**'],
+        rules: {
+            'react-refresh/only-export-components': 'off',
         },
     },
 ]

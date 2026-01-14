@@ -32,8 +32,8 @@ export function DeletePermissionDialog({ permission, open, onOpenChange, onSucce
     try {
       await permissionsService.deletePermission(permission.id)
       onSuccess()
-    } catch (err: any) {
-      setError(err.message || "Failed to delete permission")
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to delete permission")
     } finally {
       setIsLoading(false)
     }

@@ -49,8 +49,8 @@ export function CreateRoleDialog({ open, onOpenChange, onSuccess }: CreateRoleDi
       })
       onSuccess()
       setFormData({ name: "", description: "" })
-    } catch (err: any) {
-      setError(err.message || "Failed to create role")
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to create role")
     } finally {
       setIsLoading(false)
     }

@@ -1,54 +1,52 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { permissionsService } from "@/api/services/permissions.service"
 import type { Permission, PaginatedResponse } from "@/types/api.types"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Search, Pencil, Trash2 } from "lucide-react"
+import { Plus, Pencil, Trash2 } from "lucide-react"
 import { CreatePermissionDialog } from "@/components/permissions/create-permission-dialog"
 import { EditPermissionDialog } from "@/components/permissions/edit-permission-dialog"
 import { DeletePermissionDialog } from "@/components/permissions/delete-permission-dialog"
 import { formatDateTime } from "@/lib/utils"
-import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling"
 import { PermissionFilterHeader } from "@/components/permissions/permission-filter-header"
 
 export function PermissionsListPage() {
   const [permissions, setPermissions] = useState<PaginatedResponse<Permission> | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [filters, setFilters] = useState<Record<string, string>>({ search: "", role: "" })
+  const [searchQuery, setSearchQuery] = useState("")
   const [page, setPage] = useState(1)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [editingPermission, setEditingPermission] = useState<Permission | null>(null)
   const [deletingPermission, setDeletingPermission] = useState<Permission | null>(null)
 
-  const fetchPermissions = async () => {
+  const fetchPermissions = useCallback(async () => {
     setIsLoading(true)
     setError(null)
     try {
       const data = await permissionsService.getPermissionsPaginated({
         page,
         pageSize: 10,
-        search: filters.search || undefined,
+        search: searchQuery || undefined,
       })
       setPermissions(data)
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch permissions")
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to fetch permissions")
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [page, searchQuery])
 
   useEffect(() => {
     fetchPermissions()
-  }, [page, filters])
+  }, [fetchPermissions])
 
-  const handleFilterChange = (newFilters: Record<string, string>) => {
-    setFilters(newFilters)
+  const handleSearch = (filters: Record<string, string>) => {
+    setSearchQuery(filters.search || "")
     setPage(1)
   }
 
@@ -88,7 +86,7 @@ export function PermissionsListPage() {
         <CardContent>
           <div className="mb-4">
             <div className="relative">
-              <PermissionFilterHeader filters={filters} onFilterChange={handleFilterChange} />
+              <PermissionFilterHeader onFilterChange={handleSearch} />
             </div>
           </div>
 
