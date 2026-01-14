@@ -24,9 +24,9 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface CreateWarehouseDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+  readonly onSuccess: () => void;
 }
 
 export function CreateWarehouseDialog({
@@ -82,14 +82,7 @@ export function CreateWarehouseDialog({
     setIsLoading(true);
 
     try {
-      await warehousesService.createWarehouse({
-        ...formData,
-        location: formData.location || undefined,
-        address: formData.address || undefined,
-        city: formData.city || undefined,
-        country: formData.country || undefined,
-        postalCode: formData.postalCode || undefined,
-      });
+      await warehousesService.createWarehouse(validation.data);
       onSuccess();
       setFormData({
         name: "",
@@ -144,11 +137,12 @@ export function CreateWarehouseDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
+              <Label htmlFor="location">Location *</Label>
               <Input
                 id="location"
                 value={formData.location}
                 onChange={e => handleChange("location", e.target.value)}
+                required
                 disabled={isLoading}
                 className={fieldErrors.location ? "border-red-500" : ""}
               />

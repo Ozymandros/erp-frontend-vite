@@ -24,9 +24,9 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface CreateProductDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+  readonly onSuccess: () => void;
 }
 
 export function CreateProductDialog({
@@ -82,11 +82,8 @@ export function CreateProductDialog({
     setIsLoading(true);
 
     try {
-      await productsService.createProduct({
-        ...formData,
-        description: formData.description || undefined,
-        category: formData.category || undefined,
-      });
+      // Schema already handles empty strings -> undefined transformation
+      await productsService.createProduct(validation.data);
       onSuccess();
       setFormData({
         sku: "",

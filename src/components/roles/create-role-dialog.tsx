@@ -20,9 +20,9 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 interface CreateRoleDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSuccess: () => void
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+  readonly onSuccess: () => void;
 }
 
 export function CreateRoleDialog({ open, onOpenChange, onSuccess }: CreateRoleDialogProps) {

@@ -22,6 +22,15 @@ const phoneValidation = z.preprocess(
     .optional()
 );
 
+// Helper for optional string fields: converts empty strings to undefined
+const optionalString = (maxLength: number, errorMessage: string) =>
+  z.preprocess(val => {
+    if (!val || (typeof val === "string" && val.trim() === "")) {
+      return undefined;
+    }
+    return typeof val === "string" ? val.trim() : val;
+  }, z.union([z.string().max(maxLength, errorMessage), z.undefined()]));
+
 // Email validation: optional but if provided must be valid email format
 const emailValidation = z.preprocess(val => {
   if (!val || (typeof val === "string" && val.trim() === "")) {
@@ -37,19 +46,10 @@ export const CreateCustomerSchema = z.object({
     .max(255, "Name must be less than 255 characters"),
   email: emailValidation,
   phone: phoneValidation,
-  address: z
-    .string()
-    .max(500, "Address must be less than 500 characters")
-    .optional(),
-  city: z.string().max(100, "City must be less than 100 characters").optional(),
-  country: z
-    .string()
-    .max(100, "Country must be less than 100 characters")
-    .optional(),
-  postalCode: z
-    .string()
-    .max(20, "Postal code must be less than 20 characters")
-    .optional(),
+  address: optionalString(500, "Address must be less than 500 characters"),
+  city: optionalString(100, "City must be less than 100 characters"),
+  country: optionalString(100, "Country must be less than 100 characters"),
+  postalCode: optionalString(20, "Postal code must be less than 20 characters"),
   isActive: z.boolean().default(true),
 });
 

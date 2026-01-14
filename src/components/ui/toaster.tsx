@@ -4,8 +4,8 @@ import ToastCard from './toast'
 import type { ToastItem } from '@/contexts/toast.types'
 
 interface ToasterProps {
-  toasts: ToastItem[]
-  onDismiss: (id: string) => void
+  readonly toasts: ToastItem[];
+  readonly onDismiss: (id: string) => void;
 }
 
 export const Toaster: React.FC<ToasterProps> = ({ toasts, onDismiss }) => {

@@ -15,10 +15,10 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface DeleteWarehouseDialogProps {
-  warehouse: WarehouseDto | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
+  readonly warehouse: WarehouseDto | null;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+  readonly onSuccess: () => void;
 }
 
 export function DeleteWarehouseDialog({
@@ -41,7 +41,9 @@ export function DeleteWarehouseDialog({
       onSuccess();
       onOpenChange(false);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to delete warehouse");
+      setError(
+        err instanceof Error ? err.message : "Failed to delete warehouse"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -55,8 +57,8 @@ export function DeleteWarehouseDialog({
         <DialogHeader>
           <DialogTitle>Delete Warehouse</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this warehouse? This action cannot be
-            undone.
+            Are you sure you want to delete this warehouse? This action cannot
+            be undone.
           </DialogDescription>
         </DialogHeader>
 

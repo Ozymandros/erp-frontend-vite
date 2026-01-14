@@ -7,9 +7,9 @@ import { Role } from "@/types/api.types";
 
 type FilterProps = {
   /** Controlled filters object; if omitted the component will manage state internally */
-  filters?: Record<string, string>;
+  readonly filters?: Record<string, string>;
   /** Called with the full filters object whenever a field changes */
-  onFilterChange?: (filters: Record<string, string>) => void;
+  readonly onFilterChange?: (filters: Record<string, string>) => void;
 };
 
 export const PermissionFilterHeader = ({

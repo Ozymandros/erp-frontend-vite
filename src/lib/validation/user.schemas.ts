@@ -22,13 +22,25 @@ const phoneValidation = z.preprocess(
     .optional()
 );
 
+// Helper for optional string fields: converts empty strings to undefined
+const optionalString = (maxLength: number, errorMessage: string) =>
+  z.preprocess(
+    val => {
+      if (!val || (typeof val === "string" && val.trim() === "")) {
+        return undefined;
+      }
+      return typeof val === "string" ? val.trim() : val;
+    },
+    z.union([z.string().max(maxLength, errorMessage), z.undefined()])
+  );
+
 // Create User validation schema
 export const CreateUserSchema = z.object({
   email: z.string().email("Invalid email address").min(1, "Email is required"),
   username: z.string().min(8, "Username must be at least 8 characters"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  firstName: z.string().optional().or(z.literal("")),
-  lastName: z.string().optional().or(z.literal("")),
+  firstName: optionalString(100, "First name must be less than 100 characters"),
+  lastName: optionalString(100, "Last name must be less than 100 characters"),
   roleIds: z.array(z.string()).optional(),
 });
 
@@ -45,8 +57,8 @@ const emailValidation = z.preprocess(val => {
 // Update User validation schema
 export const UpdateUserSchema = z.object({
   email: emailValidation,
-  firstName: z.string().optional().or(z.literal("")),
-  lastName: z.string().optional().or(z.literal("")),
+  firstName: optionalString(100, "First name must be less than 100 characters"),
+  lastName: optionalString(100, "Last name must be less than 100 characters"),
   phoneNumber: phoneValidation,
   isActive: z.boolean().optional(),
   roleIds: z.array(z.string()).optional(),

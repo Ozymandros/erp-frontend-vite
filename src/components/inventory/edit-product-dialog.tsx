@@ -25,10 +25,10 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface EditProductDialogProps {
-  product: ProductDto | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
+  readonly product: ProductDto | null;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+  readonly onSuccess: () => void;
 }
 
 export function EditProductDialog({
@@ -101,11 +101,8 @@ export function EditProductDialog({
     setIsLoading(true);
 
     try {
-      await productsService.updateProduct(product.id, {
-        ...formData,
-        description: formData.description || undefined,
-        category: formData.category || undefined,
-      });
+      // Schema already handles empty strings -> undefined transformation
+      await productsService.updateProduct(product.id, validation.data);
       onSuccess();
       onOpenChange(false);
     } catch (err: unknown) {

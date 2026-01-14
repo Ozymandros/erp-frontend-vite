@@ -20,10 +20,10 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 interface EditPermissionDialogProps {
-  permission: Permission
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSuccess: () => void
+  readonly permission: Permission;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+  readonly onSuccess: () => void;
 }
 
 export function EditPermissionDialog({ permission, open, onOpenChange, onSuccess }: EditPermissionDialogProps) {

@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { usersService } from "@/api/services/users.service"
-import { CreateUserSchema, type CreateUserFormData } from "@/lib/validation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { useState } from "react";
+import { usersService } from "@/api/services/users.service";
+import { CreateUserSchema, type CreateUserFormData } from "@/lib/validation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -15,77 +15,87 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { handleApiError, getErrorMessage } from "@/lib/error-handling"
+} from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 
 interface CreateUserDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSuccess: () => void
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+  readonly onSuccess: () => void;
 }
 
-export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDialogProps) {
+export function CreateUserDialog({
+  open,
+  onOpenChange,
+  onSuccess,
+}: CreateUserDialogProps) {
   const [formData, setFormData] = useState<CreateUserFormData>({
     username: "",
     email: "",
     password: "",
     firstName: "",
     lastName: "",
-  })
-  const [error, setError] = useState<string | null>(null)
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
-  const [isLoading, setIsLoading] = useState(false)
+  });
+  const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (field: keyof CreateUserFormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+    setFormData(prev => ({ ...prev, [field]: value }));
     // Clear field error when user starts typing
     if (fieldErrors[field]) {
-      setFieldErrors((prev) => {
-        const newErrors = { ...prev }
-        delete newErrors[field]
-        return newErrors
-      })
+      setFieldErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    setFieldErrors({})
-    
+    e.preventDefault();
+    setError(null);
+    setFieldErrors({});
+
     // Client-side validation
-    const validation = CreateUserSchema.safeParse(formData)
+    const validation = CreateUserSchema.safeParse(formData);
     if (!validation.success) {
-      const errors: Record<string, string> = {}
-      validation.error.issues.forEach((err) => {
+      const errors: Record<string, string> = {};
+      validation.error.issues.forEach(err => {
         if (err.path[0]) {
-          errors[err.path[0].toString()] = err.message
+          errors[err.path[0].toString()] = err.message;
         }
-      })
-      setFieldErrors(errors)
-      setError("Please fix the validation errors")
-      return
+      });
+      setFieldErrors(errors);
+      setError("Please fix the validation errors");
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
       await usersService.createUser({
         ...formData,
         firstName: formData.firstName || undefined,
         lastName: formData.lastName || undefined,
-      })
-      onSuccess()
-      setFormData({ username: "", email: "", password: "", firstName: "", lastName: "" })
-      onOpenChange(false)
+      });
+      onSuccess();
+      setFormData({
+        username: "",
+        email: "",
+        password: "",
+        firstName: "",
+        lastName: "",
+      });
+      onOpenChange(false);
     } catch (error: unknown) {
       const apiError = handleApiError(error);
       setError(getErrorMessage(apiError, "Failed to create user"));
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -109,7 +119,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                 <Input
                   id="firstName"
                   value={formData.firstName}
-                  onChange={(e) => handleChange("firstName", e.target.value)}
+                  onChange={e => handleChange("firstName", e.target.value)}
                   disabled={isLoading}
                 />
               </div>
@@ -118,7 +128,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                 <Input
                   id="lastName"
                   value={formData.lastName}
-                  onChange={(e) => handleChange("lastName", e.target.value)}
+                  onChange={e => handleChange("lastName", e.target.value)}
                   disabled={isLoading}
                 />
               </div>
@@ -129,7 +139,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
               <Input
                 id="username"
                 value={formData.username}
-                onChange={(e) => handleChange("username", e.target.value)}
+                onChange={e => handleChange("username", e.target.value)}
                 required
                 disabled={isLoading}
                 className={fieldErrors.username ? "border-red-500" : ""}
@@ -145,7 +155,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => handleChange("email", e.target.value)}
+                onChange={e => handleChange("email", e.target.value)}
                 required
                 disabled={isLoading}
                 className={fieldErrors.email ? "border-red-500" : ""}
@@ -161,7 +171,7 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
                 id="password"
                 type="password"
                 value={formData.password}
-                onChange={(e) => handleChange("password", e.target.value)}
+                onChange={e => handleChange("password", e.target.value)}
                 required
                 disabled={isLoading}
                 placeholder="At least 8 characters"
@@ -174,7 +184,12 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isLoading}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
@@ -184,5 +199,5 @@ export function CreateUserDialog({ open, onOpenChange, onSuccess }: CreateUserDi
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
