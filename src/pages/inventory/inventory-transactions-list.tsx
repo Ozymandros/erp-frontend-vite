@@ -261,75 +261,69 @@ export function InventoryTransactionsListPage() {
 
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <label htmlFor="filter-product" className="text-sm font-medium">
+                <label className="text-sm font-medium flex flex-col gap-1">
                   Filter by Product
+                  <select
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    value={filterProduct}
+                    onChange={e => {
+                      setFilterProduct(e.target.value);
+                      setFilterWarehouse("");
+                      setFilterType("");
+                    }}
+                  >
+                    <option value="">All Products</option>
+                    {products.map(product => (
+                      <option key={product.id} value={product.id}>
+                        {product.name}
+                      </option>
+                    ))}
+                  </select>
                 </label>
-                <select
-                  id="filter-product"
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  value={filterProduct}
-                  onChange={e => {
-                    setFilterProduct(e.target.value);
-                    setFilterWarehouse("");
-                    setFilterType("");
-                  }}
-                >
-                  <option value="">All Products</option>
-                  {products.map(product => (
-                    <option key={product.id} value={product.id}>
-                      {product.name}
-                    </option>
-                  ))}
-                </select>
               </div>
 
               <div className="space-y-2">
-                <label
-                  htmlFor="filter-warehouse"
-                  className="text-sm font-medium"
-                >
+                <label className="text-sm font-medium flex flex-col gap-1">
                   Filter by Warehouse
+                  <select
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    value={filterWarehouse}
+                    onChange={e => {
+                      setFilterWarehouse(e.target.value);
+                      setFilterProduct("");
+                      setFilterType("");
+                    }}
+                  >
+                    <option value="">All Warehouses</option>
+                    {warehouses.map(warehouse => (
+                      <option key={warehouse.id} value={warehouse.id}>
+                        {warehouse.name}
+                      </option>
+                    ))}
+                  </select>
                 </label>
-                <select
-                  id="filter-warehouse"
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  value={filterWarehouse}
-                  onChange={e => {
-                    setFilterWarehouse(e.target.value);
-                    setFilterProduct("");
-                    setFilterType("");
-                  }}
-                >
-                  <option value="">All Warehouses</option>
-                  {warehouses.map(warehouse => (
-                    <option key={warehouse.id} value={warehouse.id}>
-                      {warehouse.name}
-                    </option>
-                  ))}
-                </select>
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="filter-type" className="text-sm font-medium">
+                <label className="text-sm font-medium flex flex-col gap-1">
                   Filter by Type
+                  <select
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    value={filterType}
+                    onChange={e => {
+                      setFilterType(e.target.value as TransactionType | "");
+                      setFilterProduct("");
+                      setFilterWarehouse("");
+                    }}
+                  >
+                    <option value="">All Types</option>
+                    {TRANSACTION_TYPES.map(type => (
+                      <option key={type.value} value={type.value}>
+                        {type.label}
+                      </option>
+                    ))}
+                  </select>
                 </label>
-                <select
-                  id="filter-type"
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  value={filterType}
-                  onChange={e => {
-                    setFilterType(e.target.value as TransactionType | "");
-                    setFilterProduct("");
-                    setFilterWarehouse("");
-                  }}
-                >
-                  <option value="">All Types</option>
-                  {TRANSACTION_TYPES.map(type => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
-                </select>
               </div>
             </div>
           </div>

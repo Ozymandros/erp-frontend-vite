@@ -191,59 +191,51 @@ export function WarehouseStocksListPage() {
 
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div className="space-y-2">
-              <label
-                htmlFor="filter-stock-product"
-                className="text-sm font-medium"
-              >
+              <label className="text-sm font-medium flex flex-col gap-1">
                 Filter by Product
+                <select
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  value={selectedProductId}
+                  onChange={e => {
+                    setSelectedProductId(e.target.value);
+                    if (e.target.value) {
+                      setFilterType("product");
+                      setSelectedWarehouseId("");
+                    }
+                  }}
+                >
+                  <option value="">Select a product...</option>
+                  {products.map(product => (
+                    <option key={product.id} value={product.id}>
+                      {product.name} ({product.sku})
+                    </option>
+                  ))}
+                </select>
               </label>
-              <select
-                id="filter-stock-product"
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                value={selectedProductId}
-                onChange={e => {
-                  setSelectedProductId(e.target.value);
-                  if (e.target.value) {
-                    setFilterType("product");
-                    setSelectedWarehouseId("");
-                  }
-                }}
-              >
-                <option value="">Select a product...</option>
-                {products.map(product => (
-                  <option key={product.id} value={product.id}>
-                    {product.name} ({product.sku})
-                  </option>
-                ))}
-              </select>
             </div>
 
             <div className="space-y-2">
-              <label
-                htmlFor="filter-stock-warehouse"
-                className="text-sm font-medium"
-              >
+              <label className="text-sm font-medium flex flex-col gap-1">
                 Filter by Warehouse
+                <select
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  value={selectedWarehouseId}
+                  onChange={e => {
+                    setSelectedWarehouseId(e.target.value);
+                    if (e.target.value) {
+                      setFilterType("warehouse");
+                      setSelectedProductId("");
+                    }
+                  }}
+                >
+                  <option value="">Select a warehouse...</option>
+                  {warehouses.map(warehouse => (
+                    <option key={warehouse.id} value={warehouse.id}>
+                      {warehouse.name}
+                    </option>
+                  ))}
+                </select>
               </label>
-              <select
-                id="filter-stock-warehouse"
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                value={selectedWarehouseId}
-                onChange={e => {
-                  setSelectedWarehouseId(e.target.value);
-                  if (e.target.value) {
-                    setFilterType("warehouse");
-                    setSelectedProductId("");
-                  }
-                }}
-              >
-                <option value="">Select a warehouse...</option>
-                {warehouses.map(warehouse => (
-                  <option key={warehouse.id} value={warehouse.id}>
-                    {warehouse.name}
-                  </option>
-                ))}
-              </select>
             </div>
           </div>
 

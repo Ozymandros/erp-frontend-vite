@@ -99,61 +99,56 @@ function ReserveStockForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label htmlFor="reserve-productId" className="text-sm font-medium">
+          <label className="text-sm font-medium flex flex-col gap-1">
             Product ID
+            <input
+              name="productId"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
           </label>
-          <input
-            id="reserve-productId"
-            name="productId"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
         </div>
         <div className="space-y-2">
-          <label htmlFor="reserve-warehouseId" className="text-sm font-medium">
+          <label className="text-sm font-medium flex flex-col gap-1">
             Warehouse ID
+            <input
+              name="warehouseId"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
           </label>
-          <input
-            id="reserve-warehouseId"
-            name="warehouseId"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
         </div>
         <div className="space-y-2">
-          <label htmlFor="reserve-quantity" className="text-sm font-medium">
+          <label className="text-sm font-medium flex flex-col gap-1">
             Quantity
+            <input
+              name="quantity"
+              type="number"
+              required
+              min={1}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
           </label>
-          <input
-            id="reserve-quantity"
-            name="quantity"
-            type="number"
-            required
-            min={1}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
         </div>
         <div className="space-y-2">
-          <label htmlFor="reserve-orderId" className="text-sm font-medium">
+          <label className="text-sm font-medium flex flex-col gap-1">
             Order ID
+            <input
+              name="orderId"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
           </label>
-          <input
-            id="reserve-orderId"
-            name="orderId"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
         </div>
         <div className="space-y-2">
-          <label htmlFor="reserve-expiresAt" className="text-sm font-medium">
+          <label className="text-sm font-medium flex flex-col gap-1">
             Expires At (optional)
+            <input
+              name="expiresAt"
+              type="datetime-local"
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
           </label>
-          <input
-            id="reserve-expiresAt"
-            name="expiresAt"
-            type="datetime-local"
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
         </div>
       </div>
 
@@ -206,68 +201,57 @@ function TransferStockForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label htmlFor="transfer-productId" className="text-sm font-medium">
+          <label className="text-sm font-medium flex flex-col gap-1">
             Product ID
+            <input
+              name="productId"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
           </label>
-          <input
-            id="transfer-productId"
-            name="productId"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
         </div>
         <div className="space-y-2">
-          <label htmlFor="transfer-quantity" className="text-sm font-medium">
+          <label className="text-sm font-medium flex flex-col gap-1">
             Quantity
+            <input
+              name="quantity"
+              type="number"
+              required
+              min={1}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
           </label>
-          <input
-            id="transfer-quantity"
-            name="quantity"
-            type="number"
-            required
-            min={1}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
         </div>
         <div className="space-y-2">
-          <label
-            htmlFor="transfer-fromWarehouseId"
-            className="text-sm font-medium"
-          >
+          <label className="text-sm font-medium flex flex-col gap-1">
             From Warehouse
+            <input
+              name="fromWarehouseId"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
           </label>
-          <input
-            id="transfer-fromWarehouseId"
-            name="fromWarehouseId"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
         </div>
         <div className="space-y-2">
-          <label
-            htmlFor="transfer-toWarehouseId"
-            className="text-sm font-medium"
-          >
+          <label className="text-sm font-medium flex flex-col gap-1">
             To Warehouse
+            <input
+              name="toWarehouseId"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
           </label>
-          <input
-            id="transfer-toWarehouseId"
-            name="toWarehouseId"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
         </div>
         <div className="space-y-2 col-span-2">
-          <label htmlFor="transfer-reason" className="text-sm font-medium">
+          <label className="text-sm font-medium flex flex-col gap-1">
             Reason
+            <textarea
+              name="reason"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              rows={3}
+            />
           </label>
-          <textarea
-            id="transfer-reason"
-            name="reason"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            rows={3}
-          />
         </div>
       </div>
 
@@ -322,72 +306,64 @@ function AdjustStockForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label htmlFor="adjust-productId" className="text-sm font-medium">
+          <label className="text-sm font-medium flex flex-col gap-1">
             Product ID
+            <input
+              name="productId"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
           </label>
-          <input
-            id="adjust-productId"
-            name="productId"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
         </div>
         <div className="space-y-2">
-          <label htmlFor="adjust-warehouseId" className="text-sm font-medium">
+          <label className="text-sm font-medium flex flex-col gap-1">
             Warehouse ID
+            <input
+              name="warehouseId"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
           </label>
-          <input
-            id="adjust-warehouseId"
-            name="warehouseId"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
         </div>
         <div className="space-y-2">
-          <label htmlFor="adjust-quantity" className="text-sm font-medium">
+          <label className="text-sm font-medium flex flex-col gap-1">
             Quantity
+            <input
+              name="quantity"
+              type="number"
+              required
+              min={1}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
           </label>
-          <input
-            id="adjust-quantity"
-            name="quantity"
-            type="number"
-            required
-            min={1}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
         </div>
         <div className="space-y-2">
-          <label
-            htmlFor="adjust-adjustmentType"
-            className="text-sm font-medium"
-          >
+          <label className="text-sm font-medium flex flex-col gap-1">
             Adjustment Type
+            <select
+              name="adjustmentType"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">Select type...</option>
+              <option value="Increase">Increase</option>
+              <option value="Decrease">Decrease</option>
+              <option value="Found">Found</option>
+              <option value="Lost">Lost</option>
+              <option value="Damaged">Damaged</option>
+            </select>
           </label>
-          <select
-            id="adjust-adjustmentType"
-            name="adjustmentType"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          >
-            <option value="">Select type...</option>
-            <option value="Increase">Increase</option>
-            <option value="Decrease">Decrease</option>
-            <option value="Found">Found</option>
-            <option value="Lost">Lost</option>
-            <option value="Damaged">Damaged</option>
-          </select>
         </div>
         <div className="space-y-2 col-span-2">
-          <label htmlFor="adjust-reason" className="text-sm font-medium">
+          <label className="text-sm font-medium flex flex-col gap-1">
             Reason
+            <textarea
+              name="reason"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              rows={3}
+            />
           </label>
-          <textarea
-            id="adjust-reason"
-            name="reason"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            rows={3}
-          />
         </div>
       </div>
 
@@ -433,16 +409,15 @@ function ReleaseReservationForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <label htmlFor="release-reservationId" className="text-sm font-medium">
+        <label className="text-sm font-medium flex flex-col gap-1">
           Reservation ID
+          <input
+            name="reservationId"
+            required
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            placeholder="Enter reservation ID to release"
+          />
         </label>
-        <input
-          id="release-reservationId"
-          name="reservationId"
-          required
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          placeholder="Enter reservation ID to release"
-        />
       </div>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
