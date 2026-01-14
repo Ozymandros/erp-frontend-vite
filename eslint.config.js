@@ -26,6 +26,7 @@ export default [
                 ...globals.es2020,
                 ...globals.node,
                 RequestInit: 'readonly',
+                React: 'readonly',
             },
         },
         plugins: {
@@ -42,6 +43,8 @@ export default [
         rules: {
             ...js.configs.recommended.rules,
             ...typescript.configs.recommended.rules,
+            ...react.configs.recommended.rules,
+            ...react.configs['jsx-runtime'].rules,
             ...reactHooks.configs.recommended.rules,
             'react/jsx-uses-react': 'off',
             'react/react-in-jsx-scope': 'off',
@@ -56,6 +59,8 @@ export default [
                 caughtErrors: 'none',
             }],
             'no-empty': ['error', { allowEmptyCatch: true }],
+            'react/prop-types': 'off',
+            'react/no-unescaped-entities': 'off',
             'react-hooks/exhaustive-deps': 'warn',
         },
     },

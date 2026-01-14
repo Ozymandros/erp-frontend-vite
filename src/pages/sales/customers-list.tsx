@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Search, Eye } from "lucide-react";
 import { CreateCustomerDialog } from "@/components/sales/create-customer-dialog";
+import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
 
 export function CustomersListPage() {
   const [customers, setCustomers] = useState<PaginatedResponse<CustomerDto> | null>(null);
