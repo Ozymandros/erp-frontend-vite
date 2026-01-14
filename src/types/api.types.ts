@@ -109,7 +109,7 @@ export const updateAuditableEntity = <T extends AuditableDto>(
 export const isAuditable = (obj: any): obj is IAuditableDto<any> => {
   return (
     obj &&
-    typeof obj.id !== "undefined" &&
+    obj.id !== undefined &&
     typeof obj.createdAt === "string" &&
     typeof obj.createdBy === "string"
   );

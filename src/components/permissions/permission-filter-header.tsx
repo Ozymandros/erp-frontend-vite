@@ -7,26 +7,31 @@ import { Role } from "@/types/api.types";
 
 type FilterProps = {
   /** Controlled filters object; if omitted the component will manage state internally */
-  filters?: Record<string, string>
+  filters?: Record<string, string>;
   /** Called with the full filters object whenever a field changes */
-  onFilterChange?: (filters: Record<string, string>) => void
-}
+  onFilterChange?: (filters: Record<string, string>) => void;
+};
 
-export const PermissionFilterHeader = ({ filters: controlledFilters, onFilterChange }: FilterProps) => {
-  const [internalFilters, setInternalFilters] = useState<Record<string, string>>({ search: "", role: "" });
+export const PermissionFilterHeader = ({
+  filters: controlledFilters,
+  onFilterChange,
+}: FilterProps) => {
+  const [internalFilters, setInternalFilters] = useState<
+    Record<string, string>
+  >({ search: "", role: "" });
   const [roles, setRoles] = useState<Role[]>([]);
-  const isControlled = typeof controlledFilters !== 'undefined'
-  const filters = isControlled ? controlledFilters! : internalFilters
+  const isControlled = controlledFilters !== undefined;
+  const filters = isControlled ? controlledFilters! : internalFilters;
 
   const handleChange = (key: string, value: string) => {
-    const updated = { ...filters, [key]: value }
+    const updated = { ...filters, [key]: value };
     if (isControlled) {
-      onFilterChange?.(updated)
+      onFilterChange?.(updated);
     } else {
-      setInternalFilters(updated)
-      onFilterChange?.(updated)
+      setInternalFilters(updated);
+      onFilterChange?.(updated);
     }
-  }
+  };
 
   useEffect(() => {
     const fetchRoles = async () => {

@@ -18,7 +18,7 @@ const silentAnalyticsLog = (data: any) => {
   if (
     import.meta.env.MODE === "test" ||
     import.meta.env.CI ||
-    (typeof process !== "undefined" && (process.env.CI || process.env.VITEST))
+    (process !== undefined && (process.env.CI || process.env.VITEST))
   ) {
     return;
   }

@@ -79,7 +79,8 @@ export function CreateCustomerDialog({
 
     setIsLoading(true);
     try {
-      await customersService.createCustomer(formData);
+      // Schema already handles empty strings -> undefined transformation
+      await customersService.createCustomer(validation.data);
       onSuccess();
       setFormData({
         name: "",
@@ -137,6 +138,7 @@ export function CreateCustomerDialog({
                 <Input
                   id="email"
                   type="email"
+                  placeholder="example@example.com"
                   value={formData.email}
                   onChange={e => handleChange("email", e.target.value)}
                   disabled={isLoading}
@@ -149,11 +151,17 @@ export function CreateCustomerDialog({
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone</Label>
                 <Input
+                  type="tel"
                   id="phone"
+                  placeholder="+1-555-123-4567"
                   value={formData.phone}
                   onChange={e => handleChange("phone", e.target.value)}
                   disabled={isLoading}
+                  className={fieldErrors.phone ? "border-red-500" : ""}
                 />
+                {fieldErrors.phone && (
+                  <p className="text-sm text-red-500">{fieldErrors.phone}</p>
+                )}
               </div>
             </div>
             <div className="space-y-2">
