@@ -23,7 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus, Eye } from "lucide-react";
-import { formatDateTime } from "@/lib/utils";
+import { formatDateTime, formatCurrency } from "@/lib/utils";
 import {
   handleApiError,
   isForbiddenError,
@@ -164,7 +164,7 @@ export function OrdersListPage() {
                       <TableCell>{getStatusBadge(order.status)}</TableCell>
                       <TableCell>{formatDateTime(order.orderDate)}</TableCell>
                       <TableCell>{order.orderLines.length} items</TableCell>
-                      <TableCell>${order.totalAmount.toFixed(2)}</TableCell>
+                      <TableCell>{formatCurrency(order.totalAmount)}</TableCell>
                       <TableCell className="text-right">
                         <Link to={`/orders/${order.id}`}>
                           <Button variant="ghost" size="sm">

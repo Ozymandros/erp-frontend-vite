@@ -27,6 +27,7 @@ import { CreateProductDialog } from "@/components/inventory/create-product-dialo
 import { EditProductDialog } from "@/components/inventory/edit-product-dialog";
 import { DeleteProductDialog } from "@/components/inventory/delete-product-dialog";
 import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
+import { formatCurrency } from "@/lib/utils";
 
 export function ProductsListPage() {
   const [products, setProducts] = useState<PaginatedResponse<ProductDto> | null>(null);
@@ -262,7 +263,7 @@ export function ProductsListPage() {
                             <span className="text-muted-foreground">-</span>
                           )}
                         </TableCell>
-                        <TableCell>${product.unitPrice.toFixed(2)}</TableCell>
+                        <TableCell>{formatCurrency(product.unitPrice)}</TableCell>
                         <TableCell>
                           <span
                             className={

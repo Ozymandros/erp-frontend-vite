@@ -29,7 +29,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus, Eye, Search, ArrowUpDown } from "lucide-react";
-import { formatDateTime } from "@/lib/utils";
+import { formatDateTime, formatCurrency } from "@/lib/utils";
 import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
 
 export function PurchaseOrdersListPage() {
@@ -247,7 +247,7 @@ export function PurchaseOrdersListPage() {
                             : "-"}
                         </TableCell>
                         <TableCell>{order.orderLines.length} items</TableCell>
-                        <TableCell>${order.totalAmount.toFixed(2)}</TableCell>
+                        <TableCell>{formatCurrency(order.totalAmount)}</TableCell>
                         <TableCell className="text-right">
                           <Link to={`/purchasing/orders/${order.id}`}>
                             <Button variant="ghost" size="sm">
