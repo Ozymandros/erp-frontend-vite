@@ -24,3 +24,6 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     libpango-1.0-0 \
     libcairo2 \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+# Switch to non-root user
+USER node
