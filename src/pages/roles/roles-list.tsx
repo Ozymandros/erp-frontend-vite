@@ -15,6 +15,7 @@ import { EditRoleDialog } from "@/components/roles/edit-role-dialog"
 import { DeleteRoleDialog } from "@/components/roles/delete-role-dialog"
 import { formatDateTime } from "@/lib/utils"
 import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling"
+import { FileDown } from "lucide-react"
 
 export function RolesListPage() {
   const [roles, setRoles] = useState<PaginatedResponse<Role> | null>(null)
@@ -73,6 +74,24 @@ export function RolesListPage() {
     fetchRoles()
   }
 
+  const handleExport = async (format: "xlsx" | "pdf") => {
+    try {
+      const blob = format === "xlsx" ? await rolesService.exportToXlsx() : await rolesService.exportToPdf()
+
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = url
+      link.setAttribute("download", `Roles.${format}`)
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      const apiError = handleApiError(error)
+      setError(getErrorMessage(apiError, `Failed to export roles to ${format}`))
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -80,10 +99,20 @@ export function RolesListPage() {
           <h1 className="text-3xl font-bold text-foreground">Roles</h1>
           <p className="text-muted-foreground mt-1">Manage user roles and their permissions</p>
         </div>
-        <Button onClick={() => setIsCreateDialogOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Role
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => handleExport("xlsx")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export XLSX
+          </Button>
+          <Button variant="outline" onClick={() => handleExport("pdf")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export PDF
+          </Button>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Role
+          </Button>
+        </div>
       </div>
 
       <Card>

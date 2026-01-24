@@ -70,6 +70,28 @@ class PermissionsService {
   async deletePermission(id: string): Promise<void> {
     return this.apiClient.delete<void>(PERMISSIONS_ENDPOINTS.BY_ID(id));
   }
+
+  async exportToXlsx(): Promise<Blob> {
+    const response = await fetch(PERMISSIONS_ENDPOINTS.EXPORT_XLSX, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    if (!response.ok) throw new Error("Failed to export permissions to XLSX");
+    return response.blob();
+  }
+
+  async exportToPdf(): Promise<Blob> {
+    const response = await fetch(PERMISSIONS_ENDPOINTS.EXPORT_PDF, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    if (!response.ok) throw new Error("Failed to export permissions to PDF");
+    return response.blob();
+  }
 }
 
 export const permissionsService = new PermissionsService();

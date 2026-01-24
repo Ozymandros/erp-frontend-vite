@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Pencil, Trash2 } from "lucide-react"
+import { Plus, Pencil, Trash2, FileDown } from "lucide-react"
 import { CreatePermissionDialog } from "@/components/permissions/create-permission-dialog"
 import { EditPermissionDialog } from "@/components/permissions/edit-permission-dialog"
 import { DeletePermissionDialog } from "@/components/permissions/delete-permission-dialog"
@@ -65,6 +65,23 @@ export function PermissionsListPage() {
     fetchPermissions()
   }
 
+  const handleExport = async (format: "xlsx" | "pdf") => {
+    try {
+      const blob = format === "xlsx" ? await permissionsService.exportToXlsx() : await permissionsService.exportToPdf()
+
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = url
+      link.setAttribute("download", `Permissions.${format}`)
+      document.body.appendChild(link);
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : `Failed to export permissions to ${format}`)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -72,10 +89,20 @@ export function PermissionsListPage() {
           <h1 className="text-3xl font-bold text-foreground">Permissions</h1>
           <p className="text-muted-foreground mt-1">Manage system permissions and access controls</p>
         </div>
-        <Button onClick={() => setIsCreateDialogOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Permission
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => handleExport("xlsx")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export XLSX
+          </Button>
+          <Button variant="outline" onClick={() => handleExport("pdf")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export PDF
+          </Button>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Permission
+          </Button>
+        </div>
       </div>
 
       <Card>

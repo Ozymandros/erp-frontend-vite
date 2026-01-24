@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { EditWarehouseDialog } from "@/components/inventory/edit-warehouse-dialog";
 import { DeleteWarehouseDialog } from "@/components/inventory/delete-warehouse-dialog";
@@ -131,59 +131,11 @@ export function WarehouseDetailPage() {
                 <p className="text-base">{warehouse.location}</p>
               </div>
             )}
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Status
-              </label>
-              <div>
-                <Badge variant={warehouse.isActive ? "default" : "secondary"}>
-                  {warehouse.isActive ? "Active" : "Inactive"}
-                </Badge>
-              </div>
-            </div>
+
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Address</CardTitle>
-            <CardDescription>Location address details</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {warehouse.address && (
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  Street Address
-                </label>
-                <p className="text-base">{warehouse.address}</p>
-              </div>
-            )}
-            {warehouse.city && (
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  City
-                </label>
-                <p className="text-base">{warehouse.city}</p>
-              </div>
-            )}
-            {warehouse.postalCode && (
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  Postal Code
-                </label>
-                <p className="text-base">{warehouse.postalCode}</p>
-              </div>
-            )}
-            {warehouse.country && (
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  Country
-                </label>
-                <p className="text-base">{warehouse.country}</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+
 
         <Card className="md:col-span-2">
           <CardHeader>

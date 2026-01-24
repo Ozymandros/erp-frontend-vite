@@ -73,6 +73,28 @@ class UsersService {
   async getUserRoles(userId: string): Promise<Role[]> {
     return this.apiClient.get<Role[]>(USERS_ENDPOINTS.GET_ROLES(userId));
   }
+
+  async exportToXlsx(): Promise<Blob> {
+    const response = await fetch(USERS_ENDPOINTS.EXPORT_XLSX, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    if (!response.ok) throw new Error("Failed to export users to XLSX");
+    return response.blob();
+  }
+
+  async exportToPdf(): Promise<Blob> {
+    const response = await fetch(USERS_ENDPOINTS.EXPORT_PDF, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    if (!response.ok) throw new Error("Failed to export users to PDF");
+    return response.blob();
+  }
 }
 
 export const usersService = new UsersService();

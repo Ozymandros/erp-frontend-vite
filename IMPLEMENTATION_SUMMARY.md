@@ -3,6 +3,7 @@
 ## Completed Modules
 
 ### 1. Products Module (`/inventory/products`)
+
 **Files Created:**
 - `src/lib/validation/inventory/product.schemas.ts` - Zod validation schemas
 - `src/components/inventory/create-product-dialog.tsx` - Create product form dialog
@@ -13,14 +14,14 @@
 
 **Features:**
 - Full CRUD operations (Create, Read, Update, Delete)
-- Search and filter by SKU, name, category
+- Search and filter by SKU, name
 - Sortable columns
 - Low stock indicator and filter
 - Pagination
-- Active/Inactive status badges
 - Validation: SKU uniqueness, price >= 0, stock >= 0
 
 ### 2. Warehouses Module (`/inventory/warehouses`)
+
 **Files Created:**
 - `src/lib/validation/inventory/warehouse.schemas.ts` - Zod validation schemas
 - `src/components/inventory/create-warehouse-dialog.tsx` - Create warehouse form dialog
@@ -31,13 +32,12 @@
 
 **Features:**
 - Full CRUD operations
-- Search by name, location, city, country
-- Address management (street, city, postal code, country)
+- Search by name, location
 - Pagination
-- Active/Inactive status
 - Audit trail (created/updated by and timestamp)
 
 ### 3. Customers Module (`/sales/customers`)
+
 **Files Created:**
 - `src/lib/validation/sales/customer.schemas.ts` - Zod validation schemas
 - `src/components/sales/create-customer-dialog.tsx` - Create customer form dialog
@@ -46,14 +46,61 @@
 
 **Features:**
 - Create and Read operations
-- Search by name, email, city, country
+- Search by name, email
 - Email validation
-- Contact information (email, phone)
-- Address management
+- Contact information (email, phoneNumber)
+- Address management (street address only)
 - Pagination
-- Active/Inactive status
 
-### 4. Navigation & Routes
+### 4. Warehouse Stocks (`/inventory/warehouse-stocks`)
+
+**Files Created:**
+- `src/pages/inventory/warehouse-stocks-list.tsx`
+
+**Features:**
+- View stock levels across warehouses
+- Filter by Low Stock, Product, or Warehouse
+- Export to PDF/XLSX
+
+### 5. Inventory Transactions (`/inventory/transactions`)
+
+**Files Created:**
+- `src/pages/inventory/inventory-transactions-list.tsx`
+
+**Features:**
+- View transaction history
+- Filter by Product, Warehouse, or Transaction Type
+- Export options
+
+### 6. Stock Operations (`/inventory/stock-operations`)
+
+**Files Created:**
+- `src/pages/inventory/stock-operations.tsx`
+
+**Features:**
+- Reserve Stock
+- Transfer Stock
+- Adjust Stock
+- Release Reservation
+
+### 7. Sales & Purchasing
+
+**Files Created:**
+- `src/pages/sales/sales-orders-list.tsx`
+- `src/pages/sales/sales-order-detail.tsx`
+- `src/pages/purchasing/purchase-orders-list.tsx`
+- `src/pages/purchasing/purchase-order-detail.tsx`
+- `src/pages/orders/orders-list.tsx`
+- `src/pages/orders/order-detail.tsx`
+
+**Features:**
+- List views for Sales Orders, Purchase Orders, and General Orders
+- Detail views for individual orders (Items, Status, Totals)
+- Creation Dialogs with Product Line Item management
+- Filtering and Exporting
+
+### 8. Navigation & Routes
+
 **Files Updated:**
 - `src/App.tsx` - Added routes for all new modules
 - `src/components/layout/sidebar.tsx` - Added navigation items with icons
@@ -65,6 +112,12 @@
 - `/inventory/warehouses/:id` - Warehouse details
 - `/sales/customers` - Customers list
 - `/sales/customers/:id` - Customer details
+- `/sales/orders` - Sales Orders list
+- `/sales/orders/:id` - Sales Order details
+- `/purchasing/orders` - Purchase Orders list
+- `/purchasing/orders/:id` - Purchase Order details
+- `/orders` - General Orders list
+- `/orders/:id` - General Order details
 
 **Sidebar Navigation:**
 - Products (Package icon)
@@ -74,6 +127,7 @@
 ## Technical Implementation Details
 
 ### Patterns Followed
+
 1. **Dialog-based Forms**: All create/edit operations use modal dialogs
 2. **Zod Validation**: Client-side validation matching backend DTOs
 3. **Paginated Lists**: All list pages use `QuerySpec` for search, filter, sort
@@ -83,6 +137,7 @@
 7. **Audit Trail**: Created/updated timestamps and user tracking
 
 ### Code Quality
+
 - ✅ Consistent naming conventions
 - ✅ Reusable component patterns
 - ✅ Type-safe API calls
@@ -91,29 +146,24 @@
 - ✅ Accessibility considerations
 
 ### Backend Synchronization
+
 All implementations strictly match backend DTOs:
+
 - `ProductDto` / `CreateUpdateProductDto`
 - `WarehouseDto` / `CreateUpdateWarehouseDto`
 - `CustomerDto`
 
 Validation rules match backend data annotations:
+
 - Required fields
 - String length limits
 - Email format validation
 - Number range validation
 
-## Remaining Work (Not Implemented)
+## Remaining Work
 
-The following modules were planned but not completed due to scope:
-
-1. **Warehouse Stocks** - Read-only list with filters
-2. **Stock Operations** - Reserve, Transfer, Adjust operations
-3. **Inventory Transactions** - Transaction log view
-4. **Orders Module** - Order management with line items
-5. **Sales Orders** - Sales order/quote workflow with stock checks
-6. **Purchase Orders** - Purchase order workflow with approval
-
-These can be implemented following the same patterns established in the completed modules.
+- **Refinement**: Polish the UI of Stock Operations.
+- **Reporting**: Add more visual reporting or dashboard widgets (future scope).
 
 ## How to Extend
 
@@ -133,6 +183,7 @@ To add a new module, follow this pattern:
 ## Testing
 
 All pages can be tested by:
+
 1. Starting the frontend: `pnpm dev`
 2. Ensure backend is running on `http://localhost:5000`
 3. Navigate to the new pages via sidebar

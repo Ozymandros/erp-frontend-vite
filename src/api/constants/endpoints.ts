@@ -66,6 +66,8 @@ export const USERS_ENDPOINTS = {
   REMOVE_ROLE: (userId: string, roleName: string) =>
     `${AUTH_SERVICE_BASE}/users/${userId}/roles/${roleName}`,
   GET_ROLES: (userId: string) => `${AUTH_SERVICE_BASE}/users/${userId}/roles`,
+  EXPORT_XLSX: `${AUTH_SERVICE_BASE}/users/export-xlsx`,
+  EXPORT_PDF: `${AUTH_SERVICE_BASE}/users/export-pdf`,
 } as const;
 
 export const ROLES_ENDPOINTS = {
@@ -82,6 +84,8 @@ export const ROLES_ENDPOINTS = {
     `${AUTH_SERVICE_BASE}/roles/${roleId}/permissions`,
   REMOVE_PERMISSION: (roleId: string, permissionId: string) =>
     `${AUTH_SERVICE_BASE}/roles/${roleId}/permissions/${permissionId}`,
+  EXPORT_XLSX: `${AUTH_SERVICE_BASE}/roles/export-xlsx`,
+  EXPORT_PDF: `${AUTH_SERVICE_BASE}/roles/export-pdf`,
 } as const;
 
 export const PERMISSIONS_ENDPOINTS = {
@@ -92,6 +96,8 @@ export const PERMISSIONS_ENDPOINTS = {
   BY_ID: (id: string) => `${AUTH_SERVICE_BASE}/permissions/${id}`,
   BY_MODULE_ACTION: `${AUTH_SERVICE_BASE}/permissions/module-action`,
   CHECK: `${AUTH_SERVICE_BASE}/permissions/check`,
+  EXPORT_XLSX: `${AUTH_SERVICE_BASE}/permissions/export-xlsx`,
+  EXPORT_PDF: `${AUTH_SERVICE_BASE}/permissions/export-pdf`,
 } as const;
 
 // ==================== INVENTORY MODULE ENDPOINTS ====================
@@ -104,6 +110,8 @@ export const PRODUCTS_ENDPOINTS = {
   BY_ID: (id: string) => `${INVENTORY_SERVICE_BASE}/products/${id}`,
   BY_SKU: (sku: string) => `${INVENTORY_SERVICE_BASE}/products/sku/${sku}`,
   LOW_STOCK: `${INVENTORY_SERVICE_BASE}/products/low-stock`,
+  EXPORT_XLSX: `${INVENTORY_SERVICE_BASE}/products/export-xlsx`,
+  EXPORT_PDF: `${INVENTORY_SERVICE_BASE}/products/export-pdf`,
 } as const;
 
 export const WAREHOUSES_ENDPOINTS = {
@@ -112,18 +120,25 @@ export const WAREHOUSES_ENDPOINTS = {
   PAGINATED: `${INVENTORY_SERVICE_BASE}/warehouses/paginated`,
   SEARCH: `${INVENTORY_SERVICE_BASE}/warehouses/search`,
   BY_ID: (id: string) => `${INVENTORY_SERVICE_BASE}/warehouses/${id}`,
+  EXPORT_XLSX: `${INVENTORY_SERVICE_BASE}/warehouses/export-xlsx`,
+  EXPORT_PDF: `${INVENTORY_SERVICE_BASE}/warehouses/export-pdf`,
 } as const;
 
 export const WAREHOUSE_STOCKS_ENDPOINTS = {
-  BY_PRODUCT_AND_WAREHOUSE: (productId: string, warehouseId: string) =>
-    `${INVENTORY_SERVICE_BASE}/warehouse-stocks/${productId}/${warehouseId}`,
+  BASE: `${INVENTORY_SERVICE_BASE}/warehouse-stocks`,
+  PAGINATED: `${INVENTORY_SERVICE_BASE}/warehouse-stocks/paginated`,
+  SEARCH: `${INVENTORY_SERVICE_BASE}/warehouse-stocks/search`,
   BY_PRODUCT: (productId: string) =>
     `${INVENTORY_SERVICE_BASE}/warehouse-stocks/product/${productId}`,
   BY_WAREHOUSE: (warehouseId: string) =>
     `${INVENTORY_SERVICE_BASE}/warehouse-stocks/warehouse/${warehouseId}`,
+  BY_PRODUCT_AND_WAREHOUSE: (productId: string, warehouseId: string) =>
+    `${INVENTORY_SERVICE_BASE}/warehouse-stocks/${productId}/${warehouseId}`,
   AVAILABILITY: (productId: string) =>
     `${INVENTORY_SERVICE_BASE}/warehouse-stocks/availability/${productId}`,
   LOW_STOCK: `${INVENTORY_SERVICE_BASE}/warehouse-stocks/low-stock`,
+  EXPORT_XLSX: `${INVENTORY_SERVICE_BASE}/warehouse-stocks/export-xlsx`,
+  EXPORT_PDF: `${INVENTORY_SERVICE_BASE}/warehouse-stocks/export-pdf`,
 } as const;
 
 export const STOCK_OPERATIONS_ENDPOINTS = {
@@ -145,6 +160,8 @@ export const INVENTORY_TRANSACTIONS_ENDPOINTS = {
     `${INVENTORY_SERVICE_BASE}/transactions/warehouse/${warehouseId}`,
   BY_TYPE: (type: string) =>
     `${INVENTORY_SERVICE_BASE}/transactions/type/${type}`,
+  EXPORT_XLSX: `${INVENTORY_SERVICE_BASE}/transactions/export-xlsx`,
+  EXPORT_PDF: `${INVENTORY_SERVICE_BASE}/transactions/export-pdf`,
 } as const;
 
 // ==================== ORDERS MODULE ENDPOINTS ====================
@@ -156,6 +173,8 @@ export const ORDERS_ENDPOINTS = {
   WITH_RESERVATION: `${ORDERS_SERVICE_BASE}/orders/with-reservation`,
   FULFILL: `${ORDERS_SERVICE_BASE}/orders/fulfill`,
   CANCEL: `${ORDERS_SERVICE_BASE}/orders/cancel`,
+  EXPORT_XLSX: `${ORDERS_SERVICE_BASE}/orders/export-xlsx`,
+  EXPORT_PDF: `${ORDERS_SERVICE_BASE}/orders/export-pdf`,
 } as const;
 
 // ==================== SALES MODULE ENDPOINTS ====================
@@ -169,6 +188,8 @@ export const SALES_ORDERS_ENDPOINTS = {
   CONFIRM_QUOTE: (id: string) =>
     `${SALES_SERVICE_BASE}/orders/quotes/${id}/confirm`,
   CHECK_AVAILABILITY: `${SALES_SERVICE_BASE}/orders/quotes/check-availability`,
+  EXPORT_XLSX: `${SALES_SERVICE_BASE}/orders/export-xlsx`,
+  EXPORT_PDF: `${SALES_SERVICE_BASE}/orders/export-pdf`,
 } as const;
 
 export const CUSTOMERS_ENDPOINTS = {
@@ -176,6 +197,8 @@ export const CUSTOMERS_ENDPOINTS = {
   BASE: `${SALES_SERVICE_BASE}/customers`,
   BY_ID: (id: string) => `${SALES_SERVICE_BASE}/customers/${id}`,
   SEARCH: `${SALES_SERVICE_BASE}/customers/search`,
+  EXPORT_XLSX: `${SALES_SERVICE_BASE}/customers/export-xlsx`,
+  EXPORT_PDF: `${SALES_SERVICE_BASE}/customers/export-pdf`,
 } as const;
 
 // ==================== PURCHASING MODULE ENDPOINTS ====================
@@ -206,4 +229,6 @@ export const SUPPLIERS_ENDPOINTS = {
   SEARCH_BY_NAME: (name: string) =>
     `${PURCHASING_SERVICE_BASE}/suppliers/search/${name}`,
   ADVANCED_SEARCH: `${PURCHASING_SERVICE_BASE}/suppliers/advanced-search`,
+  EXPORT_XLSX: `${PURCHASING_SERVICE_BASE}/suppliers/export-xlsx`,
+  EXPORT_PDF: `${PURCHASING_SERVICE_BASE}/suppliers/export-pdf`,
 } as const;

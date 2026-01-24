@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { EditProductDialog } from "@/components/inventory/edit-product-dialog";
 import { DeleteProductDialog } from "@/components/inventory/delete-product-dialog";
@@ -150,24 +150,8 @@ export function ProductDetailPage() {
                 <p className="text-base">{product.description}</p>
               </div>
             )}
-            {product.category && (
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  Category
-                </label>
-                <p className="text-base">{product.category}</p>
-              </div>
-            )}
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Status
-              </label>
-              <div>
-                <Badge variant={product.isActive ? "default" : "secondary"}>
-                  {product.isActive ? "Active" : "Inactive"}
-                </Badge>
-              </div>
-            </div>
+
+
           </CardContent>
         </Card>
 
@@ -182,7 +166,7 @@ export function ProductDetailPage() {
                 Unit Price
               </label>
               <p className="text-lg font-semibold">
-                ${product.unitPrice.toFixed(2)}
+                {formatCurrency(product.unitPrice)}
               </p>
             </div>
             <div>
@@ -191,14 +175,14 @@ export function ProductDetailPage() {
               </label>
               <p
                 className={`text-lg font-semibold ${
-                  product.stock <= product.reorderLevel
+                  product.quantityInStock <= product.reorderLevel
                     ? "text-red-600"
                     : "text-green-600"
                 }`}
               >
-                {product.stock} units
+                {product.quantityInStock} units
               </p>
-              {product.stock <= product.reorderLevel && (
+              {product.quantityInStock <= product.reorderLevel && (
                 <p className="text-sm text-red-600 mt-1">
                   ⚠️ Below reorder level
                 </p>

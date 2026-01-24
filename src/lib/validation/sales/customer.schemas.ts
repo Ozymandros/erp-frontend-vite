@@ -45,12 +45,8 @@ export const CreateCustomerSchema = z.object({
     .min(1, "Name is required")
     .max(255, "Name must be less than 255 characters"),
   email: emailValidation,
-  phone: phoneValidation,
+  phoneNumber: phoneValidation,
   address: optionalString(500, "Address must be less than 500 characters"),
-  city: optionalString(100, "City must be less than 100 characters"),
-  country: optionalString(100, "Country must be less than 100 characters"),
-  postalCode: optionalString(20, "Postal code must be less than 20 characters"),
-  isActive: z.boolean().default(true),
 });
 
 export const UpdateCustomerSchema = CreateCustomerSchema;

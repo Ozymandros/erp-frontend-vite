@@ -15,7 +15,30 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Package, ArrowRight, Minus } from "lucide-react";
 import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 
+import { useEffect } from "react";
+import { productsService } from "@/api/services/products.service";
+import { warehousesService } from "@/api/services/warehouses.service";
+
 export function StockOperationsPage() {
+  const [products, setProducts] = useState<Array<{ id: string; name: string; sku: string }>>([]);
+  const [warehouses, setWarehouses] = useState<Array<{ id: string; name: string }>>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [productsData, warehousesData] = await Promise.all([
+          productsService.getProducts(),
+          warehousesService.getWarehouses(),
+        ]);
+        setProducts(productsData);
+        setWarehouses(warehousesData);
+      } catch (error) {
+        console.error("Failed to fetch data", error);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <div className="space-y-6">
       <div>
@@ -42,15 +65,15 @@ export function StockOperationsPage() {
             </TabsList>
 
             <TabsContent value="reserve" className="mt-6">
-              <ReserveStockForm />
+              <ReserveStockForm products={products} warehouses={warehouses} />
             </TabsContent>
 
             <TabsContent value="transfer" className="mt-6">
-              <TransferStockForm />
+              <TransferStockForm products={products} warehouses={warehouses} />
             </TabsContent>
 
             <TabsContent value="adjust" className="mt-6">
-              <AdjustStockForm />
+              <AdjustStockForm products={products} warehouses={warehouses} />
             </TabsContent>
 
             <TabsContent value="release" className="mt-6">
@@ -63,7 +86,12 @@ export function StockOperationsPage() {
   );
 }
 
-function ReserveStockForm() {
+interface OperationFormProps {
+  products: Array<{ id: string; name: string; sku: string }>;
+  warehouses: Array<{ id: string; name: string }>;
+}
+
+function ReserveStockForm({ products, warehouses }: OperationFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -100,22 +128,36 @@ function ReserveStockForm() {
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Product ID
-            <input
+            Product
+            <select
               name="productId"
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            />
+            >
+              <option value="">Select a product...</option>
+              {products.map((product) => (
+                <option key={product.id} value={product.id}>
+                  {product.name} ({product.sku})
+                </option>
+              ))}
+            </select>
           </label>
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Warehouse ID
-            <input
+            Warehouse
+            <select
               name="warehouseId"
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            />
+            >
+              <option value="">Select a warehouse...</option>
+              {warehouses.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id}>
+                  {warehouse.name}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
         <div className="space-y-2">
@@ -165,7 +207,7 @@ function ReserveStockForm() {
   );
 }
 
-function TransferStockForm() {
+function TransferStockForm({ products, warehouses }: OperationFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -202,12 +244,19 @@ function TransferStockForm() {
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Product ID
-            <input
+            Product
+            <select
               name="productId"
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            />
+            >
+              <option value="">Select a product...</option>
+              {products.map((product) => (
+                <option key={product.id} value={product.id}>
+                  {product.name} ({product.sku})
+                </option>
+              ))}
+            </select>
           </label>
         </div>
         <div className="space-y-2">
@@ -225,21 +274,35 @@ function TransferStockForm() {
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
             From Warehouse
-            <input
+            <select
               name="fromWarehouseId"
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            />
+            >
+              <option value="">Select source warehouse...</option>
+              {warehouses.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id}>
+                  {warehouse.name}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
             To Warehouse
-            <input
+            <select
               name="toWarehouseId"
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            />
+            >
+              <option value="">Select destination warehouse...</option>
+              {warehouses.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id}>
+                  {warehouse.name}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
         <div className="space-y-2 col-span-2">
@@ -270,7 +333,7 @@ function TransferStockForm() {
   );
 }
 
-function AdjustStockForm() {
+function AdjustStockForm({ products, warehouses }: OperationFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -307,22 +370,36 @@ function AdjustStockForm() {
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Product ID
-            <input
+            Product
+            <select
               name="productId"
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            />
+            >
+              <option value="">Select a product...</option>
+              {products.map((product) => (
+                <option key={product.id} value={product.id}>
+                  {product.name} ({product.sku})
+                </option>
+              ))}
+            </select>
           </label>
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Warehouse ID
-            <input
+            Warehouse
+            <select
               name="warehouseId"
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            />
+            >
+              <option value="">Select a warehouse...</option>
+              {warehouses.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id}>
+                  {warehouse.name}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
         <div className="space-y-2">

@@ -74,11 +74,7 @@ export function DeleteProductDialog({
             <p>
               <strong>Name:</strong> {product.name}
             </p>
-            {product.category && (
-              <p>
-                <strong>Category:</strong> {product.category}
-              </p>
-            )}
+
           </div>
         </div>
 

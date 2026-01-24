@@ -1,4 +1,5 @@
 import { getApiClient } from "../clients";
+import { SUPPLIERS_ENDPOINTS } from "../constants/endpoints";
 import type {
   SupplierDto,
   CreateUpdateSupplierDto,
@@ -10,26 +11,20 @@ class SuppliersService {
   private apiClient = getApiClient();
 
   async getSuppliers(): Promise<SupplierDto[]> {
-    return this.apiClient.get<SupplierDto[]>(
-      "/purchasing/api/purchasing/suppliers"
-    );
+    return this.apiClient.get<SupplierDto[]>(SUPPLIERS_ENDPOINTS.BASE);
   }
 
   async getSupplierById(id: string): Promise<SupplierDto> {
-    return this.apiClient.get<SupplierDto>(
-      `/purchasing/api/purchasing/suppliers/${id}`
-    );
+    return this.apiClient.get<SupplierDto>(SUPPLIERS_ENDPOINTS.BY_ID(id));
   }
 
   async getSupplierByEmail(email: string): Promise<SupplierDto> {
-    return this.apiClient.get<SupplierDto>(
-      `/purchasing/api/purchasing/suppliers/email/${email}`
-    );
+    return this.apiClient.get<SupplierDto>(SUPPLIERS_ENDPOINTS.BY_EMAIL(email));
   }
 
   async searchSuppliersByName(name: string): Promise<SupplierDto[]> {
     return this.apiClient.get<SupplierDto[]>(
-      `/purchasing/api/purchasing/suppliers/search/${name}`
+      SUPPLIERS_ENDPOINTS.SEARCH_BY_NAME(name)
     );
   }
 
@@ -37,7 +32,7 @@ class SuppliersService {
     querySpec: QuerySpec
   ): Promise<PaginatedResponse<SupplierDto>> {
     return this.apiClient.get<PaginatedResponse<SupplierDto>>(
-      "/purchasing/api/purchasing/suppliers/advanced-search",
+      SUPPLIERS_ENDPOINTS.ADVANCED_SEARCH,
       {
         params: querySpec,
       }
@@ -45,26 +40,40 @@ class SuppliersService {
   }
 
   async createSupplier(data: CreateUpdateSupplierDto): Promise<SupplierDto> {
-    return this.apiClient.post<SupplierDto>(
-      "/purchasing/api/purchasing/suppliers",
-      data
-    );
+    return this.apiClient.post<SupplierDto>(SUPPLIERS_ENDPOINTS.BASE, data);
   }
 
   async updateSupplier(
     id: string,
     data: CreateUpdateSupplierDto
   ): Promise<SupplierDto> {
-    return this.apiClient.put<SupplierDto>(
-      `/purchasing/api/purchasing/suppliers/${id}`,
-      data
-    );
+    return this.apiClient.put<SupplierDto>(SUPPLIERS_ENDPOINTS.BY_ID(id), data);
   }
 
   async deleteSupplier(id: string): Promise<void> {
-    return this.apiClient.delete<void>(
-      `/purchasing/api/purchasing/suppliers/${id}`
-    );
+    return this.apiClient.delete<void>(SUPPLIERS_ENDPOINTS.BY_ID(id));
+  }
+
+  async exportToXlsx(): Promise<Blob> {
+    const response = await fetch(SUPPLIERS_ENDPOINTS.EXPORT_XLSX, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    if (!response.ok) throw new Error("Failed to export suppliers to XLSX");
+    return response.blob();
+  }
+
+  async exportToPdf(): Promise<Blob> {
+    const response = await fetch(SUPPLIERS_ENDPOINTS.EXPORT_PDF, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    if (!response.ok) throw new Error("Failed to export suppliers to PDF");
+    return response.blob();
   }
 }
 

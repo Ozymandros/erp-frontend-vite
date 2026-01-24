@@ -1,4 +1,5 @@
 import { getApiClient } from "../clients";
+import { INVENTORY_TRANSACTIONS_ENDPOINTS } from "../constants/endpoints";
 import type {
   InventoryTransactionDto,
   CreateUpdateInventoryTransactionDto,
@@ -12,7 +13,7 @@ class InventoryTransactionsService {
 
   async getTransactions(): Promise<InventoryTransactionDto[]> {
     return this.apiClient.get<InventoryTransactionDto[]>(
-      "/inventory/api/inventory/transactions"
+      INVENTORY_TRANSACTIONS_ENDPOINTS.BASE
     );
   }
 
@@ -21,7 +22,7 @@ class InventoryTransactionsService {
     pageSize: number = 10
   ): Promise<PaginatedResponse<InventoryTransactionDto>> {
     return this.apiClient.get<PaginatedResponse<InventoryTransactionDto>>(
-      "/inventory/api/inventory/transactions/paginated",
+      INVENTORY_TRANSACTIONS_ENDPOINTS.PAGINATED,
       {
         params: { page, pageSize },
       }
@@ -32,7 +33,7 @@ class InventoryTransactionsService {
     querySpec: QuerySpec
   ): Promise<PaginatedResponse<InventoryTransactionDto>> {
     return this.apiClient.get<PaginatedResponse<InventoryTransactionDto>>(
-      "/inventory/api/inventory/transactions/search",
+      INVENTORY_TRANSACTIONS_ENDPOINTS.SEARCH,
       {
         params: querySpec,
       }
@@ -41,7 +42,7 @@ class InventoryTransactionsService {
 
   async getTransactionById(id: string): Promise<InventoryTransactionDto> {
     return this.apiClient.get<InventoryTransactionDto>(
-      `/inventory/api/inventory/transactions/${id}`
+      INVENTORY_TRANSACTIONS_ENDPOINTS.BY_ID(id)
     );
   }
 
@@ -49,7 +50,7 @@ class InventoryTransactionsService {
     productId: string
   ): Promise<InventoryTransactionDto[]> {
     return this.apiClient.get<InventoryTransactionDto[]>(
-      `/inventory/api/inventory/transactions/product/${productId}`
+      INVENTORY_TRANSACTIONS_ENDPOINTS.BY_PRODUCT(productId)
     );
   }
 
@@ -57,7 +58,7 @@ class InventoryTransactionsService {
     warehouseId: string
   ): Promise<InventoryTransactionDto[]> {
     return this.apiClient.get<InventoryTransactionDto[]>(
-      `/inventory/api/inventory/transactions/warehouse/${warehouseId}`
+      INVENTORY_TRANSACTIONS_ENDPOINTS.BY_WAREHOUSE(warehouseId)
     );
   }
 
@@ -65,7 +66,7 @@ class InventoryTransactionsService {
     type: TransactionType
   ): Promise<InventoryTransactionDto[]> {
     return this.apiClient.get<InventoryTransactionDto[]>(
-      `/inventory/api/inventory/transactions/type/${type}`
+      INVENTORY_TRANSACTIONS_ENDPOINTS.BY_TYPE(type)
     );
   }
 
@@ -73,7 +74,7 @@ class InventoryTransactionsService {
     data: CreateUpdateInventoryTransactionDto
   ): Promise<InventoryTransactionDto> {
     return this.apiClient.post<InventoryTransactionDto>(
-      "/inventory/api/inventory/transactions",
+      INVENTORY_TRANSACTIONS_ENDPOINTS.BASE,
       data
     );
   }
@@ -83,15 +84,39 @@ class InventoryTransactionsService {
     data: CreateUpdateInventoryTransactionDto
   ): Promise<InventoryTransactionDto> {
     return this.apiClient.put<InventoryTransactionDto>(
-      `/inventory/api/inventory/transactions/${id}`,
+      INVENTORY_TRANSACTIONS_ENDPOINTS.BY_ID(id),
       data
     );
   }
 
   async deleteTransaction(id: string): Promise<void> {
     return this.apiClient.delete<void>(
-      `/inventory/api/inventory/transactions/${id}`
+      INVENTORY_TRANSACTIONS_ENDPOINTS.BY_ID(id)
     );
+  }
+
+  async exportToXlsx(): Promise<Blob> {
+    const response = await fetch(INVENTORY_TRANSACTIONS_ENDPOINTS.EXPORT_XLSX, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    if (!response.ok)
+      throw new Error("Failed to export inventory transactions to XLSX");
+    return response.blob();
+  }
+
+  async exportToPdf(): Promise<Blob> {
+    const response = await fetch(INVENTORY_TRANSACTIONS_ENDPOINTS.EXPORT_PDF, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    if (!response.ok)
+      throw new Error("Failed to export inventory transactions to PDF");
+    return response.blob();
   }
 }
 

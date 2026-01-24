@@ -6,7 +6,7 @@ import { customersService } from "@/api/services/customers.service";
 import type { CustomerDto } from "@/types/api.types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+
 import { ArrowLeft } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 
@@ -64,8 +64,7 @@ export function CustomerDetailPage() {
           <CardContent className="space-y-4">
             <div><label className="text-sm font-medium text-muted-foreground">Name</label><p className="text-lg font-semibold">{customer.name}</p></div>
             {customer.email && <div><label className="text-sm font-medium text-muted-foreground">Email</label><p className="text-base">{customer.email}</p></div>}
-            {customer.phone && <div><label className="text-sm font-medium text-muted-foreground">Phone</label><p className="text-base">{customer.phone}</p></div>}
-            <div><label className="text-sm font-medium text-muted-foreground">Status</label><div><Badge variant={customer.isActive ? "default" : "secondary"}>{customer.isActive ? "Active" : "Inactive"}</Badge></div></div>
+            {customer.phoneNumber && <div><label className="text-sm font-medium text-muted-foreground">Phone</label><p className="text-base">{customer.phoneNumber}</p></div>}
           </CardContent>
         </Card>
 
@@ -76,9 +75,7 @@ export function CustomerDetailPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {customer.address && <div><label className="text-sm font-medium text-muted-foreground">Street Address</label><p className="text-base">{customer.address}</p></div>}
-            {customer.city && <div><label className="text-sm font-medium text-muted-foreground">City</label><p className="text-base">{customer.city}</p></div>}
-            {customer.postalCode && <div><label className="text-sm font-medium text-muted-foreground">Postal Code</label><p className="text-base">{customer.postalCode}</p></div>}
-            {customer.country && <div><label className="text-sm font-medium text-muted-foreground">Country</label><p className="text-base">{customer.country}</p></div>}
+
           </CardContent>
         </Card>
 

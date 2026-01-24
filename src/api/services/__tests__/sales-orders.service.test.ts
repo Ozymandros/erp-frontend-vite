@@ -43,6 +43,7 @@ describe("SalesOrdersService", () => {
           updatedAt: "2024-01-01",
           createdBy: "user1",
           updatedBy: "user1",
+          isQuote: false,
         },
       ];
 
@@ -59,6 +60,7 @@ describe("SalesOrdersService", () => {
     it("should create a new sales order", async () => {
       const newOrder: CreateUpdateSalesOrderDto = {
         customerId: "customer-1",
+        orderNumber: "SO-NEW-001",
         orderDate: "2024-01-01",
         orderLines: [
           {
@@ -71,14 +73,17 @@ describe("SalesOrdersService", () => {
 
       const mockOrder: SalesOrderDto = {
         id: "1",
-        orderNumber: "SO-001",
         ...newOrder,
         status: SalesOrderStatus.Draft,
         totalAmount: 499.95,
         orderLines: newOrder.orderLines.map(line => ({
           ...line,
+          id: `line-${line.productId}`,
+          salesOrderId: "1",
           totalPrice: (line.quantity || 0) * (line.unitPrice || 0),
+          lineTotal: (line.quantity || 0) * (line.unitPrice || 0),
         })),
+        isQuote: false,
         createdAt: "2024-01-01",
         updatedAt: "2024-01-01",
         createdBy: "user1",
@@ -101,6 +106,8 @@ describe("SalesOrdersService", () => {
     it("should create a quote", async () => {
       const quoteData: CreateQuoteDto = {
         customerId: "customer-1",
+        orderNumber: "QUOTE-NEW-001",
+        orderDate: "2024-01-01",
         orderLines: [
           {
             productId: "product-1",
@@ -108,7 +115,7 @@ describe("SalesOrdersService", () => {
             unitPrice: 99.99,
           },
         ],
-        validUntil: "2024-12-31",
+        validityDays: 30,
       };
 
       const mockOrder: SalesOrderDto = {
@@ -123,6 +130,7 @@ describe("SalesOrdersService", () => {
         updatedAt: "2024-01-01",
         createdBy: "user1",
         updatedBy: "user1",
+        isQuote: true,
       };
 
       mockApiClient.post.mockResolvedValue(mockOrder);
@@ -141,7 +149,7 @@ describe("SalesOrdersService", () => {
     it("should confirm a quote", async () => {
       const confirmData: ConfirmQuoteDto = {
         quoteId: "quote-1",
-        confirmationDate: "2024-01-01",
+        warehouseId: "warehouse-1",
       };
 
       const mockResponse: ConfirmQuoteResponseDto = {
@@ -158,6 +166,7 @@ describe("SalesOrdersService", () => {
           updatedAt: "2024-01-01",
           createdBy: "user1",
           updatedBy: "user1",
+          isQuote: false,
         },
       };
 
@@ -186,9 +195,16 @@ describe("SalesOrdersService", () => {
       const mockAvailability: StockAvailabilityCheckDto[] = [
         {
           productId: "product-1",
-          available: true,
-          warehouseId: "warehouse-1",
-          quantity: 10,
+          requestedQuantity: 5,
+          availableQuantity: 10,
+          isAvailable: true,
+          warehouseStock: [
+            {
+              warehouseId: "warehouse-1",
+              warehouseName: "Warehouse 1",
+              availableQuantity: 10,
+            }
+          ]
         },
       ];
 

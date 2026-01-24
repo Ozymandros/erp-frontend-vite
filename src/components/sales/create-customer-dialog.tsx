@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
+
 import {
   Dialog,
   DialogContent,
@@ -36,12 +36,8 @@ export function CreateCustomerDialog({
   const [formData, setFormData] = useState<CreateCustomerFormData>({
     name: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
     address: "",
-    city: "",
-    country: "",
-    postalCode: "",
-    isActive: true,
   });
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -85,12 +81,8 @@ export function CreateCustomerDialog({
       setFormData({
         name: "",
         email: "",
-        phone: "",
+        phoneNumber: "",
         address: "",
-        city: "",
-        country: "",
-        postalCode: "",
-        isActive: true,
       });
       onOpenChange(false);
     } catch (err: unknown) {
@@ -149,18 +141,18 @@ export function CreateCustomerDialog({
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
+                <Label htmlFor="phoneNumber">Phone</Label>
                 <Input
                   type="tel"
-                  id="phone"
+                  id="phoneNumber"
                   placeholder="+1-555-123-4567"
-                  value={formData.phone}
-                  onChange={e => handleChange("phone", e.target.value)}
+                  value={formData.phoneNumber || ""}
+                  onChange={e => handleChange("phoneNumber", e.target.value)}
                   disabled={isLoading}
-                  className={fieldErrors.phone ? "border-red-500" : ""}
+                  className={fieldErrors.phoneNumber ? "border-red-500" : ""}
                 />
-                {fieldErrors.phone && (
-                  <p className="text-sm text-red-500">{fieldErrors.phone}</p>
+                {fieldErrors.phoneNumber && (
+                  <p className="text-sm text-red-500">{fieldErrors.phoneNumber}</p>
                 )}
               </div>
             </div>
@@ -173,44 +165,7 @@ export function CreateCustomerDialog({
                 disabled={isLoading}
               />
             </div>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
-                <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={e => handleChange("city", e.target.value)}
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="postalCode">Postal Code</Label>
-                <Input
-                  id="postalCode"
-                  value={formData.postalCode}
-                  onChange={e => handleChange("postalCode", e.target.value)}
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="country">Country</Label>
-                <Input
-                  id="country"
-                  value={formData.country}
-                  onChange={e => handleChange("country", e.target.value)}
-                  disabled={isLoading}
-                />
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="isActive"
-                checked={formData.isActive}
-                onCheckedChange={checked => handleChange("isActive", checked)}
-                disabled={isLoading}
-              />
-              <Label htmlFor="isActive">Active</Label>
-            </div>
+
           </div>
           <DialogFooter>
             <Button

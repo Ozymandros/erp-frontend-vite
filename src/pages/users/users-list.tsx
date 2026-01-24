@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Search, Pencil, Trash2, Eye, ArrowUpDown } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Eye, ArrowUpDown, FileDown } from "lucide-react";
 import { CreateUserDialog } from "@/components/users/create-user-dialog";
 import { EditUserDialog } from "@/components/users/edit-user-dialog";
 import { DeleteUserDialog } from "@/components/users/delete-user-dialog";
@@ -104,6 +104,27 @@ export function UsersListPage() {
     fetchUsers();
   };
 
+  const handleExport = async (format: "xlsx" | "pdf") => {
+    try {
+      const blob =
+        format === "xlsx"
+          ? await usersService.exportToXlsx()
+          : await usersService.exportToPdf();
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `Users.${format}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      const apiError = handleApiError(error);
+      setError(getErrorMessage(apiError, `Failed to export users to ${format}`));
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -113,10 +134,20 @@ export function UsersListPage() {
             Manage system users and their roles
           </p>
         </div>
-        <Button onClick={() => setIsCreateDialogOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add User
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => handleExport("xlsx")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export XLSX
+          </Button>
+          <Button variant="outline" onClick={() => handleExport("pdf")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export PDF
+          </Button>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add User
+          </Button>
+        </div>
       </div>
 
       <Card>

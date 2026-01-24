@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
+
 import {
   Dialog,
   DialogContent,
@@ -38,10 +38,8 @@ export function CreateProductDialog({
     sku: "",
     name: "",
     description: "",
-    category: "",
     unitPrice: 0,
     reorderLevel: 0,
-    isActive: true,
   });
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -89,10 +87,8 @@ export function CreateProductDialog({
         sku: "",
         name: "",
         description: "",
-        category: "",
         unitPrice: 0,
         reorderLevel: 0,
-        isActive: true,
       });
       onOpenChange(false);
     } catch (err: unknown) {
@@ -168,19 +164,7 @@ export function CreateProductDialog({
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
-              <Input
-                id="category"
-                value={formData.category}
-                onChange={e => handleChange("category", e.target.value)}
-                disabled={isLoading}
-                className={fieldErrors.category ? "border-red-500" : ""}
-              />
-              {fieldErrors.category && (
-                <p className="text-sm text-red-500">{fieldErrors.category}</p>
-              )}
-            </div>
+
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -233,15 +217,7 @@ export function CreateProductDialog({
               </div>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="isActive"
-                checked={formData.isActive}
-                onCheckedChange={checked => handleChange("isActive", checked)}
-                disabled={isLoading}
-              />
-              <Label htmlFor="isActive">Active</Label>
-            </div>
+
           </div>
 
           <DialogFooter>

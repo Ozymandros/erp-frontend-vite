@@ -13,7 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -22,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Search, Pencil, Trash2, Eye, ArrowUpDown, AlertTriangle } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Eye, ArrowUpDown, AlertTriangle, FileDown } from "lucide-react";
 import { CreateProductDialog } from "@/components/inventory/create-product-dialog";
 import { EditProductDialog } from "@/components/inventory/edit-product-dialog";
 import { DeleteProductDialog } from "@/components/inventory/delete-product-dialog";
@@ -37,7 +36,7 @@ export function ProductsListPage() {
     page: 1,
     pageSize: 10,
     searchTerm: "",
-    searchFields: "sku,name,category",
+    searchFields: "sku,name",
     sortBy: "createdAt",
     sortDesc: true,
   });
@@ -140,6 +139,27 @@ export function ProductsListPage() {
     }
   };
 
+  const handleExport = async (format: "xlsx" | "pdf") => {
+    try {
+      const blob =
+        format === "xlsx"
+          ? await productsService.exportToXlsx()
+          : await productsService.exportToPdf();
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `Products.${format}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      const apiError = handleApiError(error);
+      setError(getErrorMessage(apiError, `Failed to export products to ${format}`));
+    }
+  };
+
   const totalPages = products
     ? Math.ceil(products.total / (querySpec.pageSize ?? 20))
     : 0;
@@ -153,10 +173,20 @@ export function ProductsListPage() {
             Manage your inventory products
           </p>
         </div>
-        <Button onClick={() => setIsCreateDialogOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Product
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => handleExport("xlsx")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export XLSX
+          </Button>
+          <Button variant="outline" onClick={() => handleExport("pdf")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export PDF
+          </Button>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Product
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -184,7 +214,7 @@ export function ProductsListPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search by SKU, name, or category..."
+                  placeholder="Search by SKU or name..."
                   className="pl-10"
                   value={querySpec.searchTerm}
                   onChange={(e) => handleSearch(e.target.value)}
@@ -216,70 +246,51 @@ export function ProductsListPage() {
               <div className="rounded-md border">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead>
-                        <button
-                          className="flex items-center hover:text-foreground"
-                          onClick={() => handleSort("sku")}
-                        >
-                          SKU
-                          <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </button>
-                      </TableHead>
-                      <TableHead>
-                        <button
-                          className="flex items-center hover:text-foreground"
-                          onClick={() => handleSort("name")}
-                        >
-                          Name
-                          <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </button>
-                      </TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>
-                        <button
-                          className="flex items-center hover:text-foreground"
-                          onClick={() => handleSort("unitPrice")}
-                        >
-                          Unit Price
-                          <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </button>
-                      </TableHead>
-                      <TableHead>Stock</TableHead>
-                      <TableHead>Reorder Level</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
+                <TableRow>
+                  <TableHead>
+                    <button
+                      className="flex items-center hover:text-foreground"
+                      onClick={() => handleSort("sku")}
+                    >
+                      SKU
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </button>
+                  </TableHead>
+                  <TableHead>
+                    <button
+                      className="flex items-center hover:text-foreground"
+                      onClick={() => handleSort("name")}
+                    >
+                      Name
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </button>
+                  </TableHead>
+                  <TableHead>
+                    <button
+                      className="flex items-center hover:text-foreground"
+                      onClick={() => handleSort("unitPrice")}
+                    >
+                      Price
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </button>
+                  </TableHead>
+                  <TableHead>Stock</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
                   </TableHeader>
                   <TableBody>
                     {products.items.map((product) => (
                       <TableRow key={product.id}>
-                        <TableCell className="font-medium">
-                          {product.sku}
-                        </TableCell>
+                        <TableCell className="font-medium">{product.sku}</TableCell>
                         <TableCell>{product.name}</TableCell>
-                        <TableCell>
-                          {product.category || (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
                         <TableCell>{formatCurrency(product.unitPrice)}</TableCell>
                         <TableCell>
-                          <span
-                            className={
-                              product.stock <= product.reorderLevel
-                                ? "text-red-600 font-semibold"
-                                : ""
-                            }
-                          >
-                            {product.stock}
-                          </span>
-                        </TableCell>
-                        <TableCell>{product.reorderLevel}</TableCell>
-                        <TableCell>
-                          <Badge variant={product.isActive ? "default" : "secondary"}>
-                            {product.isActive ? "Active" : "Inactive"}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            {product.quantityInStock}
+                            {product.quantityInStock <= product.reorderLevel && (
+                              <AlertTriangle className="h-4 w-4 text-amber-500" />
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">

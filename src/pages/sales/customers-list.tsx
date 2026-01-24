@@ -8,16 +8,15 @@ import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Search, Eye } from "lucide-react";
+import { Plus, Search, Eye, FileDown } from "lucide-react";
 import { CreateCustomerDialog } from "@/components/sales/create-customer-dialog";
 
 export function CustomersListPage() {
   const [customers, setCustomers] = useState<PaginatedResponse<CustomerDto> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [querySpec, setQuerySpec] = useState<QuerySpec>({ page: 1, pageSize: 10, searchTerm: "", searchFields: "name,email,city,country", sortBy: "createdAt", sortDesc: true });
+  const [querySpec, setQuerySpec] = useState<QuerySpec>({ page: 1, pageSize: 10, searchTerm: "", searchFields: "name,email", sortBy: "createdAt", sortDesc: true });
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   const fetchCustomers = useCallback(async () => {
@@ -52,6 +51,27 @@ export function CustomersListPage() {
     fetchCustomers();
   };
 
+  const handleExport = async (format: "xlsx" | "pdf") => {
+    try {
+      const blob =
+        format === "xlsx"
+          ? await customersService.exportToXlsx()
+          : await customersService.exportToPdf();
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `Customers.${format}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      const apiError = handleApiError(error);
+      setError(getErrorMessage(apiError, `Failed to export customers to ${format}`));
+    }
+  };
+
   const totalPages = customers ? Math.ceil(customers.total / (querySpec.pageSize ?? 20)) : 0;
 
   return (
@@ -61,10 +81,20 @@ export function CustomersListPage() {
           <h1 className="text-3xl font-bold text-foreground">Customers</h1>
           <p className="text-muted-foreground mt-1">Manage your customers</p>
         </div>
-        <Button onClick={() => setIsCreateDialogOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Customer
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => handleExport("xlsx")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export XLSX
+          </Button>
+          <Button variant="outline" onClick={() => handleExport("pdf")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export PDF
+          </Button>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Customer
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -76,7 +106,7 @@ export function CustomersListPage() {
           <div className="flex items-center gap-4 mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search by name, email, city, or country..." className="pl-10" value={querySpec.searchTerm} onChange={(e) => handleSearch(e.target.value)} />
+              <Input placeholder="Search by name or email..." className="pl-10" value={querySpec.searchTerm} onChange={(e) => handleSearch(e.target.value)} />
             </div>
           </div>
 
@@ -89,33 +119,29 @@ export function CustomersListPage() {
               <div className="rounded-md border">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Phone</TableHead>
-                      <TableHead>City</TableHead>
-                      <TableHead>Country</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {customers.items.map((customer) => (
-                      <TableRow key={customer.id}>
-                        <TableCell className="font-medium">{customer.name}</TableCell>
-                        <TableCell>{customer.email || <span className="text-muted-foreground">-</span>}</TableCell>
-                        <TableCell>{customer.phone || <span className="text-muted-foreground">-</span>}</TableCell>
-                        <TableCell>{customer.city || <span className="text-muted-foreground">-</span>}</TableCell>
-                        <TableCell>{customer.country || <span className="text-muted-foreground">-</span>}</TableCell>
-                        <TableCell><Badge variant={customer.isActive ? "default" : "secondary"}>{customer.isActive ? "Active" : "Inactive"}</Badge></TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <Link to={`/sales/customers/${customer.id}`}>
-                              <Button variant="ghost" size="sm"><Eye className="h-4 w-4" /></Button>
-                            </Link>
-                          </div>
-                        </TableCell>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Phone</TableHead>
+                        <TableHead>Address</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {customers.items.map((customer) => (
+                        <TableRow key={customer.id}>
+                          <TableCell className="font-medium">{customer.name}</TableCell>
+                          <TableCell>{customer.email || <span className="text-muted-foreground">-</span>}</TableCell>
+                          <TableCell>{customer.phoneNumber || <span className="text-muted-foreground">-</span>}</TableCell>
+                          <TableCell>{customer.address || <span className="text-muted-foreground">-</span>}</TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <Link to={`/sales/customers/${customer.id}`}>
+                                <Button variant="ghost" size="sm"><Eye className="h-4 w-4" /></Button>
+                              </Link>
+                            </div>
+                          </TableCell>
+                        </TableRow>
                     ))}
                   </TableBody>
                 </Table>

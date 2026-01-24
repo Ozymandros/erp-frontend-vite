@@ -12,8 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
+
 import {
   Dialog,
   DialogContent,
@@ -40,11 +39,6 @@ export function EditWarehouseDialog({
   const [formData, setFormData] = useState<UpdateWarehouseFormData>({
     name: "",
     location: "",
-    address: "",
-    city: "",
-    country: "",
-    postalCode: "",
-    isActive: true,
   });
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -55,11 +49,6 @@ export function EditWarehouseDialog({
       setFormData({
         name: warehouse.name,
         location: warehouse.location || "",
-        address: warehouse.address || "",
-        city: warehouse.city || "",
-        country: warehouse.country || "",
-        postalCode: warehouse.postalCode || "",
-        isActive: warehouse.isActive,
       });
     }
   }, [warehouse]);
@@ -161,75 +150,7 @@ export function EditWarehouseDialog({
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
-              <Textarea
-                id="address"
-                value={formData.address}
-                onChange={e => handleChange("address", e.target.value)}
-                disabled={isLoading}
-                className={fieldErrors.address ? "border-red-500" : ""}
-              />
-              {fieldErrors.address && (
-                <p className="text-sm text-red-500">{fieldErrors.address}</p>
-              )}
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
-                <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={e => handleChange("city", e.target.value)}
-                  disabled={isLoading}
-                  className={fieldErrors.city ? "border-red-500" : ""}
-                />
-                {fieldErrors.city && (
-                  <p className="text-sm text-red-500">{fieldErrors.city}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="postalCode">Postal Code</Label>
-                <Input
-                  id="postalCode"
-                  value={formData.postalCode}
-                  onChange={e => handleChange("postalCode", e.target.value)}
-                  disabled={isLoading}
-                  className={fieldErrors.postalCode ? "border-red-500" : ""}
-                />
-                {fieldErrors.postalCode && (
-                  <p className="text-sm text-red-500">
-                    {fieldErrors.postalCode}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="country">Country</Label>
-              <Input
-                id="country"
-                value={formData.country}
-                onChange={e => handleChange("country", e.target.value)}
-                disabled={isLoading}
-                className={fieldErrors.country ? "border-red-500" : ""}
-              />
-              {fieldErrors.country && (
-                <p className="text-sm text-red-500">{fieldErrors.country}</p>
-              )}
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="isActive"
-                checked={formData.isActive}
-                onCheckedChange={checked => handleChange("isActive", checked)}
-                disabled={isLoading}
-              />
-              <Label htmlFor="isActive">Active</Label>
-            </div>
           </div>
 
           <DialogFooter>

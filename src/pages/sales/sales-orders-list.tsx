@@ -28,9 +28,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Eye, Search, ArrowUpDown } from "lucide-react";
+import { Plus, Eye, Search, ArrowUpDown, FileDown } from "lucide-react";
 import { formatDateTime, formatCurrency } from "@/lib/utils";
 import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
+
+import { CreateSalesOrderDialog } from "@/components/sales/create-sales-order-dialog";
 
 export function SalesOrdersListPage() {
   const [salesOrders, setSalesOrders] = useState<
@@ -39,6 +41,7 @@ export function SalesOrdersListPage() {
   const [customers, setCustomers] = useState<CustomerDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [querySpec, setQuerySpec] = useState<QuerySpec>({
     page: 1,
     pageSize: 20,
@@ -105,6 +108,27 @@ export function SalesOrdersListPage() {
     setQuerySpec((prev) => ({ ...prev, page: newPage }));
   };
 
+  const handleExport = async (format: "xlsx" | "pdf") => {
+    try {
+      const blob =
+        format === "xlsx"
+          ? await salesOrdersService.exportToXlsx()
+          : await salesOrdersService.exportToPdf();
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `SalesOrders.${format}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      const apiError = handleApiError(error);
+      setError(getErrorMessage(apiError, `Failed to export sales orders to ${format}`));
+    }
+  };
+
   const getCustomerName = (customerId: string) => {
     const customer = customers.find((c) => c.id === customerId);
     return customer?.name || customerId;
@@ -140,11 +164,27 @@ export function SalesOrdersListPage() {
             Manage sales orders and quotes
           </p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          New Order
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => handleExport("xlsx")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export XLSX
+          </Button>
+          <Button variant="outline" onClick={() => handleExport("pdf")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export PDF
+          </Button>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Order
+          </Button>
+        </div>
       </div>
+
+      <CreateSalesOrderDialog 
+        open={isCreateDialogOpen} 
+        onOpenChange={setIsCreateDialogOpen} 
+        onSuccess={fetchSalesOrders} 
+      />
 
       <Card>
         <CardHeader>

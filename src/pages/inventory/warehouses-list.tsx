@@ -13,7 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -22,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Search, Pencil, Trash2, Eye, ArrowUpDown } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Eye, ArrowUpDown, FileDown } from "lucide-react";
 import { CreateWarehouseDialog } from "@/components/inventory/create-warehouse-dialog";
 import { EditWarehouseDialog } from "@/components/inventory/edit-warehouse-dialog";
 import { DeleteWarehouseDialog } from "@/components/inventory/delete-warehouse-dialog";
@@ -36,7 +35,7 @@ export function WarehousesListPage() {
     page: 1,
     pageSize: 10,
     searchTerm: "",
-    searchFields: "name,location,city,country",
+    searchFields: "name,location",
     sortBy: "createdAt",
     sortDesc: true,
   });
@@ -98,6 +97,27 @@ export function WarehousesListPage() {
     fetchWarehouses();
   };
 
+  const handleExport = async (format: "xlsx" | "pdf") => {
+    try {
+      const blob =
+        format === "xlsx"
+          ? await warehousesService.exportToXlsx()
+          : await warehousesService.exportToPdf();
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `Warehouses.${format}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      const apiError = handleApiError(error);
+      setError(getErrorMessage(apiError, `Failed to export warehouses to ${format}`));
+    }
+  };
+
   const totalPages = warehouses
     ? Math.ceil(warehouses.total / (querySpec.pageSize ?? 20))
     : 0;
@@ -111,10 +131,20 @@ export function WarehousesListPage() {
             Manage warehouse locations
           </p>
         </div>
-        <Button onClick={() => setIsCreateDialogOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Warehouse
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => handleExport("xlsx")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export XLSX
+          </Button>
+          <Button variant="outline" onClick={() => handleExport("pdf")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export PDF
+          </Button>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Warehouse
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -129,7 +159,7 @@ export function WarehousesListPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by name, location, city, or country..."
+                placeholder="Search by name or location..."
                 className="pl-10"
                 value={querySpec.searchTerm}
                 onChange={(e) => handleSearch(e.target.value)}
@@ -171,9 +201,6 @@ export function WarehousesListPage() {
                         </button>
                       </TableHead>
                       <TableHead>Location</TableHead>
-                      <TableHead>City</TableHead>
-                      <TableHead>Country</TableHead>
-                      <TableHead>Status</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -187,21 +214,6 @@ export function WarehousesListPage() {
                           {warehouse.location || (
                             <span className="text-muted-foreground">-</span>
                           )}
-                        </TableCell>
-                        <TableCell>
-                          {warehouse.city || (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {warehouse.country || (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={warehouse.isActive ? "default" : "secondary"}>
-                            {warehouse.isActive ? "Active" : "Inactive"}
-                          </Badge>
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">

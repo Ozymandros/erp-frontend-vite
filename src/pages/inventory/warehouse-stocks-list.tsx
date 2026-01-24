@@ -26,7 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { AlertTriangle, Package, Warehouse } from "lucide-react";
+import { AlertTriangle, Package, Warehouse, FileDown } from "lucide-react";
 import {
   handleApiError,
   isForbiddenError,
@@ -136,6 +136,27 @@ export function WarehouseStocksListPage() {
   const isLowStock = (stock: WarehouseStockDto) =>
     availableQuantity(stock) <= stock.reorderLevel;
 
+  const handleExport = async (format: "xlsx" | "pdf") => {
+    try {
+      const blob =
+        format === "xlsx"
+          ? await warehouseStocksService.exportToXlsx()
+          : await warehouseStocksService.exportToPdf();
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `WarehouseStocks.${format}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      const apiError = handleApiError(error);
+      setError(getErrorMessage(apiError, `Failed to export stocks to ${format}`));
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -146,6 +167,16 @@ export function WarehouseStocksListPage() {
           <p className="text-muted-foreground mt-1">
             View inventory stock levels across warehouses
           </p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => handleExport("xlsx")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export XLSX
+          </Button>
+          <Button variant="outline" onClick={() => handleExport("pdf")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export PDF
+          </Button>
         </div>
       </div>
 

@@ -28,9 +28,8 @@ describe("ProductsService", () => {
           sku: "SKU-001",
           name: "Test Product",
           unitPrice: 99.99,
-          stock: 100,
+          quantityInStock: 100,
           reorderLevel: 10,
-          isActive: true,
           createdAt: "2024-01-01",
           updatedAt: "2024-01-01",
           createdBy: "user1",
@@ -54,9 +53,8 @@ describe("ProductsService", () => {
         sku: "SKU-001",
         name: "Test Product",
         unitPrice: 99.99,
-        stock: 100,
+        quantityInStock: 100,
         reorderLevel: 10,
-        isActive: true,
         createdAt: "2024-01-01",
         updatedAt: "2024-01-01",
         createdBy: "user1",
@@ -109,13 +107,12 @@ describe("ProductsService", () => {
         name: "New Product",
         unitPrice: 149.99,
         reorderLevel: 15,
-        isActive: true,
       };
 
       const mockProduct: ProductDto = {
         id: "2",
         ...newProduct,
-        stock: 0,
+        quantityInStock: 0,
         createdAt: "2024-01-01",
         updatedAt: "2024-01-01",
         createdBy: "user1",
@@ -141,13 +138,12 @@ describe("ProductsService", () => {
         name: "Updated Product",
         unitPrice: 199.99,
         reorderLevel: 20,
-        isActive: true,
       };
 
       const mockProduct: ProductDto = {
         id: "1",
         ...updateData,
-        stock: 100,
+        quantityInStock: 100,
         createdAt: "2024-01-01",
         updatedAt: "2024-01-02",
         createdBy: "user1",

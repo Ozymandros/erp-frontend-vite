@@ -77,9 +77,8 @@ describe('Backend Synchronization Validation', () => {
         sku: 'TEST-001',
         name: 'Test Product',
         unitPrice: 10.99,
-        stock: 100,
+        quantityInStock: 100,
         reorderLevel: 10,
-        isActive: true,
         createdAt: '2024-01-01T00:00:00Z',
         createdBy: 'system',
       }

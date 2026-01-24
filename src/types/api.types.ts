@@ -429,14 +429,20 @@ export interface OrderDto extends IAuditableDto<string> {
 
 export interface CreateUpdateOrderDto {
   customerId: string;
-  orderLines: OrderLineDto[];
+  orderLines: CreateUpdateOrderLineDto[];
   orderDate: string;
 }
 
 export interface CreateOrderWithReservationDto {
   customerId: string;
-  orderLines: OrderLineDto[];
+  orderLines: CreateUpdateOrderLineDto[];
   orderDate: string;
+}
+
+export interface CreateUpdateOrderLineDto {
+  productId: string;
+  quantity: number;
+  unitPrice: number;
 }
 
 export interface FulfillOrderDto {
@@ -540,12 +546,8 @@ export interface CustomerDto extends IAuditableDto<string> {
 export interface CreateUpdateCustomerDto {
   name: string;
   email?: string;
-  phone?: string;
+  phoneNumber?: string;
   address?: string;
-  city?: string;
-  country?: string;
-  postalCode?: string;
-  isActive: boolean;
 }
 
 // ==================== PURCHASING MODULE ====================
@@ -569,7 +571,7 @@ export interface CreateUpdatePurchaseOrderDto {
   expectedDeliveryDate?: string;
   status?: number;
   totalAmount?: number;
-  orderLines: PurchaseOrderLineDto[];
+  orderLines: CreateUpdatePurchaseOrderLineDto[];
 }
 
 export interface PurchaseOrderLineDto {
@@ -579,6 +581,12 @@ export interface PurchaseOrderLineDto {
   quantity: number;
   unitPrice: number;
   lineTotal: number;
+}
+
+export interface CreateUpdatePurchaseOrderLineDto {
+  productId: string;
+  quantity: number;
+  unitPrice: number;
 }
 
 export interface ApprovePurchaseOrderDto {

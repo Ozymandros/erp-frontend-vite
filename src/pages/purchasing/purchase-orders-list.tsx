@@ -28,9 +28,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Eye, Search, ArrowUpDown } from "lucide-react";
+import { Plus, Eye, Search, ArrowUpDown, FileDown } from "lucide-react";
 import { formatDateTime, formatCurrency } from "@/lib/utils";
 import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
+
+import { CreatePurchaseOrderDialog } from "@/components/purchasing/create-purchase-order-dialog";
 
 export function PurchaseOrdersListPage() {
   const [purchaseOrders, setPurchaseOrders] = useState<
@@ -39,6 +41,7 @@ export function PurchaseOrdersListPage() {
   const [suppliers, setSuppliers] = useState<SupplierDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [querySpec, setQuerySpec] = useState<QuerySpec>({
     page: 1,
     pageSize: 20,
@@ -105,6 +108,27 @@ export function PurchaseOrdersListPage() {
     setQuerySpec((prev) => ({ ...prev, page: newPage }));
   };
 
+  const handleExport = async (format: "xlsx" | "pdf") => {
+    try {
+      const blob =
+        format === "xlsx"
+          ? await purchaseOrdersService.exportToXlsx()
+          : await purchaseOrdersService.exportToPdf();
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `PurchaseOrders.${format}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      const apiError = handleApiError(error);
+      setError(getErrorMessage(apiError, `Failed to export purchase orders to ${format}`));
+    }
+  };
+
   const getSupplierName = (supplierId: string) => {
     const supplier = suppliers.find((s) => s.id === supplierId);
     return supplier?.name || supplierId;
@@ -140,11 +164,27 @@ export function PurchaseOrdersListPage() {
             Manage purchase orders from suppliers
           </p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          New Purchase Order
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => handleExport("xlsx")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export XLSX
+          </Button>
+          <Button variant="outline" onClick={() => handleExport("pdf")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export PDF
+          </Button>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Purchase Order
+          </Button>
+        </div>
       </div>
+
+      <CreatePurchaseOrderDialog 
+        open={isCreateDialogOpen} 
+        onOpenChange={setIsCreateDialogOpen} 
+        onSuccess={fetchPurchaseOrders} 
+      />
 
       <Card>
         <CardHeader>

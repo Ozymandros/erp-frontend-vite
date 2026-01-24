@@ -10,12 +10,6 @@ describe("Warehouse Validation Schemas", () => {
       const validData = {
         name: "Main Warehouse",
         location: "Building A",
-        address: "123 Main St",
-        city: "New York",
-        state: "NY",
-        country: "USA",
-        postalCode: "10001",
-        isActive: true,
       };
 
       const result = CreateWarehouseSchema.safeParse(validData);

@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Eye } from "lucide-react";
+import { Plus, Eye, FileDown } from "lucide-react";
 import { formatDateTime, formatCurrency } from "@/lib/utils";
 import {
   handleApiError,
@@ -31,11 +31,16 @@ import {
   getErrorMessage,
 } from "@/lib/error-handling";
 
+import { CreateOrderDialog } from "@/components/orders/create-order-dialog";
+
 export function OrdersListPage() {
   const [orders, setOrders] = useState<OrderDto[]>([]);
   const [customers, setCustomers] = useState<CustomerDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+
+  // ... (fetch orders and customers)
 
   const fetchOrders = async () => {
     setIsLoading(true);
@@ -53,6 +58,27 @@ export function OrdersListPage() {
       }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleExport = async (format: "xlsx" | "pdf") => {
+    try {
+      const blob =
+        format === "xlsx"
+          ? await ordersService.exportToXlsx()
+          : await ordersService.exportToPdf();
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `Orders.${format}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      const apiError = handleApiError(error);
+      setError(getErrorMessage(apiError, `Failed to export orders to ${format}`));
     }
   };
 
@@ -81,6 +107,7 @@ export function OrdersListPage() {
   };
 
   const getStatusBadge = (status: string) => {
+// ...
     const statusMap: Record<
       string,
       {
@@ -110,11 +137,27 @@ export function OrdersListPage() {
             Manage fulfillment orders
           </p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Order
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => handleExport("xlsx")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export XLSX
+          </Button>
+          <Button variant="outline" onClick={() => handleExport("pdf")}>
+            <FileDown className="mr-2 h-4 w-4" />
+            Export PDF
+          </Button>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Order
+          </Button>
+        </div>
       </div>
+
+      <CreateOrderDialog 
+        open={isCreateDialogOpen} 
+        onOpenChange={setIsCreateDialogOpen} 
+        onSuccess={fetchOrders} 
+      />
 
       <Card>
         <CardHeader>

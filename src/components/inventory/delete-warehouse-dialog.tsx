@@ -78,11 +78,7 @@ export function DeleteWarehouseDialog({
                 <strong>Location:</strong> {warehouse.location}
               </p>
             )}
-            {warehouse.city && (
-              <p>
-                <strong>City:</strong> {warehouse.city}
-              </p>
-            )}
+
           </div>
         </div>
 

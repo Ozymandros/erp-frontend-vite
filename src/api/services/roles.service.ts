@@ -80,6 +80,28 @@ class RolesService {
       ROLES_ENDPOINTS.PERMISSIONS(roleId)
     );
   }
+
+  async exportToXlsx(): Promise<Blob> {
+    const response = await fetch(ROLES_ENDPOINTS.EXPORT_XLSX, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    if (!response.ok) throw new Error("Failed to export roles to XLSX");
+    return response.blob();
+  }
+
+  async exportToPdf(): Promise<Blob> {
+    const response = await fetch(ROLES_ENDPOINTS.EXPORT_PDF, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    if (!response.ok) throw new Error("Failed to export roles to PDF");
+    return response.blob();
+  }
 }
 
 export const rolesService = new RolesService();

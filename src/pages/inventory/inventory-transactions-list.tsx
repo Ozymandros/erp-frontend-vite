@@ -29,7 +29,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search, ArrowUpDown, Package, Warehouse, Eye } from "lucide-react";
+import { Search, ArrowUpDown, Package, Warehouse, Eye, FileDown } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 import {
   handleApiError,
@@ -203,6 +203,27 @@ export function InventoryTransactionsListPage() {
     return warehouse?.name || warehouseId;
   };
 
+  const handleExport = async (format: "xlsx" | "pdf") => {
+    try {
+      const blob =
+        format === "xlsx"
+          ? await inventoryTransactionsService.exportToXlsx()
+          : await inventoryTransactionsService.exportToPdf();
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `InventoryTransactions.${format}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      const apiError = handleApiError(error);
+      setError(getErrorMessage(apiError, `Failed to export transactions to ${format}`));
+    }
+  };
+
   const getTypeBadgeVariant = (type: TransactionType) => {
     switch (type) {
       case "Purchase":
@@ -234,6 +255,16 @@ export function InventoryTransactionsListPage() {
         <p className="text-muted-foreground mt-1">
           View all inventory movement transactions
         </p>
+      </div>
+      <div className="flex gap-2">
+        <Button variant="outline" onClick={() => handleExport("xlsx")}>
+          <FileDown className="mr-2 h-4 w-4" />
+          Export XLSX
+        </Button>
+        <Button variant="outline" onClick={() => handleExport("pdf")}>
+          <FileDown className="mr-2 h-4 w-4" />
+          Export PDF
+        </Button>
       </div>
 
       <Card>

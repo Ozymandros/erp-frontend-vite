@@ -22,8 +22,11 @@ import { StockOperationsPage } from "@/pages/inventory/stock-operations";
 import { CustomersListPage } from "@/pages/sales/customers-list";
 import { CustomerDetailPage } from "@/pages/sales/customer-detail";
 import { SalesOrdersListPage } from "@/pages/sales/sales-orders-list";
+import { SalesOrderDetailPage } from "@/pages/sales/sales-order-detail";
 import { OrdersListPage } from "@/pages/orders/orders-list";
 import { PurchaseOrdersListPage } from "@/pages/purchasing/purchase-orders-list";
+import { PurchaseOrderDetailPage } from "@/pages/purchasing/purchase-order-detail";
+import { OrderDetailPage } from "@/pages/orders/order-detail";
 import { ToastContextProvider } from "./contexts/toast.context";
 
 function App() {
@@ -70,16 +73,17 @@ function App() {
 
               {/* Orders Management */}
               <Route path="/orders" element={<OrdersListPage />} />
+              <Route path="/orders/:id" element={<OrderDetailPage />} />
 
               {/* Sales Management */}
               <Route path="/sales/customers" element={<CustomersListPage />} />
               <Route path="/sales/customers/:id" element={<CustomerDetailPage />} />
               <Route path="/sales/orders" element={<SalesOrdersListPage />} />
-              <Route path="/sales/orders/:id" element={<SalesOrdersListPage />} />
+              <Route path="/sales/orders/:id" element={<SalesOrderDetailPage />} />
 
               {/* Purchasing Management */}
               <Route path="/purchasing/orders" element={<PurchaseOrdersListPage />} />
-              <Route path="/purchasing/orders/:id" element={<PurchaseOrdersListPage />} />
+              <Route path="/purchasing/orders/:id" element={<PurchaseOrderDetailPage />} />
             </Route>
 
             {/* Catch all */}
