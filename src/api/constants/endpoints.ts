@@ -193,6 +193,8 @@ export const PURCHASE_ORDERS_ENDPOINTS = {
     `${PURCHASING_SERVICE_BASE}/orders/${id}/status/${status}`,
   APPROVE: (id: string) => `${PURCHASING_SERVICE_BASE}/orders/${id}/approve`,
   RECEIVE: (id: string) => `${PURCHASING_SERVICE_BASE}/orders/${id}/receive`,
+  EXPORT_XLSX: `${PURCHASING_SERVICE_BASE}/orders/export-xlsx`,
+  EXPORT_PDF: `${PURCHASING_SERVICE_BASE}/orders/export-pdf`,
 } as const;
 
 export const SUPPLIERS_ENDPOINTS = {

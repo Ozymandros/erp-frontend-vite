@@ -1,4 +1,5 @@
 import { getApiClient } from "../clients";
+import { PURCHASE_ORDERS_ENDPOINTS } from "../constants/endpoints";
 import type {
   PurchaseOrderDto,
   CreateUpdatePurchaseOrderDto,
@@ -100,9 +101,39 @@ class PurchaseOrdersService {
     data: ReceivePurchaseOrderDto
   ): Promise<PurchaseOrderDto> {
     return this.apiClient.post<PurchaseOrderDto>(
-      `/purchasing/api/purchasing/orders/${id}/receive`,
+      PURCHASE_ORDERS_ENDPOINTS.RECEIVE(id),
       data
     );
+  }
+
+  async exportToXlsx(): Promise<Blob> {
+    const response = await fetch(PURCHASE_ORDERS_ENDPOINTS.EXPORT_XLSX, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to export purchase orders to XLSX');
+    }
+    
+    return response.blob();
+  }
+
+  async exportToPdf(): Promise<Blob> {
+    const response = await fetch(PURCHASE_ORDERS_ENDPOINTS.EXPORT_PDF, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to export purchase orders to PDF');
+    }
+    
+    return response.blob();
   }
 }
 
