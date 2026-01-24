@@ -21,8 +21,21 @@ export function formatDate(date?: string | Date): string {
  */
 export function formatCurrency(amount: number): string {
   // Remove trailing zeros and decimal point if not needed
-  const formatted = amount.toFixed(2).replace(/\.?0+$/, "");
-  return `$${formatted}`;
+  // Implementation without regex to eliminate ReDoS risk (as flagged by SonarCloud)
+  const formatted = amount.toFixed(2);
+  const parts = formatted.split(".");
+  const whole = parts[0];
+  const decimal = parts[1];
+
+  if (!decimal || decimal === "00") {
+    return `$${whole}`;
+  }
+
+  if (decimal.endsWith("0")) {
+    return `$${whole}.${decimal.charAt(0)}`;
+  }
+
+  return `$${whole}.${decimal}`;
 }
 
 export function formatDateTime(date?: string | Date): string {
