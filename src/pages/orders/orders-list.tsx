@@ -198,7 +198,7 @@ export function OrdersListPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orders.map(order => (
+                  {orders?.map(order => (
                     <TableRow key={order.id}>
                       <TableCell className="font-medium">
                         {order.orderNumber}
@@ -206,7 +206,7 @@ export function OrdersListPage() {
                       <TableCell>{getCustomerName(order.customerId)}</TableCell>
                       <TableCell>{getStatusBadge(order.status)}</TableCell>
                       <TableCell>{formatDateTime(order.orderDate)}</TableCell>
-                      <TableCell>{order.orderLines.length} items</TableCell>
+                      <TableCell>{order.orderLines?.length || 0} items</TableCell>
                       <TableCell>{formatCurrency(order.totalAmount)}</TableCell>
                       <TableCell className="text-right">
                         <Link to={`/orders/${order.id}`}>

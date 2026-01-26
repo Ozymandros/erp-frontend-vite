@@ -147,7 +147,7 @@ export function UserDetailPage() {
         <CardContent>
           {user.roles && user.roles.length > 0 ? (
             <div className="space-y-4">
-              {user.roles.map((role) => (
+              {user.roles?.map((role) => (
                 <div key={role.id} className="border border-border rounded-lg p-4">
                   <div className="flex items-start justify-between mb-2">
                     <div>
@@ -159,7 +159,7 @@ export function UserDetailPage() {
                     <div className="mt-3">
                       <p className="text-sm font-medium text-muted-foreground mb-2">Permissions:</p>
                       <div className="flex flex-wrap gap-2">
-                        {role.permissions.map((permission) => (
+                        {role.permissions?.map((permission) => (
                           <Badge key={permission.id} variant="secondary">
                             {permission.module}:{permission.action}
                           </Badge>

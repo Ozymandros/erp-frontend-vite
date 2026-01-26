@@ -130,15 +130,15 @@ export class DtoFactory {
   }
 
   static createUserList(data: any[]): UserDto[] {
-    return data.map(item => this.createUser(item));
+    return data?.map(item => this.createUser(item));
   }
 
   static createRoleList(data: any[]): RoleDto[] {
-    return data.map(item => this.createRole(item));
+    return data?.map(item => this.createRole(item));
   }
 
   static createPermissionList(data: any[]): PermissionDto[] {
-    return data.map(item => this.createPermission(item));
+    return data?.map(item => this.createPermission(item));
   }
 }
 
@@ -428,6 +428,7 @@ export interface OrderDto extends IAuditableDto<string> {
 }
 
 export interface CreateUpdateOrderDto {
+  orderNumber: string;
   customerId: string;
   orderLines: CreateUpdateOrderLineDto[];
   orderDate: string;

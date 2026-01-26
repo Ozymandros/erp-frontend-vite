@@ -153,7 +153,7 @@ export function RolesListPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {roles.items.map((role) => (
+                    {roles.items?.map((role) => (
                       <TableRow key={role.id}>
                         <TableCell className="font-medium">{role.name}</TableCell>
                         <TableCell className="max-w-md truncate">{role.description || "-"}</TableCell>

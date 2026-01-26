@@ -205,7 +205,7 @@ export function WarehousesListPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {warehouses.items.map((warehouse) => (
+                    {warehouses.items?.map((warehouse) => (
                       <TableRow key={warehouse.id}>
                         <TableCell className="font-medium">
                           {warehouse.name}

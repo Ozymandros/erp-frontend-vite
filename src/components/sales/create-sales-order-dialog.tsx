@@ -227,7 +227,7 @@ export function CreateSalesOrderDialog({
                     disabled={isLoading}
                 >
                     <option value="">Select Customer...</option>
-                    {customers.map(c => (
+                    {customers?.map(c => (
                         <option key={c.id} value={c.id}>{c.name}</option>
                     ))}
                 </select>
@@ -268,7 +268,7 @@ export function CreateSalesOrderDialog({
                             onChange={e => handleNewLineChange("productId", e.target.value)}
                         >
                             <option value="">Select Product...</option>
-                            {products.map(p => (
+                            {products?.map(p => (
                                 <option key={p.id} value={p.id}>{p.name} ({formatCurrency(p.unitPrice)})</option>
                             ))}
                         </select>
@@ -329,7 +329,7 @@ export function CreateSalesOrderDialog({
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                formData.orderLines.map((line, index) => {
+                                formData.orderLines?.map((line, index) => {
                                     const product = products.find(p => p.id === line.productId);
                                     return (
                                         <TableRow key={index}>

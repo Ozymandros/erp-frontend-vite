@@ -137,7 +137,7 @@ export function PermissionsListPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {permissions.items.map((permission) => (
+                    {permissions.items?.map((permission) => (
                       <TableRow key={permission.id}>
                         <TableCell>
                           <Badge variant="secondary">{permission.module}</Badge>

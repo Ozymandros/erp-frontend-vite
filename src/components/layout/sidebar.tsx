@@ -136,7 +136,7 @@ export function Sidebar() {
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto p-4">
             <ul className="space-y-2">
-              {navItems.map(item => {
+              {navItems?.map(item => {
                 const Icon = item.icon;
                 const isActive = location.pathname.startsWith(item.href);
 

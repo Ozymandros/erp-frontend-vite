@@ -27,7 +27,7 @@ import { OrdersListPage } from "@/pages/orders/orders-list";
 import { PurchaseOrdersListPage } from "@/pages/purchasing/purchase-orders-list";
 import { PurchaseOrderDetailPage } from "@/pages/purchasing/purchase-order-detail";
 import { OrderDetailPage } from "@/pages/orders/order-detail";
-import { ToastContextProvider } from "./contexts/toast.context";
+import { ToastContextProvider } from "@/contexts/toast.context";
 
 function App() {
   return (

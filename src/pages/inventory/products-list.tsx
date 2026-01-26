@@ -279,7 +279,7 @@ export function ProductsListPage() {
                 </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {products.items.map((product) => (
+                    {products.items?.map((product) => (
                       <TableRow key={product.id}>
                         <TableCell className="font-medium">{product.sku}</TableCell>
                         <TableCell>{product.name}</TableCell>

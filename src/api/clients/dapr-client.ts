@@ -93,7 +93,7 @@ export class DaprHttpClient implements ApiClient {
             details = errorData.errors
             // Build a user-friendly message from validation errors
             const validationMessages = Object.entries(errorData.errors)
-              .map(([field, messages]: [string, any]) => {
+              ?.map(([field, messages]: [string, any]) => {
                 const fieldMessages = Array.isArray(messages) ? messages : [messages]
                 return `${field}: ${fieldMessages.join(', ')}`
               })

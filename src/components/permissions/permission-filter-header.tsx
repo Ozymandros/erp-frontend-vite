@@ -69,7 +69,7 @@ export const PermissionFilterHeader = ({
         <Select.Trigger className="w-[200px]" />
         <Select.Content>
           <Select.Item value="all">Tots els rols</Select.Item>
-          {roles.map(role => (
+          {roles?.map(role => (
             <Select.Item key={role.id} value={role.id}>
               {role.name}
             </Select.Item>

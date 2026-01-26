@@ -102,7 +102,7 @@ export function ProfilePage() {
         <CardContent>
           {user.roles && user.roles.length > 0 ? (
             <div className="space-y-4">
-              {user.roles.map(role => (
+              {user.roles?.map(role => (
                 <div
                   key={role.id}
                   className="border border-border rounded-lg p-4"
@@ -125,7 +125,7 @@ export function ProfilePage() {
                         Permissions:
                       </p>
                       <div className="flex flex-wrap gap-2">
-                        {role.permissions.map(permission => (
+                        {role.permissions?.map(permission => (
                           <Badge key={permission.id} variant="secondary">
                             {permission.module}:{permission.action}
                           </Badge>

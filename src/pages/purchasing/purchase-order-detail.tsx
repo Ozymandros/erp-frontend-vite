@@ -203,7 +203,7 @@ export function PurchaseOrderDetailPage() {
         <CardHeader>
           <CardTitle>Order Items</CardTitle>
           <CardDescription>
-            {order.orderLines.length} items in this order
+            {order.orderLines?.length || 0} items in this order
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -218,7 +218,7 @@ export function PurchaseOrderDetailPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {order.orderLines.map(line => (
+                {order.orderLines?.map(line => (
                   <TableRow key={line.id}>
                     <TableCell className="font-medium">
                       {line.productId}

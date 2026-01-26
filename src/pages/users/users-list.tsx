@@ -220,7 +220,7 @@ export function UsersListPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {users.items.map(user => (
+                    {users.items?.map(user => (
                       <TableRow key={user.id}>
                         <TableCell className="font-medium">
                           {user.username}
@@ -234,7 +234,7 @@ export function UsersListPage() {
                         <TableCell>
                           <div className="flex flex-wrap gap-1">
                             {user.roles && user.roles.length > 0 ? (
-                              user.roles.map(role => (
+                              user.roles?.map(role => (
                                 <Badge
                                   key={role.id}
                                   variant="secondary"

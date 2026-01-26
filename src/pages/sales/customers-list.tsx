@@ -128,7 +128,7 @@ export function CustomersListPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {customers.items.map((customer) => (
+                      {customers.items?.map((customer) => (
                         <TableRow key={customer.id}>
                           <TableCell className="font-medium">{customer.name}</TableCell>
                           <TableCell>{customer.email || <span className="text-muted-foreground">-</span>}</TableCell>

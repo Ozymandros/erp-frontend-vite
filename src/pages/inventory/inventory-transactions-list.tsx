@@ -304,7 +304,7 @@ export function InventoryTransactionsListPage() {
                     }}
                   >
                     <option value="">All Products</option>
-                    {products.map(product => (
+                    {products?.map(product => (
                       <option key={product.id} value={product.id}>
                         {product.name}
                       </option>
@@ -326,7 +326,7 @@ export function InventoryTransactionsListPage() {
                     }}
                   >
                     <option value="">All Warehouses</option>
-                    {warehouses.map(warehouse => (
+                    {warehouses?.map(warehouse => (
                       <option key={warehouse.id} value={warehouse.id}>
                         {warehouse.name}
                       </option>
@@ -348,7 +348,7 @@ export function InventoryTransactionsListPage() {
                     }}
                   >
                     <option value="">All Types</option>
-                    {TRANSACTION_TYPES.map(type => (
+                    {TRANSACTION_TYPES?.map(type => (
                       <option key={type.value} value={type.value}>
                         {type.label}
                       </option>
@@ -414,7 +414,7 @@ export function InventoryTransactionsListPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {transactions.items.map(transaction => (
+                    {transactions.items?.map(transaction => (
                       <TableRow key={transaction.id}>
                         <TableCell>
                           {formatDateTime(transaction.transactionDate)}

@@ -76,7 +76,7 @@ describe("SalesOrdersService", () => {
         ...newOrder,
         status: SalesOrderStatus.Draft,
         totalAmount: 499.95,
-        orderLines: newOrder.orderLines.map(line => ({
+        orderLines: newOrder.orderLines?.map(line => ({
           ...line,
           id: `line-${line.productId}`,
           salesOrderId: "1",

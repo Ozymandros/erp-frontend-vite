@@ -18,20 +18,25 @@ import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 import { useEffect } from "react";
 import { productsService } from "@/api/services/products.service";
 import { warehousesService } from "@/api/services/warehouses.service";
+import { ordersService } from "@/api/services/orders.service";
+import type { OrderDto } from "@/types/api.types";
 
 export function StockOperationsPage() {
   const [products, setProducts] = useState<Array<{ id: string; name: string; sku: string }>>([]);
   const [warehouses, setWarehouses] = useState<Array<{ id: string; name: string }>>([]);
+  const [orders, setOrders] = useState<OrderDto[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [productsData, warehousesData] = await Promise.all([
+        const [productsData, warehousesData, ordersData] = await Promise.all([
           productsService.getProducts(),
           warehousesService.getWarehouses(),
+          ordersService.getOrders(),
         ]);
         setProducts(productsData);
         setWarehouses(warehousesData);
+        setOrders(ordersData);
       } catch (error) {
         console.error("Failed to fetch data", error);
       }
@@ -65,7 +70,7 @@ export function StockOperationsPage() {
             </TabsList>
 
             <TabsContent value="reserve" className="mt-6">
-              <ReserveStockForm products={products} warehouses={warehouses} />
+              <ReserveStockForm products={products} warehouses={warehouses} orders={orders} />
             </TabsContent>
 
             <TabsContent value="transfer" className="mt-6">
@@ -89,9 +94,10 @@ export function StockOperationsPage() {
 interface OperationFormProps {
   products: Array<{ id: string; name: string; sku: string }>;
   warehouses: Array<{ id: string; name: string }>;
+  orders?: OrderDto[];
 }
 
-function ReserveStockForm({ products, warehouses }: OperationFormProps) {
+function ReserveStockForm({ products, warehouses, orders }: OperationFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -135,7 +141,7 @@ function ReserveStockForm({ products, warehouses }: OperationFormProps) {
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               <option value="">Select a product...</option>
-              {products.map((product) => (
+              {products?.map((product) => (
                 <option key={product.id} value={product.id}>
                   {product.name} ({product.sku})
                 </option>
@@ -152,7 +158,7 @@ function ReserveStockForm({ products, warehouses }: OperationFormProps) {
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               <option value="">Select a warehouse...</option>
-              {warehouses.map((warehouse) => (
+              {warehouses?.map((warehouse) => (
                 <option key={warehouse.id} value={warehouse.id}>
                   {warehouse.name}
                 </option>
@@ -174,12 +180,19 @@ function ReserveStockForm({ products, warehouses }: OperationFormProps) {
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Order ID
-            <input
+            Order
+            <select
               name="orderId"
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            />
+            >
+              <option value="">Select an order...</option>
+              {orders?.map((order) => (
+                <option key={order.id} value={order.id}>
+                  {order.orderNumber} ({order.status})
+                </option>
+              ))}
+            </select>
           </label>
         </div>
         <div className="space-y-2">
@@ -251,7 +264,7 @@ function TransferStockForm({ products, warehouses }: OperationFormProps) {
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               <option value="">Select a product...</option>
-              {products.map((product) => (
+              {products?.map((product) => (
                 <option key={product.id} value={product.id}>
                   {product.name} ({product.sku})
                 </option>
@@ -280,7 +293,7 @@ function TransferStockForm({ products, warehouses }: OperationFormProps) {
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               <option value="">Select source warehouse...</option>
-              {warehouses.map((warehouse) => (
+              {warehouses?.map((warehouse) => (
                 <option key={warehouse.id} value={warehouse.id}>
                   {warehouse.name}
                 </option>
@@ -297,7 +310,7 @@ function TransferStockForm({ products, warehouses }: OperationFormProps) {
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               <option value="">Select destination warehouse...</option>
-              {warehouses.map((warehouse) => (
+              {warehouses?.map((warehouse) => (
                 <option key={warehouse.id} value={warehouse.id}>
                   {warehouse.name}
                 </option>
@@ -377,7 +390,7 @@ function AdjustStockForm({ products, warehouses }: OperationFormProps) {
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               <option value="">Select a product...</option>
-              {products.map((product) => (
+              {products?.map((product) => (
                 <option key={product.id} value={product.id}>
                   {product.name} ({product.sku})
                 </option>
@@ -394,7 +407,7 @@ function AdjustStockForm({ products, warehouses }: OperationFormProps) {
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               <option value="">Select a warehouse...</option>
-              {warehouses.map((warehouse) => (
+              {warehouses?.map((warehouse) => (
                 <option key={warehouse.id} value={warehouse.id}>
                   {warehouse.name}
                 </option>

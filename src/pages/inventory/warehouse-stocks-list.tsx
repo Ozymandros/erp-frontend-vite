@@ -236,7 +236,7 @@ export function WarehouseStocksListPage() {
                   }}
                 >
                   <option value="">Select a product...</option>
-                  {products.map(product => (
+                  {products?.map(product => (
                     <option key={product.id} value={product.id}>
                       {product.name} ({product.sku})
                     </option>
@@ -260,7 +260,7 @@ export function WarehouseStocksListPage() {
                   }}
                 >
                   <option value="">Select a warehouse...</option>
-                  {warehouses.map(warehouse => (
+                  {warehouses?.map(warehouse => (
                     <option key={warehouse.id} value={warehouse.id}>
                       {warehouse.name}
                     </option>
@@ -309,7 +309,7 @@ export function WarehouseStocksListPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {stocks.map(stock => {
+                  {stocks?.map(stock => {
                     const available = availableQuantity(stock);
                     const low = isLowStock(stock);
                     return (

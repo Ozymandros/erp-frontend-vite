@@ -12,7 +12,7 @@ export const Toaster: React.FC<ToasterProps> = ({ toasts, onDismiss }) => {
   return (
     <ToastPrimitive.Provider swipeDirection="right">
       <div aria-live="polite">
-        {toasts.map((t) => (
+        {toasts?.map((t) => (
           <ToastCard key={t.id} toast={t} onClose={onDismiss} />
         ))}
       </div>

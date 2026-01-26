@@ -273,7 +273,7 @@ export function PurchaseOrdersListPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {purchaseOrders.items.map((order) => (
+                    {purchaseOrders.items?.map((order) => (
                       <TableRow key={order.id}>
                         <TableCell className="font-medium">
                           {order.orderNumber}
@@ -286,7 +286,7 @@ export function PurchaseOrdersListPage() {
                             ? formatDateTime(order.expectedDeliveryDate)
                             : "-"}
                         </TableCell>
-                        <TableCell>{order.orderLines.length} items</TableCell>
+                        <TableCell>{order.orderLines?.length || 0} items</TableCell>
                         <TableCell>{formatCurrency(order.totalAmount)}</TableCell>
                         <TableCell className="text-right">
                           <Link to={`/purchasing/orders/${order.id}`}>

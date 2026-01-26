@@ -272,7 +272,7 @@ export function SalesOrdersListPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {salesOrders.items.map((order) => (
+                    {salesOrders.items?.map((order) => (
                       <TableRow key={order.id}>
                         <TableCell className="font-medium">
                           {order.orderNumber}
@@ -280,7 +280,7 @@ export function SalesOrdersListPage() {
                         <TableCell>{getCustomerName(order.customerId)}</TableCell>
                         <TableCell>{getStatusBadge(order.status)}</TableCell>
                         <TableCell>{formatDateTime(order.orderDate)}</TableCell>
-                        <TableCell>{order.orderLines.length} items</TableCell>
+                        <TableCell>{order.orderLines?.length || 0} items</TableCell>
                         <TableCell>{formatCurrency(order.totalAmount)}</TableCell>
                         <TableCell className="text-right">
                           <Link to={`/sales/orders/${order.id}`}>

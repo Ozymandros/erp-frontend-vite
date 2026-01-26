@@ -216,7 +216,7 @@ export function CreatePurchaseOrderDialog({
                   disabled={isLoading}
                 >
                   <option value="">Select Supplier...</option>
-                  {suppliers.map((s) => (
+                  {suppliers?.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.name}
                     </option>
@@ -295,7 +295,7 @@ export function CreatePurchaseOrderDialog({
                     }
                   >
                     <option value="">Select Product...</option>
-                    {products.map((p) => (
+                    {products?.map((p) => (
                       <option key={p.id} value={p.id}>
                         {p.name}
                       </option>
@@ -375,7 +375,7 @@ export function CreatePurchaseOrderDialog({
                         </TableCell>
                       </TableRow>
                     ) : (
-                      formData.orderLines.map((line, index) => {
+                      formData.orderLines?.map((line, index) => {
                         const product = products.find(
                           (p) => p.id === line.productId
                         );

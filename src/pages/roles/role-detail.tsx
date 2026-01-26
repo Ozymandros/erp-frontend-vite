@@ -140,7 +140,7 @@ export function RoleDetailPage() {
         <CardContent>
           {role.permissions && role.permissions.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {role.permissions.map((permission) => (
+              {role.permissions?.map((permission) => (
                 <div key={permission.id} className="border border-border rounded-lg p-3">
                   <div className="flex items-start justify-between mb-1">
                     <Badge variant="secondary" className="text-xs">

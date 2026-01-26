@@ -187,7 +187,7 @@ export function OrderDetailPage() {
         <CardHeader>
           <CardTitle>Order Items</CardTitle>
           <CardDescription>
-            {order.orderLines.length} items in this order
+            {order.orderLines?.length || 0} items in this order
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -202,7 +202,7 @@ export function OrderDetailPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {order.orderLines.map((line) => (
+                {order.orderLines?.map((line) => (
                   <TableRow key={line.productId}> {/* Assuming productId is unique per order for simplicity, otherwise update backend to return line IDs */}
                     <TableCell className="font-medium">
                       {line.productId}

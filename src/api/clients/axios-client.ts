@@ -116,7 +116,7 @@ export class AxiosApiClient implements ApiClient {
           details = errorData.errors;
           // Build a user-friendly message from validation errors
           const validationMessages = Object.entries(errorData.errors)
-            .map(([field, messages]) => {
+            ?.map(([field, messages]) => {
               const fieldMessages = Array.isArray(messages)
                 ? messages
                 : [messages];

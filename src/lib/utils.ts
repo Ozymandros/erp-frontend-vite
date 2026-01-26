@@ -20,6 +20,8 @@ export function formatDate(date?: string | Date): string {
  * Example: 15000.00 -> "$15000", 15000.50 -> "$15000.5", 15000.99 -> "$15000.99"
  */
 export function formatCurrency(amount: number): string {
+  if (!amount) return ""
+  
   // Remove trailing zeros and decimal point if not needed
   // Implementation without regex to eliminate ReDoS risk (as flagged by SonarCloud)
   const formatted = amount.toFixed(2);
