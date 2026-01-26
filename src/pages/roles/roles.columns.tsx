@@ -1,0 +1,62 @@
+import React from "react"
+import { Link } from "react-router-dom"
+import { Eye, Pencil, Trash2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Column } from "@/components/ui/data-table"
+import { Role } from "@/types/api.types"
+import { formatDateTime } from "@/lib/utils"
+
+interface RoleColumnsProps {
+  onEdit: (role: Role) => void
+  onDelete: (role: Role) => void
+}
+
+export function getRoleColumns({ onEdit, onDelete }: RoleColumnsProps): Column<Role>[] {
+  return [
+    {
+      header: "Name",
+      accessor: "name",
+      sortable: true,
+      className: "font-medium",
+    },
+    {
+      header: "Description",
+      accessor: (role) => <div className="max-w-md truncate">{role.description || "-"}</div>,
+    },
+    {
+      header: "Permissions",
+      accessor: (role) => (
+        <div className="flex items-center gap-2">
+          <Badge variant="secondary">{role.permissions?.length || 0}</Badge>
+          <span className="text-sm text-muted-foreground">permissions</span>
+        </div>
+      ),
+    },
+    {
+      header: "Created",
+      accessor: (role) => <span className="text-sm text-muted-foreground">{formatDateTime(role.createdAt)}</span>,
+      sortable: true,
+      sortField: "createdAt",
+    },
+    {
+      header: "Actions",
+      className: "text-right",
+      accessor: (role) => (
+        <div className="flex items-center justify-end gap-2">
+          <Button variant="ghost" size="icon" asChild>
+            <Link to={`/roles/${role.id}`}>
+              <Eye className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => onEdit(role)}>
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => onDelete(role)}>
+            <Trash2 className="h-4 w-4 text-destructive" />
+          </Button>
+        </div>
+      ),
+    },
+  ]
+}
