@@ -15,10 +15,10 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 interface DeleteUserDialogProps {
-  user: User
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSuccess: () => void
+  readonly user: User;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+  readonly onSuccess: () => void;
 }
 
 export function DeleteUserDialog({ user, open, onOpenChange, onSuccess }: DeleteUserDialogProps) {

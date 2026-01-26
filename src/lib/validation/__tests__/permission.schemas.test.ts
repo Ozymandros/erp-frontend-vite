@@ -44,7 +44,7 @@ describe("Permission Validation Schemas", () => {
       const result = CreatePermissionSchema.safeParse(validData);
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.description).toBe("");
+        expect(result.data.description).toBeUndefined();
       }
     });
 

@@ -80,6 +80,18 @@ class RolesService {
       ROLES_ENDPOINTS.PERMISSIONS(roleId)
     );
   }
+
+  async exportToXlsx(): Promise<Blob> {
+    return this.apiClient.get<Blob>(ROLES_ENDPOINTS.EXPORT_XLSX, {
+      responseType: "blob",
+    });
+  }
+
+  async exportToPdf(): Promise<Blob> {
+    return this.apiClient.get<Blob>(ROLES_ENDPOINTS.EXPORT_PDF, {
+      responseType: "blob",
+    });
+  }
 }
 
 export const rolesService = new RolesService();

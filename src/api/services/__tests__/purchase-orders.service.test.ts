@@ -57,8 +57,7 @@ describe("PurchaseOrdersService", () => {
     it("should approve a purchase order", async () => {
       const approvalData: ApprovePurchaseOrderDto = {
         purchaseOrderId: "po-1",
-        approvedBy: "user-1",
-        approvalDate: "2024-01-01",
+        notes: "Approved",
       };
 
       const mockOrder: PurchaseOrderDto = {
@@ -93,11 +92,10 @@ describe("PurchaseOrdersService", () => {
         purchaseOrderId: "po-1",
         warehouseId: "warehouse-1",
         receivedDate: "2024-01-15",
-        receivedItems: [
+        lines: [
           {
-            productId: "product-1",
-            quantity: 10,
-            warehouseId: "warehouse-1",
+            purchaseOrderLineId: "line-1",
+            receivedQuantity: 10,
           },
         ],
       };

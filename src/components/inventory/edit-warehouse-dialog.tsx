@@ -12,8 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
+
 import {
   Dialog,
   DialogContent,
@@ -25,10 +24,10 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface EditWarehouseDialogProps {
-  warehouse: WarehouseDto | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
+  readonly warehouse: WarehouseDto | null;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+  readonly onSuccess: () => void;
 }
 
 export function EditWarehouseDialog({
@@ -40,11 +39,6 @@ export function EditWarehouseDialog({
   const [formData, setFormData] = useState<UpdateWarehouseFormData>({
     name: "",
     location: "",
-    address: "",
-    city: "",
-    country: "",
-    postalCode: "",
-    isActive: true,
   });
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -55,19 +49,17 @@ export function EditWarehouseDialog({
       setFormData({
         name: warehouse.name,
         location: warehouse.location || "",
-        address: warehouse.address || "",
-        city: warehouse.city || "",
-        country: warehouse.country || "",
-        postalCode: warehouse.postalCode || "",
-        isActive: warehouse.isActive,
       });
     }
   }, [warehouse]);
 
-  const handleChange = (field: keyof UpdateWarehouseFormData, value: string | number | boolean) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleChange = (
+    field: keyof UpdateWarehouseFormData,
+    value: string | number | boolean
+  ) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
     if (fieldErrors[field]) {
-      setFieldErrors((prev) => {
+      setFieldErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors[field];
         return newErrors;
@@ -85,7 +77,7 @@ export function EditWarehouseDialog({
     const validation = UpdateWarehouseSchema.safeParse(formData);
     if (!validation.success) {
       const errors: Record<string, string> = {};
-      validation.error.issues.forEach((err) => {
+      validation.error.issues.forEach(err => {
         if (err.path[0]) {
           errors[err.path[0].toString()] = err.message;
         }
@@ -98,18 +90,13 @@ export function EditWarehouseDialog({
     setIsLoading(true);
 
     try {
-      await warehousesService.updateWarehouse(warehouse.id, {
-        ...formData,
-        location: formData.location || undefined,
-        address: formData.address || undefined,
-        city: formData.city || undefined,
-        country: formData.country || undefined,
-        postalCode: formData.postalCode || undefined,
-      });
+      await warehousesService.updateWarehouse(warehouse.id, validation.data);
       onSuccess();
       onOpenChange(false);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to update warehouse");
+      setError(
+        err instanceof Error ? err.message : "Failed to update warehouse"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -138,7 +125,7 @@ export function EditWarehouseDialog({
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => handleChange("name", e.target.value)}
+                onChange={e => handleChange("name", e.target.value)}
                 required
                 disabled={isLoading}
                 className={fieldErrors.name ? "border-red-500" : ""}
@@ -149,11 +136,12 @@ export function EditWarehouseDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
+              <Label htmlFor="location">Location *</Label>
               <Input
                 id="location"
                 value={formData.location}
-                onChange={(e) => handleChange("location", e.target.value)}
+                onChange={e => handleChange("location", e.target.value)}
+                required
                 disabled={isLoading}
                 className={fieldErrors.location ? "border-red-500" : ""}
               />
@@ -162,73 +150,7 @@ export function EditWarehouseDialog({
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
-              <Textarea
-                id="address"
-                value={formData.address}
-                onChange={(e) => handleChange("address", e.target.value)}
-                disabled={isLoading}
-                className={fieldErrors.address ? "border-red-500" : ""}
-              />
-              {fieldErrors.address && (
-                <p className="text-sm text-red-500">{fieldErrors.address}</p>
-              )}
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
-                <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={(e) => handleChange("city", e.target.value)}
-                  disabled={isLoading}
-                  className={fieldErrors.city ? "border-red-500" : ""}
-                />
-                {fieldErrors.city && (
-                  <p className="text-sm text-red-500">{fieldErrors.city}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="postalCode">Postal Code</Label>
-                <Input
-                  id="postalCode"
-                  value={formData.postalCode}
-                  onChange={(e) => handleChange("postalCode", e.target.value)}
-                  disabled={isLoading}
-                  className={fieldErrors.postalCode ? "border-red-500" : ""}
-                />
-                {fieldErrors.postalCode && (
-                  <p className="text-sm text-red-500">{fieldErrors.postalCode}</p>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="country">Country</Label>
-              <Input
-                id="country"
-                value={formData.country}
-                onChange={(e) => handleChange("country", e.target.value)}
-                disabled={isLoading}
-                className={fieldErrors.country ? "border-red-500" : ""}
-              />
-              {fieldErrors.country && (
-                <p className="text-sm text-red-500">{fieldErrors.country}</p>
-              )}
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="isActive"
-                checked={formData.isActive}
-                onCheckedChange={(checked) => handleChange("isActive", checked)}
-                disabled={isLoading}
-              />
-              <Label htmlFor="isActive">Active</Label>
-            </div>
           </div>
 
           <DialogFooter>

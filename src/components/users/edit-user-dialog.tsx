@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { usersService } from "@/api/services/users.service"
-import type { User, UpdateUserRequest } from "@/types/api.types"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+import { useState, useEffect } from "react";
+import { usersService } from "@/api/services/users.service";
+import type { User, UpdateUserRequest } from "@/types/api.types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
@@ -16,25 +16,30 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+} from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface EditUserDialogProps {
-  user: User
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSuccess: () => void
+  readonly user: User;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+  readonly onSuccess: () => void;
 }
 
-export function EditUserDialog({ user, open, onOpenChange, onSuccess }: EditUserDialogProps) {
+export function EditUserDialog({
+  user,
+  open,
+  onOpenChange,
+  onSuccess,
+}: EditUserDialogProps) {
   const [formData, setFormData] = useState<UpdateUserRequest>({
     email: user.email,
     firstName: user.firstName,
     lastName: user.lastName,
     isActive: user.isActive,
-  })
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  });
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setFormData({
@@ -42,27 +47,30 @@ export function EditUserDialog({ user, open, onOpenChange, onSuccess }: EditUser
       firstName: user.firstName,
       lastName: user.lastName,
       isActive: user.isActive,
-    })
-  }, [user])
+    });
+  }, [user]);
 
-  const handleChange = (field: keyof UpdateUserRequest, value: string | boolean) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+  const handleChange = (
+    field: keyof UpdateUserRequest,
+    value: string | boolean
+  ) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    setIsLoading(true)
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
 
     try {
-      await usersService.updateUser(user.id, formData)
-      onSuccess()
+      await usersService.updateUser(user.id, formData);
+      onSuccess();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to update user")
+      setError(err instanceof Error ? err.message : "Failed to update user");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -86,7 +94,7 @@ export function EditUserDialog({ user, open, onOpenChange, onSuccess }: EditUser
                 <Input
                   id="edit-firstName"
                   value={formData.firstName || ""}
-                  onChange={(e) => handleChange("firstName", e.target.value)}
+                  onChange={e => handleChange("firstName", e.target.value)}
                   disabled={isLoading}
                 />
               </div>
@@ -95,7 +103,7 @@ export function EditUserDialog({ user, open, onOpenChange, onSuccess }: EditUser
                 <Input
                   id="edit-lastName"
                   value={formData.lastName || ""}
-                  onChange={(e) => handleChange("lastName", e.target.value)}
+                  onChange={e => handleChange("lastName", e.target.value)}
                   disabled={isLoading}
                 />
               </div>
@@ -107,7 +115,7 @@ export function EditUserDialog({ user, open, onOpenChange, onSuccess }: EditUser
                 id="edit-email"
                 type="email"
                 value={formData.email || ""}
-                onChange={(e) => handleChange("email", e.target.value)}
+                onChange={e => handleChange("email", e.target.value)}
                 disabled={isLoading}
               />
             </div>
@@ -115,19 +123,26 @@ export function EditUserDialog({ user, open, onOpenChange, onSuccess }: EditUser
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="edit-isActive">Active Status</Label>
-                <p className="text-sm text-muted-foreground">Enable or disable this user account</p>
+                <p className="text-sm text-muted-foreground">
+                  Enable or disable this user account
+                </p>
               </div>
               <Switch
                 id="edit-isActive"
                 checked={formData.isActive}
-                onCheckedChange={(checked) => handleChange("isActive", checked)}
+                onCheckedChange={checked => handleChange("isActive", checked)}
                 disabled={isLoading}
               />
             </div>
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isLoading}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
@@ -137,5 +152,5 @@ export function EditUserDialog({ user, open, onOpenChange, onSuccess }: EditUser
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

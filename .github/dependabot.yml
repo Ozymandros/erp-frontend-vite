@@ -8,9 +8,6 @@ updates:
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 10
-    labels:
-      - "dependencies"
-      - "automated"
     commit-message:
       prefix: "chore"
       include: "scope"
@@ -39,10 +36,6 @@ updates:
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 5
-    labels:
-      - "github-actions"
-      - "dependencies"
-      - "automated"
     commit-message:
       prefix: "ci"
       include: "scope"

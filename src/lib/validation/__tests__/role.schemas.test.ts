@@ -41,7 +41,7 @@ describe("Role Validation Schemas", () => {
       const result = CreateRoleSchema.safeParse(validData);
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.description).toBe("");
+        expect(result.data.description).toBeUndefined();
       }
     });
 

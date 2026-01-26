@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
+
 import {
   Dialog,
   DialogContent,
@@ -24,9 +24,9 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface CreateProductDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+  readonly onSuccess: () => void;
 }
 
 export function CreateProductDialog({
@@ -38,19 +38,20 @@ export function CreateProductDialog({
     sku: "",
     name: "",
     description: "",
-    category: "",
     unitPrice: 0,
     reorderLevel: 0,
-    isActive: true,
   });
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (field: keyof CreateProductFormData, value: string | number | boolean) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleChange = (
+    field: keyof CreateProductFormData,
+    value: string | number | boolean
+  ) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
     if (fieldErrors[field]) {
-      setFieldErrors((prev) => {
+      setFieldErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors[field];
         return newErrors;
@@ -66,7 +67,7 @@ export function CreateProductDialog({
     const validation = CreateProductSchema.safeParse(formData);
     if (!validation.success) {
       const errors: Record<string, string> = {};
-      validation.error.issues.forEach((err) => {
+      validation.error.issues.forEach(err => {
         if (err.path[0]) {
           errors[err.path[0].toString()] = err.message;
         }
@@ -79,20 +80,15 @@ export function CreateProductDialog({
     setIsLoading(true);
 
     try {
-      await productsService.createProduct({
-        ...formData,
-        description: formData.description || undefined,
-        category: formData.category || undefined,
-      });
+      // Schema already handles empty strings -> undefined transformation
+      await productsService.createProduct(validation.data);
       onSuccess();
       setFormData({
         sku: "",
         name: "",
         description: "",
-        category: "",
         unitPrice: 0,
         reorderLevel: 0,
-        isActive: true,
       });
       onOpenChange(false);
     } catch (err: unknown) {
@@ -126,7 +122,7 @@ export function CreateProductDialog({
                 <Input
                   id="sku"
                   value={formData.sku}
-                  onChange={(e) => handleChange("sku", e.target.value)}
+                  onChange={e => handleChange("sku", e.target.value)}
                   required
                   disabled={isLoading}
                   className={fieldErrors.sku ? "border-red-500" : ""}
@@ -141,7 +137,7 @@ export function CreateProductDialog({
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => handleChange("name", e.target.value)}
+                  onChange={e => handleChange("name", e.target.value)}
                   required
                   disabled={isLoading}
                   className={fieldErrors.name ? "border-red-500" : ""}
@@ -157,28 +153,18 @@ export function CreateProductDialog({
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => handleChange("description", e.target.value)}
+                onChange={e => handleChange("description", e.target.value)}
                 disabled={isLoading}
                 className={fieldErrors.description ? "border-red-500" : ""}
               />
               {fieldErrors.description && (
-                <p className="text-sm text-red-500">{fieldErrors.description}</p>
+                <p className="text-sm text-red-500">
+                  {fieldErrors.description}
+                </p>
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
-              <Input
-                id="category"
-                value={formData.category}
-                onChange={(e) => handleChange("category", e.target.value)}
-                disabled={isLoading}
-                className={fieldErrors.category ? "border-red-500" : ""}
-              />
-              {fieldErrors.category && (
-                <p className="text-sm text-red-500">{fieldErrors.category}</p>
-              )}
-            </div>
+
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -189,15 +175,20 @@ export function CreateProductDialog({
                   step="0.01"
                   min="0"
                   value={formData.unitPrice}
-                  onChange={(e) =>
-                    handleChange("unitPrice", parseFloat(e.target.value) || 0)
+                  onChange={e =>
+                    handleChange(
+                      "unitPrice",
+                      Number.parseFloat(e.target.value) || 0
+                    )
                   }
                   required
                   disabled={isLoading}
                   className={fieldErrors.unitPrice ? "border-red-500" : ""}
                 />
                 {fieldErrors.unitPrice && (
-                  <p className="text-sm text-red-500">{fieldErrors.unitPrice}</p>
+                  <p className="text-sm text-red-500">
+                    {fieldErrors.unitPrice}
+                  </p>
                 )}
               </div>
 
@@ -208,8 +199,11 @@ export function CreateProductDialog({
                   type="number"
                   min="0"
                   value={formData.reorderLevel}
-                  onChange={(e) =>
-                    handleChange("reorderLevel", parseInt(e.target.value) || 0)
+                  onChange={e =>
+                    handleChange(
+                      "reorderLevel",
+                      Number.parseInt(e.target.value) || 0
+                    )
                   }
                   required
                   disabled={isLoading}
@@ -223,15 +217,7 @@ export function CreateProductDialog({
               </div>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="isActive"
-                checked={formData.isActive}
-                onCheckedChange={(checked) => handleChange("isActive", checked)}
-                disabled={isLoading}
-              />
-              <Label htmlFor="isActive">Active</Label>
-            </div>
+
           </div>
 
           <DialogFooter>

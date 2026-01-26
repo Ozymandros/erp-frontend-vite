@@ -11,9 +11,9 @@ interface TabsContextValue {
 const TabsContext = React.createContext<TabsContextValue | undefined>(undefined);
 
 interface TabsProps {
-  defaultValue: string;
-  className?: string;
-  children: React.ReactNode;
+  readonly defaultValue: string;
+  readonly className?: string;
+  readonly children: React.ReactNode;
 }
 
 export function Tabs({ defaultValue, className, children }: TabsProps) {

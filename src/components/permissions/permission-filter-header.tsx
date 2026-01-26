@@ -7,26 +7,40 @@ import { Role } from "@/types/api.types";
 
 type FilterProps = {
   /** Controlled filters object; if omitted the component will manage state internally */
-  filters?: Record<string, string>
+  readonly filters?: Record<string, string>;
   /** Called with the full filters object whenever a field changes */
-  onFilterChange?: (filters: Record<string, string>) => void
-}
+  readonly onFilterChange?: (filters: Record<string, string>) => void;
+};
 
-export const PermissionFilterHeader = ({ filters: controlledFilters, onFilterChange }: FilterProps) => {
-  const [internalFilters, setInternalFilters] = useState<Record<string, string>>({ search: "", role: "" });
+export const PermissionFilterHeader = ({
+  filters: controlledFilters,
+  onFilterChange,
+}: FilterProps) => {
+  const [internalFilters, setInternalFilters] = useState<
+    Record<string, string>
+  >({ search: "", role: "all" });
   const [roles, setRoles] = useState<Role[]>([]);
-  const isControlled = typeof controlledFilters !== 'undefined'
-  const filters = isControlled ? controlledFilters! : internalFilters
+  const isControlled = controlledFilters !== undefined;
+  const filters = isControlled ? controlledFilters! : internalFilters;
 
   const handleChange = (key: string, value: string) => {
-    const updated = { ...filters, [key]: value }
-    if (isControlled) {
-      onFilterChange?.(updated)
-    } else {
-      setInternalFilters(updated)
-      onFilterChange?.(updated)
+    // Create the updated filters object
+    const updated = { ...filters, [key]: value };
+    
+    // If role is "all", remove it from the filters sent to parent
+    // (or convert to empty string if backend expects that)
+    const filtersToSend = { ...updated };
+    if (filtersToSend.role === "all") {
+      filtersToSend.role = "";
     }
-  }
+    
+    if (isControlled) {
+      onFilterChange?.(filtersToSend);
+    } else {
+      setInternalFilters(updated);
+      onFilterChange?.(filtersToSend);
+    }
+  };
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -54,8 +68,8 @@ export const PermissionFilterHeader = ({ filters: controlledFilters, onFilterCha
       >
         <Select.Trigger className="w-[200px]" />
         <Select.Content>
-          <Select.Item value="">Tots els rols</Select.Item>
-          {roles.map(role => (
+          <Select.Item value="all">Tots els rols</Select.Item>
+          {roles?.map(role => (
             <Select.Item key={role.id} value={role.id}>
               {role.name}
             </Select.Item>

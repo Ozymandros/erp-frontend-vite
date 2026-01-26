@@ -5,8 +5,8 @@ import { CheckCircle, AlertTriangle, AlertCircle, Info, X } from 'lucide-react'
 import type { ToastItem } from '@/contexts/toast.types'
 
 interface ToastCardProps {
-  toast: ToastItem
-  onClose: (id: string) => void
+  readonly toast: ToastItem;
+  readonly onClose: (id: string) => void;
 }
 
 export const ToastCard: React.FC<ToastCardProps> = ({ toast, onClose }) => {

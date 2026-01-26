@@ -29,9 +29,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search, ArrowUpDown, Package, Warehouse, Eye } from "lucide-react";
+import { Search, ArrowUpDown, Package, Warehouse, Eye, FileDown } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
-import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
+import {
+  handleApiError,
+  isForbiddenError,
+  getForbiddenMessage,
+  getErrorMessage,
+} from "@/lib/error-handling";
 
 import { TransactionType as TransactionTypeEnum } from "@/types/api.types";
 
@@ -46,11 +51,14 @@ const TRANSACTION_TYPES: { value: TransactionType; label: string }[] = [
 ];
 
 export function InventoryTransactionsListPage() {
-  const [transactions, setTransactions] = useState<
-    PaginatedResponse<InventoryTransactionDto> | null
-  >(null);
-  const [products, setProducts] = useState<Array<{ id: string; name: string }>>([]);
-  const [warehouses, setWarehouses] = useState<Array<{ id: string; name: string }>>([]);
+  const [transactions, setTransactions] =
+    useState<PaginatedResponse<InventoryTransactionDto> | null>(null);
+  const [products, setProducts] = useState<Array<{ id: string; name: string }>>(
+    []
+  );
+  const [warehouses, setWarehouses] = useState<
+    Array<{ id: string; name: string }>
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [querySpec, setQuerySpec] = useState<QuerySpec>({
@@ -100,9 +108,10 @@ export function InventoryTransactionsListPage() {
       let data: PaginatedResponse<InventoryTransactionDto>;
 
       if (filterProduct) {
-        const txns = await inventoryTransactionsService.getTransactionsByProduct(
-          filterProduct
-        );
+        const txns =
+          await inventoryTransactionsService.getTransactionsByProduct(
+            filterProduct
+          );
         data = {
           items: txns,
           page: 1,
@@ -142,7 +151,7 @@ export function InventoryTransactionsListPage() {
       } else {
         data = await inventoryTransactionsService.searchTransactions(querySpec);
       }
-      
+
       setTransactions(data);
     } catch (error: unknown) {
       const apiError = handleApiError(error);
@@ -150,7 +159,9 @@ export function InventoryTransactionsListPage() {
       if (isForbiddenError(apiError)) {
         setError(getForbiddenMessage("inventory transactions"));
       } else {
-        setError(getErrorMessage(apiError, "Failed to fetch inventory transactions"));
+        setError(
+          getErrorMessage(apiError, "Failed to fetch inventory transactions")
+        );
       }
     } finally {
       setIsLoading(false);
@@ -167,11 +178,11 @@ export function InventoryTransactionsListPage() {
   }, []);
 
   const handleSearch = (value: string) => {
-    setQuerySpec((prev) => ({ ...prev, searchTerm: value, page: 1 }));
+    setQuerySpec(prev => ({ ...prev, searchTerm: value, page: 1 }));
   };
 
   const handleSort = (field: string) => {
-    setQuerySpec((prev) => ({
+    setQuerySpec(prev => ({
       ...prev,
       sortBy: field,
       sortDesc: prev.sortBy === field ? !prev.sortDesc : false,
@@ -179,17 +190,38 @@ export function InventoryTransactionsListPage() {
   };
 
   const handlePageChange = (newPage: number) => {
-    setQuerySpec((prev) => ({ ...prev, page: newPage }));
+    setQuerySpec(prev => ({ ...prev, page: newPage }));
   };
 
   const getProductName = (productId: string) => {
-    const product = products.find((p) => p.id === productId);
+    const product = products.find(p => p.id === productId);
     return product?.name || productId;
   };
 
   const getWarehouseName = (warehouseId: string) => {
-    const warehouse = warehouses.find((w) => w.id === warehouseId);
+    const warehouse = warehouses.find(w => w.id === warehouseId);
     return warehouse?.name || warehouseId;
+  };
+
+  const handleExport = async (format: "xlsx" | "pdf") => {
+    try {
+      const blob =
+        format === "xlsx"
+          ? await inventoryTransactionsService.exportToXlsx()
+          : await inventoryTransactionsService.exportToPdf();
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `InventoryTransactions.${format}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      const apiError = handleApiError(error);
+      setError(getErrorMessage(apiError, `Failed to export transactions to ${format}`));
+    }
   };
 
   const getTypeBadgeVariant = (type: TransactionType) => {
@@ -224,6 +256,16 @@ export function InventoryTransactionsListPage() {
           View all inventory movement transactions
         </p>
       </div>
+      <div className="flex gap-2">
+        <Button variant="outline" onClick={() => handleExport("xlsx")}>
+          <FileDown className="mr-2 h-4 w-4" />
+          Export XLSX
+        </Button>
+        <Button variant="outline" onClick={() => handleExport("pdf")}>
+          <FileDown className="mr-2 h-4 w-4" />
+          Export PDF
+        </Button>
+      </div>
 
       <Card>
         <CardHeader>
@@ -243,70 +285,76 @@ export function InventoryTransactionsListPage() {
                   placeholder="Search transactions..."
                   className="pl-10"
                   value={querySpec.searchTerm}
-                  onChange={(e) => handleSearch(e.target.value)}
+                  onChange={e => handleSearch(e.target.value)}
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Filter by Product</label>
-                <select
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  value={filterProduct}
-                  onChange={(e) => {
-                    setFilterProduct(e.target.value);
-                    setFilterWarehouse("");
-                    setFilterType("");
-                  }}
-                >
-                  <option value="">All Products</option>
-                  {products.map((product) => (
-                    <option key={product.id} value={product.id}>
-                      {product.name}
-                    </option>
-                  ))}
-                </select>
+                <label className="text-sm font-medium flex flex-col gap-1">
+                  Filter by Product
+                  <select
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    value={filterProduct}
+                    onChange={e => {
+                      setFilterProduct(e.target.value);
+                      setFilterWarehouse("");
+                      setFilterType("");
+                    }}
+                  >
+                    <option value="">All Products</option>
+                    {products?.map(product => (
+                      <option key={product.id} value={product.id}>
+                        {product.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Filter by Warehouse</label>
-                <select
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  value={filterWarehouse}
-                  onChange={(e) => {
-                    setFilterWarehouse(e.target.value);
-                    setFilterProduct("");
-                    setFilterType("");
-                  }}
-                >
-                  <option value="">All Warehouses</option>
-                  {warehouses.map((warehouse) => (
-                    <option key={warehouse.id} value={warehouse.id}>
-                      {warehouse.name}
-                    </option>
-                  ))}
-                </select>
+                <label className="text-sm font-medium flex flex-col gap-1">
+                  Filter by Warehouse
+                  <select
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    value={filterWarehouse}
+                    onChange={e => {
+                      setFilterWarehouse(e.target.value);
+                      setFilterProduct("");
+                      setFilterType("");
+                    }}
+                  >
+                    <option value="">All Warehouses</option>
+                    {warehouses?.map(warehouse => (
+                      <option key={warehouse.id} value={warehouse.id}>
+                        {warehouse.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Filter by Type</label>
-                <select
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  value={filterType}
-                  onChange={(e) => {
-                    setFilterType(e.target.value as TransactionType | "");
-                    setFilterProduct("");
-                    setFilterWarehouse("");
-                  }}
-                >
-                  <option value="">All Types</option>
-                  {TRANSACTION_TYPES.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
-                </select>
+                <label className="text-sm font-medium flex flex-col gap-1">
+                  Filter by Type
+                  <select
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    value={filterType}
+                    onChange={e => {
+                      setFilterType(e.target.value as TransactionType | "");
+                      setFilterProduct("");
+                      setFilterWarehouse("");
+                    }}
+                  >
+                    <option value="">All Types</option>
+                    {TRANSACTION_TYPES?.map(type => (
+                      <option key={type.value} value={type.value}>
+                        {type.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
               </div>
             </div>
           </div>
@@ -366,15 +414,19 @@ export function InventoryTransactionsListPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {transactions.items.map((transaction) => (
+                    {transactions.items?.map(transaction => (
                       <TableRow key={transaction.id}>
                         <TableCell>
                           {formatDateTime(transaction.transactionDate)}
                         </TableCell>
                         <TableCell>
-                          <Badge variant={getTypeBadgeVariant(transaction.transactionType)}>
+                          <Badge
+                            variant={getTypeBadgeVariant(
+                              transaction.transactionType
+                            )}
+                          >
                             {TRANSACTION_TYPES.find(
-                              (t) => t.value === transaction.transactionType
+                              t => t.value === transaction.transactionType
                             )?.label || transaction.transactionType}
                           </Badge>
                         </TableCell>
@@ -397,7 +449,9 @@ export function InventoryTransactionsListPage() {
                           {transaction.quantity}
                         </TableCell>
                         <TableCell>
-                          <Link to={`/inventory/transactions/${transaction.id}`}>
+                          <Link
+                            to={`/inventory/transactions/${transaction.id}`}
+                          >
                             <Button variant="ghost" size="sm">
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -418,7 +472,9 @@ export function InventoryTransactionsListPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange((querySpec.page ?? 1) - 1)}
+                      onClick={() =>
+                        handlePageChange((querySpec.page ?? 1) - 1)
+                      }
                       disabled={!transactions.hasPreviousPage}
                     >
                       Previous
@@ -426,7 +482,9 @@ export function InventoryTransactionsListPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange((querySpec.page ?? 1) + 1)}
+                      onClick={() =>
+                        handlePageChange((querySpec.page ?? 1) + 1)
+                      }
                       disabled={!transactions.hasNextPage}
                     >
                       Next

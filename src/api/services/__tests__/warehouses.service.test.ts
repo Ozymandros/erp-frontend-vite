@@ -27,7 +27,6 @@ describe("WarehousesService", () => {
           id: "1",
           name: "Main Warehouse",
           location: "Building A",
-          isActive: true,
           createdAt: "2024-01-01",
           updatedAt: "2024-01-01",
           createdBy: "user1",
@@ -49,10 +48,6 @@ describe("WarehousesService", () => {
       const newWarehouse: CreateUpdateWarehouseDto = {
         name: "New Warehouse",
         location: "Building B",
-        address: "123 Main St",
-        city: "New York",
-        country: "USA",
-        isActive: true,
       };
 
       const mockWarehouse: WarehouseDto = {

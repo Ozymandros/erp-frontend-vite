@@ -1,11 +1,23 @@
 import { z } from "zod";
 
+// Helper for optional string fields: converts empty strings to undefined
+const optionalString = (maxLength: number, errorMessage: string) =>
+  z.preprocess(
+    val => {
+      if (!val || (typeof val === "string" && val.trim() === "")) {
+        return undefined;
+      }
+      return typeof val === "string" ? val.trim() : val;
+    },
+    z.union([z.string().max(maxLength, errorMessage), z.undefined()])
+  );
+
 export const ReserveStockSchema = z.object({
   productId: z.string().min(1, "Product is required"),
   warehouseId: z.string().min(1, "Warehouse is required"),
   quantity: z.number().int().min(1, "Quantity must be at least 1"),
   orderId: z.string().min(1, "Order ID is required"),
-  expiresAt: z.string().optional(),
+  expiresAt: optionalString(100, "Expires at must be less than 100 characters"),
 });
 
 export const StockTransferSchema = z.object({

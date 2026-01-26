@@ -11,10 +11,8 @@ describe("Product Validation Schemas", () => {
         sku: "SKU-001",
         name: "Test Product",
         description: "A test product",
-        category: "Electronics",
         unitPrice: 99.99,
         reorderLevel: 10,
-        isActive: true,
       };
 
       const result = CreateProductSchema.safeParse(validData);

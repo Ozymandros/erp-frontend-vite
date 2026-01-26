@@ -15,7 +15,35 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Package, ArrowRight, Minus } from "lucide-react";
 import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 
+import { useEffect } from "react";
+import { productsService } from "@/api/services/products.service";
+import { warehousesService } from "@/api/services/warehouses.service";
+import { ordersService } from "@/api/services/orders.service";
+import type { OrderDto } from "@/types/api.types";
+
 export function StockOperationsPage() {
+  const [products, setProducts] = useState<Array<{ id: string; name: string; sku: string }>>([]);
+  const [warehouses, setWarehouses] = useState<Array<{ id: string; name: string }>>([]);
+  const [orders, setOrders] = useState<OrderDto[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [productsData, warehousesData, ordersData] = await Promise.all([
+          productsService.getProducts(),
+          warehousesService.getWarehouses(),
+          ordersService.getOrders(),
+        ]);
+        setProducts(productsData);
+        setWarehouses(warehousesData);
+        setOrders(ordersData);
+      } catch (error) {
+        console.error("Failed to fetch data", error);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <div className="space-y-6">
       <div>
@@ -42,15 +70,15 @@ export function StockOperationsPage() {
             </TabsList>
 
             <TabsContent value="reserve" className="mt-6">
-              <ReserveStockForm />
+              <ReserveStockForm products={products} warehouses={warehouses} orders={orders} />
             </TabsContent>
 
             <TabsContent value="transfer" className="mt-6">
-              <TransferStockForm />
+              <TransferStockForm products={products} warehouses={warehouses} />
             </TabsContent>
 
             <TabsContent value="adjust" className="mt-6">
-              <AdjustStockForm />
+              <AdjustStockForm products={products} warehouses={warehouses} />
             </TabsContent>
 
             <TabsContent value="release" className="mt-6">
@@ -63,7 +91,13 @@ export function StockOperationsPage() {
   );
 }
 
-function ReserveStockForm() {
+interface OperationFormProps {
+  products: Array<{ id: string; name: string; sku: string }>;
+  warehouses: Array<{ id: string; name: string }>;
+  orders?: OrderDto[];
+}
+
+function ReserveStockForm({ products, warehouses, orders }: OperationFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -78,9 +112,9 @@ function ReserveStockForm() {
     const data = {
       productId: formData.get("productId") as string,
       warehouseId: formData.get("warehouseId") as string,
-      quantity: parseInt(formData.get("quantity") as string),
+      quantity: Number.parseInt(formData.get("quantity") as string),
       orderId: formData.get("orderId") as string,
-      expiresAt: formData.get("expiresAt") as string || undefined,
+      expiresAt: (formData.get("expiresAt") as string) || undefined,
     };
 
     try {
@@ -99,46 +133,77 @@ function ReserveStockForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Product ID</label>
-          <input
-            name="productId"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
+          <label className="text-sm font-medium flex flex-col gap-1">
+            Product
+            <select
+              name="productId"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">Select a product...</option>
+              {products?.map((product) => (
+                <option key={product.id} value={product.id}>
+                  {product.name} ({product.sku})
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Warehouse ID</label>
-          <input
-            name="warehouseId"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
+          <label className="text-sm font-medium flex flex-col gap-1">
+            Warehouse
+            <select
+              name="warehouseId"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">Select a warehouse...</option>
+              {warehouses?.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id}>
+                  {warehouse.name}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Quantity</label>
-          <input
-            name="quantity"
-            type="number"
-            required
-            min={1}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
+          <label className="text-sm font-medium flex flex-col gap-1">
+            Quantity
+            <input
+              name="quantity"
+              type="number"
+              required
+              min={1}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
+          </label>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Order ID</label>
-          <input
-            name="orderId"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
+          <label className="text-sm font-medium flex flex-col gap-1">
+            Order
+            <select
+              name="orderId"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">Select an order...</option>
+              {orders?.map((order) => (
+                <option key={order.id} value={order.id}>
+                  {order.orderNumber} ({order.status})
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Expires At (optional)</label>
-          <input
-            name="expiresAt"
-            type="datetime-local"
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
+          <label className="text-sm font-medium flex flex-col gap-1">
+            Expires At (optional)
+            <input
+              name="expiresAt"
+              type="datetime-local"
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
+          </label>
         </div>
       </div>
 
@@ -155,7 +220,7 @@ function ReserveStockForm() {
   );
 }
 
-function TransferStockForm() {
+function TransferStockForm({ products, warehouses }: OperationFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -171,7 +236,7 @@ function TransferStockForm() {
       productId: formData.get("productId") as string,
       fromWarehouseId: formData.get("fromWarehouseId") as string,
       toWarehouseId: formData.get("toWarehouseId") as string,
-      quantity: parseInt(formData.get("quantity") as string),
+      quantity: Number.parseInt(formData.get("quantity") as string),
       reason: formData.get("reason") as string,
     };
 
@@ -191,53 +256,86 @@ function TransferStockForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Product ID</label>
-          <input
-            name="productId"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
+          <label className="text-sm font-medium flex flex-col gap-1">
+            Product
+            <select
+              name="productId"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">Select a product...</option>
+              {products?.map((product) => (
+                <option key={product.id} value={product.id}>
+                  {product.name} ({product.sku})
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Quantity</label>
-          <input
-            name="quantity"
-            type="number"
-            required
-            min={1}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
+          <label className="text-sm font-medium flex flex-col gap-1">
+            Quantity
+            <input
+              name="quantity"
+              type="number"
+              required
+              min={1}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
+          </label>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">From Warehouse</label>
-          <input
-            name="fromWarehouseId"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
+          <label className="text-sm font-medium flex flex-col gap-1">
+            From Warehouse
+            <select
+              name="fromWarehouseId"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">Select source warehouse...</option>
+              {warehouses?.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id}>
+                  {warehouse.name}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">To Warehouse</label>
-          <input
-            name="toWarehouseId"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
+          <label className="text-sm font-medium flex flex-col gap-1">
+            To Warehouse
+            <select
+              name="toWarehouseId"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">Select destination warehouse...</option>
+              {warehouses?.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id}>
+                  {warehouse.name}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
         <div className="space-y-2 col-span-2">
-          <label className="text-sm font-medium">Reason</label>
-          <textarea
-            name="reason"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            rows={3}
-          />
+          <label className="text-sm font-medium flex flex-col gap-1">
+            Reason
+            <textarea
+              name="reason"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              rows={3}
+            />
+          </label>
         </div>
       </div>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
       {success && (
-        <p className="text-green-500 text-sm">Stock transferred successfully!</p>
+        <p className="text-green-500 text-sm">
+          Stock transferred successfully!
+        </p>
       )}
 
       <Button type="submit" disabled={isLoading}>
@@ -248,7 +346,7 @@ function TransferStockForm() {
   );
 }
 
-function AdjustStockForm() {
+function AdjustStockForm({ products, warehouses }: OperationFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -263,7 +361,7 @@ function AdjustStockForm() {
     const data = {
       productId: formData.get("productId") as string,
       warehouseId: formData.get("warehouseId") as string,
-      quantity: parseInt(formData.get("quantity") as string),
+      quantity: Number.parseInt(formData.get("quantity") as string),
       reason: formData.get("reason") as string,
       adjustmentType: formData.get("adjustmentType") as AdjustmentType,
     };
@@ -284,54 +382,78 @@ function AdjustStockForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Product ID</label>
-          <input
-            name="productId"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
+          <label className="text-sm font-medium flex flex-col gap-1">
+            Product
+            <select
+              name="productId"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">Select a product...</option>
+              {products?.map((product) => (
+                <option key={product.id} value={product.id}>
+                  {product.name} ({product.sku})
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Warehouse ID</label>
-          <input
-            name="warehouseId"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
+          <label className="text-sm font-medium flex flex-col gap-1">
+            Warehouse
+            <select
+              name="warehouseId"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">Select a warehouse...</option>
+              {warehouses?.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id}>
+                  {warehouse.name}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Quantity</label>
-          <input
-            name="quantity"
-            type="number"
-            required
-            min={1}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          />
+          <label className="text-sm font-medium flex flex-col gap-1">
+            Quantity
+            <input
+              name="quantity"
+              type="number"
+              required
+              min={1}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            />
+          </label>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Adjustment Type</label>
-          <select
-            name="adjustmentType"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          >
-            <option value="">Select type...</option>
-            <option value="Increase">Increase</option>
-            <option value="Decrease">Decrease</option>
-            <option value="Found">Found</option>
-            <option value="Lost">Lost</option>
-            <option value="Damaged">Damaged</option>
-          </select>
+          <label className="text-sm font-medium flex flex-col gap-1">
+            Adjustment Type
+            <select
+              name="adjustmentType"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">Select type...</option>
+              <option value="Increase">Increase</option>
+              <option value="Decrease">Decrease</option>
+              <option value="Found">Found</option>
+              <option value="Lost">Lost</option>
+              <option value="Damaged">Damaged</option>
+            </select>
+          </label>
         </div>
         <div className="space-y-2 col-span-2">
-          <label className="text-sm font-medium">Reason</label>
-          <textarea
-            name="reason"
-            required
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            rows={3}
-          />
+          <label className="text-sm font-medium flex flex-col gap-1">
+            Reason
+            <textarea
+              name="reason"
+              required
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              rows={3}
+            />
+          </label>
         </div>
       </div>
 
@@ -377,18 +499,22 @@ function ReleaseReservationForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <label className="text-sm font-medium">Reservation ID</label>
-        <input
-          name="reservationId"
-          required
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          placeholder="Enter reservation ID to release"
-        />
+        <label className="text-sm font-medium flex flex-col gap-1">
+          Reservation ID
+          <input
+            name="reservationId"
+            required
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            placeholder="Enter reservation ID to release"
+          />
+        </label>
       </div>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
       {success && (
-        <p className="text-green-500 text-sm">Reservation released successfully!</p>
+        <p className="text-green-500 text-sm">
+          Reservation released successfully!
+        </p>
       )}
 
       <Button type="submit" disabled={isLoading} variant="destructive">

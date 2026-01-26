@@ -20,9 +20,12 @@ class UsersService {
   async getUsersPaginated(
     params?: SearchParams
   ): Promise<PaginatedResponse<User>> {
-    return this.apiClient.get<PaginatedResponse<User>>(USERS_ENDPOINTS.PAGINATED, {
-      params,
-    });
+    return this.apiClient.get<PaginatedResponse<User>>(
+      USERS_ENDPOINTS.PAGINATED,
+      {
+        params,
+      }
+    );
   }
 
   async searchUsers(querySpec: QuerySpec): Promise<PaginatedResponse<User>> {
@@ -56,15 +59,31 @@ class UsersService {
   }
 
   async assignRole(userId: string, roleName: string): Promise<void> {
-    return this.apiClient.post<void>(USERS_ENDPOINTS.ASSIGN_ROLE(userId, roleName));
+    return this.apiClient.post<void>(
+      USERS_ENDPOINTS.ASSIGN_ROLE(userId, roleName)
+    );
   }
 
   async removeRole(userId: string, roleName: string): Promise<void> {
-    return this.apiClient.delete<void>(USERS_ENDPOINTS.REMOVE_ROLE(userId, roleName));
+    return this.apiClient.delete<void>(
+      USERS_ENDPOINTS.REMOVE_ROLE(userId, roleName)
+    );
   }
 
   async getUserRoles(userId: string): Promise<Role[]> {
     return this.apiClient.get<Role[]>(USERS_ENDPOINTS.GET_ROLES(userId));
+  }
+
+  async exportToXlsx(): Promise<Blob> {
+    return this.apiClient.get<Blob>(USERS_ENDPOINTS.EXPORT_XLSX, {
+      responseType: "blob",
+    });
+  }
+
+  async exportToPdf(): Promise<Blob> {
+    return this.apiClient.get<Blob>(USERS_ENDPOINTS.EXPORT_PDF, {
+      responseType: "blob",
+    });
   }
 }
 

@@ -1,24 +1,12 @@
 "use client"
 
 import type React from "react"
-import { createContext, useContext, useState, useEffect, useCallback } from "react"
+import { useContext, useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { authService } from "@/api/services/auth.service"
 import { getApiClient } from "@/api/clients"
 import type { User, LoginRequest, RegisterRequest } from "@/types/api.types"
-
-interface AuthContextType {
-  user: User | null
-  isAuthenticated: boolean
-  isLoading: boolean
-  login: (credentials: LoginRequest) => Promise<void>
-  register: (data: RegisterRequest) => Promise<void>
-  logout: () => Promise<void>
-  checkPermission: (module: string, action: string) => Promise<boolean>
-  refreshUserData: () => Promise<void>
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+import { AuthContext, type AuthContextType } from "./auth.context-object"
 
 const ACCESS_TOKEN_KEY = "access_token"
 const REFRESH_TOKEN_KEY = "refresh_token"

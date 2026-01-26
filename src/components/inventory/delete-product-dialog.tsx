@@ -15,10 +15,10 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface DeleteProductDialogProps {
-  product: ProductDto | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
+  readonly product: ProductDto | null;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+  readonly onSuccess: () => void;
 }
 
 export function DeleteProductDialog({
@@ -74,11 +74,7 @@ export function DeleteProductDialog({
             <p>
               <strong>Name:</strong> {product.name}
             </p>
-            {product.category && (
-              <p>
-                <strong>Category:</strong> {product.category}
-              </p>
-            )}
+
           </div>
         </div>
 

@@ -22,11 +22,15 @@ const silentAnalyticsLog = (data: any) => {
   ) {
     return;
   }
-  fetch("http://127.0.0.1:7243/ingest/f4501e27-82bc-42a1-8239-00d978106f66", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  }).catch(() => {});
+  // Only log if analytics endpoint is configured via environment variable
+  const analyticsEndpoint = import.meta.env.VITE_ANALYTICS_ENDPOINT;
+  if (analyticsEndpoint) {
+    fetch(analyticsEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    }).catch(() => {});
+  }
 };
 
 export class AxiosApiClient implements ApiClient {
@@ -112,7 +116,7 @@ export class AxiosApiClient implements ApiClient {
           details = errorData.errors;
           // Build a user-friendly message from validation errors
           const validationMessages = Object.entries(errorData.errors)
-            .map(([field, messages]) => {
+            ?.map(([field, messages]) => {
               const fieldMessages = Array.isArray(messages)
                 ? messages
                 : [messages];

@@ -1,13 +1,10 @@
 import { z } from "zod";
 
+
+
 export const CreateWarehouseSchema = z.object({
   name: z.string().min(1, "Name is required").max(255, "Name must be less than 255 characters"),
-  location: z.string().max(255, "Location must be less than 255 characters").optional(),
-  address: z.string().max(500, "Address must be less than 500 characters").optional(),
-  city: z.string().max(100, "City must be less than 100 characters").optional(),
-  country: z.string().max(100, "Country must be less than 100 characters").optional(),
-  postalCode: z.string().max(20, "Postal code must be less than 20 characters").optional(),
-  isActive: z.boolean().default(true),
+  location: z.string().min(1, "Location is required").max(255, "Location must be less than 255 characters"),
 });
 
 export const UpdateWarehouseSchema = CreateWarehouseSchema;
