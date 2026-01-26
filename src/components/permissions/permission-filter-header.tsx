@@ -18,18 +18,27 @@ export const PermissionFilterHeader = ({
 }: FilterProps) => {
   const [internalFilters, setInternalFilters] = useState<
     Record<string, string>
-  >({ search: "", role: "" });
+  >({ search: "", role: "all" });
   const [roles, setRoles] = useState<Role[]>([]);
   const isControlled = controlledFilters !== undefined;
   const filters = isControlled ? controlledFilters! : internalFilters;
 
   const handleChange = (key: string, value: string) => {
+    // Create the updated filters object
     const updated = { ...filters, [key]: value };
+    
+    // If role is "all", remove it from the filters sent to parent
+    // (or convert to empty string if backend expects that)
+    const filtersToSend = { ...updated };
+    if (filtersToSend.role === "all") {
+      filtersToSend.role = "";
+    }
+    
     if (isControlled) {
-      onFilterChange?.(updated);
+      onFilterChange?.(filtersToSend);
     } else {
       setInternalFilters(updated);
-      onFilterChange?.(updated);
+      onFilterChange?.(filtersToSend);
     }
   };
 
@@ -59,7 +68,7 @@ export const PermissionFilterHeader = ({
       >
         <Select.Trigger className="w-[200px]" />
         <Select.Content>
-          <Select.Item value="">Tots els rols</Select.Item>
+          <Select.Item value="all">Tots els rols</Select.Item>
           {roles.map(role => (
             <Select.Item key={role.id} value={role.id}>
               {role.name}
