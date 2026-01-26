@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+
 import { warehousesService } from "@/api/services/warehouses.service";
-import type { WarehouseDto } from "@/types/api.types";
+import type { WarehouseDto, QuerySpec } from "@/types/api.types";
 import { CreateWarehouseDialog } from "@/components/inventory/create-warehouse-dialog";
 import { EditWarehouseDialog } from "@/components/inventory/edit-warehouse-dialog";
 import { DeleteWarehouseDialog } from "@/components/inventory/delete-warehouse-dialog";
@@ -14,6 +14,8 @@ import { getWarehouseColumns } from "./warehouses.columns";
 import { downloadBlob } from "@/lib/export.utils";
 
 export function WarehousesListPage() {
+  const fetcher = (qs: QuerySpec) => warehousesService.searchWarehouses(qs);
+
   const {
     data: warehouses,
     isLoading,
@@ -25,7 +27,7 @@ export function WarehousesListPage() {
     setError,
     refresh,
   } = useDataTable<WarehouseDto>({
-    fetcher: (qs) => warehousesService.searchWarehouses(qs),
+    fetcher,
     initialQuery: {
       searchFields: "name,location",
     },

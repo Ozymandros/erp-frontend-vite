@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+
 import { customersService } from "@/api/services/customers.service";
-import type { CustomerDto } from "@/types/api.types";
+import type { CustomerDto, QuerySpec } from "@/types/api.types";
 import { CreateCustomerDialog } from "@/components/sales/create-customer-dialog";
 import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 import { useDataTable } from "@/hooks/use-data-table";
@@ -12,6 +12,8 @@ import { customerColumns } from "./customers.columns";
 import { downloadBlob } from "@/lib/export.utils";
 
 export function CustomersListPage() {
+  const fetcher = (qs: QuerySpec) => customersService.searchCustomers(qs);
+
   const {
     data: customers,
     isLoading,
@@ -23,7 +25,7 @@ export function CustomersListPage() {
     setError,
     refresh,
   } = useDataTable<CustomerDto>({
-    fetcher: (qs) => customersService.searchCustomers(qs),
+    fetcher,
     initialQuery: {
       searchFields: "name,email",
     },

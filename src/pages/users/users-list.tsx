@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+
 import { usersService } from "@/api/services/users.service";
-import type { User } from "@/types/api.types";
+import type { User, QuerySpec } from "@/types/api.types";
 import { CreateUserDialog } from "@/components/users/create-user-dialog";
 import { EditUserDialog } from "@/components/users/edit-user-dialog";
 import { DeleteUserDialog } from "@/components/users/delete-user-dialog";
@@ -14,6 +14,8 @@ import { getUserColumns } from "./users.columns";
 import { downloadBlob } from "@/lib/export.utils";
 
 export function UsersListPage() {
+  const fetcher = (qs: QuerySpec) => usersService.searchUsers(qs);
+
   const {
     data: users,
     isLoading,
@@ -25,7 +27,7 @@ export function UsersListPage() {
     setError,
     refresh,
   } = useDataTable<User>({
-    fetcher: (qs) => usersService.searchUsers(qs),
+    fetcher,
     initialQuery: {
       searchFields: "username,email,firstName,lastName",
     },

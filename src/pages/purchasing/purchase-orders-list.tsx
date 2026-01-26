@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { purchaseOrdersService } from "@/api/services/purchase-orders.service";
 import { suppliersService } from "@/api/services/suppliers.service";
-import type { PurchaseOrderDto, SupplierDto } from "@/types/api.types";
+import type { PurchaseOrderDto, SupplierDto, QuerySpec } from "@/types/api.types";
 import { CreatePurchaseOrderDialog } from "@/components/purchasing/create-purchase-order-dialog";
 import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 import { useDataTable } from "@/hooks/use-data-table";
@@ -14,6 +14,8 @@ import { downloadBlob } from "@/lib/export.utils";
 
 export function PurchaseOrdersListPage() {
   const [suppliers, setSuppliers] = useState<SupplierDto[]>([]);
+
+  const fetcher = (qs: QuerySpec) => purchaseOrdersService.searchPurchaseOrders(qs);
 
   const {
     data: purchaseOrders,
@@ -26,7 +28,7 @@ export function PurchaseOrdersListPage() {
     setError,
     refresh,
   } = useDataTable<PurchaseOrderDto>({
-    fetcher: (qs) => purchaseOrdersService.searchPurchaseOrders(qs),
+    fetcher,
     initialQuery: {
       pageSize: 20,
       searchFields: "orderNumber",

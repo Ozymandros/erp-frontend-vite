@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { productsService } from "@/api/services/products.service";
-import type { ProductDto } from "@/types/api.types";
+import type { ProductDto, QuerySpec } from "@/types/api.types";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 import { CreateProductDialog } from "@/components/inventory/create-product-dialog";
@@ -17,6 +17,22 @@ import { downloadBlob } from "@/lib/export.utils";
 
 export function ProductsListPage() {
   const [showLowStock, setShowLowStock] = useState(false);
+  
+  const fetcher = async (qs: QuerySpec) => {
+    if (showLowStock) {
+      const items = await productsService.getLowStockProducts();
+      return {
+        items,
+        page: 1,
+        pageSize: items.length,
+        total: items.length,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPreviousPage: false,
+      };
+    }
+    return productsService.searchProducts(qs);
+  }
 
   const {
     data: products,
@@ -29,21 +45,7 @@ export function ProductsListPage() {
     setError,
     refresh,
   } = useDataTable<ProductDto>({
-    fetcher: async (qs) => {
-      if (showLowStock) {
-        const items = await productsService.getLowStockProducts();
-        return {
-          items,
-          page: 1,
-          pageSize: items.length,
-          total: items.length,
-          totalPages: 1,
-          hasNextPage: false,
-          hasPreviousPage: false,
-        };
-      }
-      return productsService.searchProducts(qs);
-    },
+    fetcher,
     initialQuery: {
       searchFields: "sku,name",
     },

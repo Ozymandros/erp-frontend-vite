@@ -1,8 +1,8 @@
 "use client"
 
-import React from "react"
+
 import { permissionsService } from "@/api/services/permissions.service"
-import type { Permission } from "@/types/api.types"
+import type { Permission, QuerySpec } from "@/types/api.types"
 import { CreatePermissionDialog } from "@/components/permissions/create-permission-dialog"
 import { EditPermissionDialog } from "@/components/permissions/edit-permission-dialog"
 import { DeletePermissionDialog } from "@/components/permissions/delete-permission-dialog"
@@ -15,6 +15,13 @@ import { downloadBlob } from "@/lib/export.utils"
 import { PermissionFilterHeader } from "@/components/permissions/permission-filter-header"
 
 export function PermissionsListPage() {
+  const fetcher = (qs: QuerySpec) =>
+    permissionsService.getPermissionsPaginated({
+      page: qs.page || 1,
+      pageSize: qs.pageSize || 10,
+      search: qs.searchTerm || undefined,
+    });
+
   const {
     data: permissions,
     isLoading,
@@ -26,12 +33,7 @@ export function PermissionsListPage() {
     setError,
     refresh,
   } = useDataTable<Permission>({
-    fetcher: (qs) =>
-      permissionsService.getPermissionsPaginated({
-        page: qs.page || 1,
-        pageSize: qs.pageSize || 10,
-        search: qs.searchTerm || undefined,
-      }),
+    fetcher,
     resourceName: "permissions",
   })
 

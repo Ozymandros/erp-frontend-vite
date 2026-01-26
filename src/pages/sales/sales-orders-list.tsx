@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { salesOrdersService } from "@/api/services/sales-orders.service";
 import { customersService } from "@/api/services/customers.service";
-import type { SalesOrderDto, CustomerDto } from "@/types/api.types";
+import type { SalesOrderDto, CustomerDto, QuerySpec } from "@/types/api.types";
 import { CreateSalesOrderDialog } from "@/components/sales/create-sales-order-dialog";
 import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 import { useDataTable } from "@/hooks/use-data-table";
@@ -14,6 +14,8 @@ import { downloadBlob } from "@/lib/export.utils";
 
 export function SalesOrdersListPage() {
   const [customers, setCustomers] = useState<CustomerDto[]>([]);
+
+  const fetcher = (qs: QuerySpec) => salesOrdersService.searchSalesOrders(qs);
 
   const {
     data: salesOrders,
@@ -26,7 +28,7 @@ export function SalesOrdersListPage() {
     setError,
     refresh,
   } = useDataTable<SalesOrderDto>({
-    fetcher: (qs) => salesOrdersService.searchSalesOrders(qs),
+    fetcher,
     initialQuery: {
       pageSize: 20,
       searchFields: "orderNumber",

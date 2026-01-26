@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ordersService } from "@/api/services/orders.service";
 import { customersService } from "@/api/services/customers.service";
-import type { OrderDto, CustomerDto } from "@/types/api.types";
+import type { OrderDto, CustomerDto, QuerySpec } from "@/types/api.types";
 import { CreateOrderDialog } from "@/components/orders/create-order-dialog";
 import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 import { useDataTable } from "@/hooks/use-data-table";
@@ -14,6 +14,19 @@ import { downloadBlob } from "@/lib/export.utils";
 
 export function OrdersListPage() {
   const [customers, setCustomers] = useState<CustomerDto[]>([]);
+
+  const fetcher = async (_qs: QuerySpec) => {
+    const items = await ordersService.getOrders();
+    return {
+      items,
+      page: 1,
+      pageSize: items.length,
+      total: items.length,
+      totalPages: 1,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    };
+  };
 
   const {
     data: ordersResponse,
@@ -26,18 +39,7 @@ export function OrdersListPage() {
     setError,
     refresh,
   } = useDataTable<OrderDto>({
-    fetcher: async () => {
-      const items = await ordersService.getOrders();
-      return {
-        items,
-        page: 1,
-        pageSize: items.length,
-        total: items.length,
-        totalPages: 1,
-        hasNextPage: false,
-        hasPreviousPage: false,
-      };
-    },
+    fetcher,
     resourceName: "orders",
   });
 

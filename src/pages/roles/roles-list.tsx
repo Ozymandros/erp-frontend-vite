@@ -1,8 +1,8 @@
 "use client"
 
-import React from "react"
+
 import { rolesService } from "@/api/services/roles.service"
-import type { Role } from "@/types/api.types"
+import type { Role, QuerySpec } from "@/types/api.types"
 import { CreateRoleDialog } from "@/components/roles/create-role-dialog"
 import { EditRoleDialog } from "@/components/roles/edit-role-dialog"
 import { DeleteRoleDialog } from "@/components/roles/delete-role-dialog"
@@ -14,6 +14,13 @@ import { getRoleColumns } from "./roles.columns"
 import { downloadBlob } from "@/lib/export.utils"
 
 export function RolesListPage() {
+  const fetcher = (qs: QuerySpec) =>
+    rolesService.getRolesPaginated({
+      page: qs.page || 1,
+      pageSize: qs.pageSize || 10,
+      search: qs.searchTerm || undefined,
+    });
+
   const {
     data: roles,
     isLoading,
@@ -25,12 +32,7 @@ export function RolesListPage() {
     setError,
     refresh,
   } = useDataTable<Role>({
-    fetcher: (qs) =>
-      rolesService.getRolesPaginated({
-        page: qs.page || 1,
-        pageSize: qs.pageSize || 10,
-        search: qs.searchTerm || undefined,
-      }),
+    fetcher,
     resourceName: "roles",
   })
 

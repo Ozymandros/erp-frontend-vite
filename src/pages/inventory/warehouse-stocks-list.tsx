@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { warehouseStocksService } from "@/api/services/warehouse-stocks.service";
 import { productsService } from "@/api/services/products.service";
 import { warehousesService } from "@/api/services/warehouses.service";
@@ -8,6 +8,7 @@ import type {
   WarehouseStockDto,
   ProductDto,
   WarehouseDto,
+  QuerySpec,
 } from "@/types/api.types";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
@@ -24,6 +25,29 @@ export function WarehouseStocksListPage() {
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<string>("");
 
+  const fetcher = async (_qs: QuerySpec) => {
+    let data: WarehouseStockDto[] = [];
+    if (filterType === "low") {
+      data = await warehouseStocksService.getLowStocks();
+    } else if (filterType === "product" && selectedProductId) {
+      data = await warehouseStocksService.getStocksByProduct(selectedProductId);
+    } else if (filterType === "warehouse" && selectedWarehouseId) {
+      data = await warehouseStocksService.getStocksByWarehouse(selectedWarehouseId);
+    } else {
+      data = await warehouseStocksService.getLowStocks();
+      if (filterType === "all") setFilterType("low");
+    }
+    return {
+      items: data,
+      page: 1,
+      pageSize: data.length,
+      total: data.length,
+      totalPages: 1,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    };
+  };
+
   const {
     data: stocks,
     isLoading,
@@ -35,28 +59,7 @@ export function WarehouseStocksListPage() {
     setError,
     refresh,
   } = useDataTable<WarehouseStockDto>({
-    fetcher: async () => {
-      let data: WarehouseStockDto[] = [];
-      if (filterType === "low") {
-        data = await warehouseStocksService.getLowStocks();
-      } else if (filterType === "product" && selectedProductId) {
-        data = await warehouseStocksService.getStocksByProduct(selectedProductId);
-      } else if (filterType === "warehouse" && selectedWarehouseId) {
-        data = await warehouseStocksService.getStocksByWarehouse(selectedWarehouseId);
-      } else {
-        data = await warehouseStocksService.getLowStocks();
-        if (filterType === "all") setFilterType("low");
-      }
-      return {
-        items: data,
-        page: 1,
-        pageSize: data.length,
-        total: data.length,
-        totalPages: 1,
-        hasNextPage: false,
-        hasPreviousPage: false,
-      };
-    },
+    fetcher,
     resourceName: "warehouse stocks",
   });
 
@@ -126,17 +129,17 @@ export function WarehouseStocksListPage() {
       onSort={handleSort}
       onPageChange={handlePageChange}
       onExport={handleExport}
-      onCreateOpen={() => {}} // Disabled as there's no manual record creation
+      onCreateOpen={() => { }} // Disabled as there's no manual record creation
       columns={columns}
       cardTitle="Stock Levels"
       cardDescription={
         filterType === "low"
           ? "Products with low stock levels"
           : filterType === "product"
-          ? `Stock for ${getProductName(selectedProductId)}`
-          : filterType === "warehouse"
-          ? `Stock in ${getWarehouseName(selectedWarehouseId)}`
-          : "All warehouse stocks"
+            ? `Stock for ${getProductName(selectedProductId)}`
+            : filterType === "warehouse"
+              ? `Stock in ${getWarehouseName(selectedWarehouseId)}`
+              : "All warehouse stocks"
       }
       extraHeaderActions={
         <div className="flex flex-wrap gap-4">

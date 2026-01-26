@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { inventoryTransactionsService } from "@/api/services/inventory-transactions.service";
 import { productsService } from "@/api/services/products.service";
 import { warehousesService } from "@/api/services/warehouses.service";
 import type {
   InventoryTransactionDto,
   TransactionType,
+  QuerySpec,
 } from "@/types/api.types";
 import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 import { useDataTable } from "@/hooks/use-data-table";
@@ -32,6 +33,20 @@ export function InventoryTransactionsListPage() {
   const [filterWarehouse, setFilterWarehouse] = useState<string>("");
   const [filterType, setFilterType] = useState<TransactionType | "">("");
 
+  const fetcher = async (qs: QuerySpec) => {
+    if (filterProduct) {
+      const txns = await inventoryTransactionsService.getTransactionsByProduct(filterProduct);
+      return wrapItems(txns);
+    } else if (filterWarehouse) {
+      const txns = await inventoryTransactionsService.getTransactionsByWarehouse(filterWarehouse);
+      return wrapItems(txns);
+    } else if (filterType) {
+      const txns = await inventoryTransactionsService.getTransactionsByType(filterType as TransactionType);
+      return wrapItems(txns);
+    }
+    return inventoryTransactionsService.searchTransactions(qs);
+  };
+
   const {
     data: transactions,
     isLoading,
@@ -43,19 +58,7 @@ export function InventoryTransactionsListPage() {
     setError,
     refresh,
   } = useDataTable<InventoryTransactionDto>({
-    fetcher: async (qs) => {
-      if (filterProduct) {
-        const txns = await inventoryTransactionsService.getTransactionsByProduct(filterProduct);
-        return wrapItems(txns);
-      } else if (filterWarehouse) {
-        const txns = await inventoryTransactionsService.getTransactionsByWarehouse(filterWarehouse);
-        return wrapItems(txns);
-      } else if (filterType) {
-        const txns = await inventoryTransactionsService.getTransactionsByType(filterType as TransactionType);
-        return wrapItems(txns);
-      }
-      return inventoryTransactionsService.searchTransactions(qs);
-    },
+    fetcher,
     initialQuery: {
       pageSize: 20,
       searchFields: "transactionType",
