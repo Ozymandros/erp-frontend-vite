@@ -48,25 +48,15 @@ class CustomersService {
   }
 
   async exportToXlsx(): Promise<Blob> {
-    const response = await fetch(CUSTOMERS_ENDPOINTS.EXPORT_XLSX, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
+    return this.apiClient.get<Blob>(CUSTOMERS_ENDPOINTS.EXPORT_XLSX, {
+      responseType: "blob",
     });
-    if (!response.ok) throw new Error("Failed to export customers to XLSX");
-    return response.blob();
   }
 
   async exportToPdf(): Promise<Blob> {
-    const response = await fetch(CUSTOMERS_ENDPOINTS.EXPORT_PDF, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
+    return this.apiClient.get<Blob>(CUSTOMERS_ENDPOINTS.EXPORT_PDF, {
+      responseType: "blob",
     });
-    if (!response.ok) throw new Error("Failed to export customers to PDF");
-    return response.blob();
   }
 }
 

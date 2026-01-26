@@ -112,6 +112,16 @@ export class DaprHttpClient implements ApiClient {
         )
       }
 
+      if (config?.responseType === 'blob') {
+        const blob = await response.blob()
+        return blob as T
+      }
+
+      if (config?.responseType === 'text') {
+        const text = await response.text()
+        return text as T
+      }
+      
       const responseData = await response.json()
 
       if (this.onResponse) {

@@ -7,10 +7,13 @@ export interface ApiClientConfig {
   headers?: Record<string, string>
 }
 
+export type ResponseType = 'arraybuffer' | 'blob' | 'document' | 'json' | 'text' | 'stream'
+
 export interface RequestConfig {
   headers?: Record<string, string>
   params?: Record<string, any>
   signal?: AbortSignal
+  responseType?: ResponseType
 }
 
 export interface ApiClient {

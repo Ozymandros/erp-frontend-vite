@@ -82,25 +82,15 @@ class RolesService {
   }
 
   async exportToXlsx(): Promise<Blob> {
-    const response = await fetch(ROLES_ENDPOINTS.EXPORT_XLSX, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
+    return this.apiClient.get<Blob>(ROLES_ENDPOINTS.EXPORT_XLSX, {
+      responseType: "blob",
     });
-    if (!response.ok) throw new Error("Failed to export roles to XLSX");
-    return response.blob();
   }
 
   async exportToPdf(): Promise<Blob> {
-    const response = await fetch(ROLES_ENDPOINTS.EXPORT_PDF, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
+    return this.apiClient.get<Blob>(ROLES_ENDPOINTS.EXPORT_PDF, {
+      responseType: "blob",
     });
-    if (!response.ok) throw new Error("Failed to export roles to PDF");
-    return response.blob();
   }
 }
 

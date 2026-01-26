@@ -75,25 +75,15 @@ class UsersService {
   }
 
   async exportToXlsx(): Promise<Blob> {
-    const response = await fetch(USERS_ENDPOINTS.EXPORT_XLSX, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
+    return this.apiClient.get<Blob>(USERS_ENDPOINTS.EXPORT_XLSX, {
+      responseType: "blob",
     });
-    if (!response.ok) throw new Error("Failed to export users to XLSX");
-    return response.blob();
   }
 
   async exportToPdf(): Promise<Blob> {
-    const response = await fetch(USERS_ENDPOINTS.EXPORT_PDF, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
+    return this.apiClient.get<Blob>(USERS_ENDPOINTS.EXPORT_PDF, {
+      responseType: "blob",
     });
-    if (!response.ok) throw new Error("Failed to export users to PDF");
-    return response.blob();
   }
 }
 

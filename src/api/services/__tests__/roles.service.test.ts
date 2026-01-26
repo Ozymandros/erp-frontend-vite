@@ -255,4 +255,44 @@ describe("RolesService", () => {
       expect(result).toEqual(mockPermissions);
     });
   });
+
+  describe("exportToXlsx", () => {
+    it("should export roles to XLSX", async () => {
+      const mockBlob = new Blob(["mock xlsx content"], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      mockApiClient.get.mockResolvedValue(mockBlob);
+
+      const result = await rolesService.exportToXlsx();
+
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        "/auth/api/roles/export-xlsx",
+        {
+          responseType: "blob",
+        }
+      );
+      expect(result).toBe(mockBlob);
+    });
+  });
+
+  describe("exportToPdf", () => {
+    it("should export roles to PDF", async () => {
+      const mockBlob = new Blob(["mock pdf content"], {
+        type: "application/pdf",
+      });
+
+      mockApiClient.get.mockResolvedValue(mockBlob);
+
+      const result = await rolesService.exportToPdf();
+
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        "/auth/api/roles/export-pdf",
+        {
+          responseType: "blob",
+        }
+      );
+      expect(result).toBe(mockBlob);
+    });
+  });
 });

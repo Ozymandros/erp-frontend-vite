@@ -107,33 +107,15 @@ class PurchaseOrdersService {
   }
 
   async exportToXlsx(): Promise<Blob> {
-    const response = await fetch(PURCHASE_ORDERS_ENDPOINTS.EXPORT_XLSX, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-      },
+    return this.apiClient.get<Blob>(PURCHASE_ORDERS_ENDPOINTS.EXPORT_XLSX, {
+      responseType: "blob",
     });
-    
-    if (!response.ok) {
-      throw new Error('Failed to export purchase orders to XLSX');
-    }
-    
-    return response.blob();
   }
 
   async exportToPdf(): Promise<Blob> {
-    const response = await fetch(PURCHASE_ORDERS_ENDPOINTS.EXPORT_PDF, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-      },
+    return this.apiClient.get<Blob>(PURCHASE_ORDERS_ENDPOINTS.EXPORT_PDF, {
+      responseType: "blob",
     });
-    
-    if (!response.ok) {
-      throw new Error('Failed to export purchase orders to PDF');
-    }
-    
-    return response.blob();
   }
 }
 
