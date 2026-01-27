@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useContext, useState, useEffect, useCallback } from "react"
+import { useContext, useState, useEffect, useCallback, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { authService } from "@/api/services/auth.service"
 import { getApiClient } from "@/api/clients"
@@ -17,6 +17,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
+  const permissionCache = useRef<Map<string, Promise<boolean>>>(new Map())
+
   // Store tokens in sessionStorage
   const storeTokens = useCallback((accessToken: string, refreshToken: string, expiresIn: number) => {
     sessionStorage.setItem(ACCESS_TOKEN_KEY, accessToken)
@@ -27,6 +29,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Set token in API client
     const apiClient = getApiClient()
     apiClient.setAuthToken(accessToken)
+    
+    // Clear permission cache on new token/login
+    permissionCache.current.clear()
   }, [])
 
   // Clear tokens from storage
@@ -38,6 +43,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Clear token from API client
     const apiClient = getApiClient()
     apiClient.setAuthToken(null)
+    
+    // Clear permission cache
+    permissionCache.current.clear()
   }, [])
 
   // Get stored access token
@@ -72,6 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const response = await authService.refreshToken(accessToken, refreshToken)
       storeTokens(response.accessToken, response.refreshToken, response.expiresIn)
       setUser(response.user)
+      // Cache is cleared in storeTokens
       return response.accessToken
     } catch (error) {
       console.error("[Auth] Token refresh failed:", error)
@@ -86,6 +95,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const userData = await authService.getCurrentUser()
       setUser(userData)
+      // Permissions in user object might have changed, but checkPermission checks distinct endpoint.
+      // Safer to clear cache to ensure consistency.
+      permissionCache.current.clear()
     } catch (error) {
       console.error("[Auth] Failed to fetch user data:", error)
       clearTokens()
@@ -138,14 +150,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [clearTokens, navigate])
 
   // Check permission
-  const checkPermission = useCallback(async (module: string, action: string): Promise<boolean> => {
-    try {
-      const response = await authService.checkPermission(module, action)
-      return response.allowed
-    } catch (error) {
-      console.error("[Auth] Permission check failed:", error)
-      return false
+  const checkPermission = useCallback((module: string, action: string): Promise<boolean> => {
+    const key = `${module}:${action}`.toLowerCase()
+    
+    // Return existing promise (resolved or pending) if found
+    if (permissionCache.current.has(key)) {
+      return permissionCache.current.get(key)!
     }
+
+    // Create and cache the promise immediately to prevent duplicate flight
+    const promise = authService.checkPermission(module, action)
+      .then((response) => response.allowed)
+      .catch((error) => {
+        console.error("[Auth] Permission check failed:", error)
+        // We could delete the key on error to allow retry, but for simplicity/stability we default to false
+        return false
+      })
+
+    permissionCache.current.set(key, promise)
+    return promise
   }, [])
 
   // Refresh user data
