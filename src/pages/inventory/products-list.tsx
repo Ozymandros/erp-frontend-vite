@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { productsService } from "@/api/services/products.service";
 import type { ProductDto, QuerySpec } from "@/types/api.types";
 import { Button } from "@/components/ui/button";
@@ -8,12 +8,12 @@ import { AlertTriangle } from "lucide-react";
 import { CreateProductDialog } from "@/components/inventory/create-product-dialog";
 import { EditProductDialog } from "@/components/inventory/edit-product-dialog";
 import { DeleteProductDialog } from "@/components/inventory/delete-product-dialog";
-import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useListActions } from "@/hooks/use-list-actions";
+import { useModulePermissions } from "@/hooks/use-permissions";
+import { useExport } from "@/hooks/use-export";
 import { ListPageLayout } from "@/components/layout/list-page-layout";
 import { getProductColumns } from "./products.columns";
-import { downloadBlob } from "@/lib/export.utils";
 
 export function ProductsListPage() {
   const [showLowStock, setShowLowStock] = useState(false);
@@ -37,12 +37,11 @@ export function ProductsListPage() {
   const {
     data: products,
     isLoading,
-    error,
+    error: dataError,
     querySpec,
     handleSearch,
     handleSort,
     handlePageChange,
-    setError,
     refresh,
   } = useDataTable<ProductDto>({
     fetcher,
@@ -52,6 +51,10 @@ export function ProductsListPage() {
     resourceName: "products",
   });
 
+  // Permissions
+  const { canCreate, canUpdate, canDelete, canExport } = useModulePermissions("products");
+
+  // Actions
   const {
     isCreateOpen,
     setIsCreateOpen,
@@ -64,23 +67,22 @@ export function ProductsListPage() {
     handleDeleted,
   } = useListActions<ProductDto>({ refresh });
 
-  const handleExport = async (format: "xlsx" | "pdf") => {
-    try {
-      const blob =
-        format === "xlsx"
-          ? await productsService.exportToXlsx()
-          : await productsService.exportToPdf();
+  // Export
+  const { handleExport, exportError } = useExport({
+    resourceName: "Products",
+    onExport: (format) =>
+      format === "xlsx"
+        ? productsService.exportToXlsx()
+        : productsService.exportToPdf(),
+  });
 
-      await downloadBlob(blob, `Products.${format}`);
-    } catch (err) {
-      const apiError = handleApiError(err);
-      setError(getErrorMessage(apiError, `Failed to export products to ${format}`));
-    }
-  };
+  const error = dataError || exportError;
 
   const columns = getProductColumns({
     onEdit: setEditingItem,
     onDelete: setDeletingItem,
+    canEdit: canUpdate,
+    canDelete: canDelete,
   });
 
   return (
@@ -95,8 +97,8 @@ export function ProductsListPage() {
       onSearch={handleSearch}
       onSort={handleSort}
       onPageChange={handlePageChange}
-      onExport={handleExport}
-      onCreateOpen={() => setIsCreateOpen(true)}
+      onExport={canExport ? handleExport : undefined}
+      onCreateOpen={canCreate ? () => setIsCreateOpen(true) : undefined}
       columns={columns}
       searchPlaceholder="Search by SKU or name..."
       cardTitle="All Products"

@@ -1,4 +1,3 @@
-import React from "react"
 import { Link } from "react-router-dom"
 import { Eye, Pencil, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -8,11 +7,13 @@ import { Role } from "@/types/api.types"
 import { formatDateTime } from "@/lib/utils"
 
 interface RoleColumnsProps {
-  onEdit: (role: Role) => void
-  onDelete: (role: Role) => void
+  onEdit: (role: Role) => void;
+  onDelete: (role: Role) => void;
+  canEdit?: boolean;
+  canDelete?: boolean;
 }
 
-export function getRoleColumns({ onEdit, onDelete }: RoleColumnsProps): Column<Role>[] {
+export function getRoleColumns({ onEdit, onDelete, canEdit = true, canDelete = true }: RoleColumnsProps): Column<Role>[] {
   return [
     {
       header: "Name",
@@ -44,17 +45,21 @@ export function getRoleColumns({ onEdit, onDelete }: RoleColumnsProps): Column<R
       className: "text-right",
       accessor: (role) => (
         <div className="flex items-center justify-end gap-2">
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild title="View Details">
             <Link to={`/roles/${role.id}`}>
               <Eye className="h-4 w-4" />
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => onEdit(role)}>
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => onDelete(role)}>
-            <Trash2 className="h-4 w-4 text-destructive" />
-          </Button>
+          {canEdit && (
+            <Button variant="ghost" size="icon" onClick={() => onEdit(role)} title="Edit Role">
+              <Pencil className="h-4 w-4" />
+            </Button>
+          )}
+          {canDelete && (
+            <Button variant="ghost" size="icon" onClick={() => onDelete(role)} title="Delete Role">
+              <Trash2 className="h-4 w-4 text-destructive" />
+            </Button>
+          )}
         </div>
       ),
     },

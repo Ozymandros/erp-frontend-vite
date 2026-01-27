@@ -10,9 +10,11 @@ import { formatDateTime } from "@/lib/utils";
 interface UserColumnsProps {
   onEdit: (user: User) => void;
   onDelete: (user: User) => void;
+  canEdit?: boolean;
+  canDelete?: boolean;
 }
 
-export function getUserColumns({ onEdit, onDelete }: UserColumnsProps): Column<User>[] {
+export function getUserColumns({ onEdit, onDelete, canEdit = true, canDelete = true }: UserColumnsProps): Column<User>[] {
   return [
     {
       header: "Username",
@@ -66,17 +68,21 @@ export function getUserColumns({ onEdit, onDelete }: UserColumnsProps): Column<U
       className: "text-right",
       accessor: (user) => (
         <div className="flex items-center justify-end gap-2">
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild title="View Details">
             <Link to={`/users/${user.id}`}>
               <Eye className="h-4 w-4" />
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => onEdit(user)}>
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => onDelete(user)}>
-            <Trash2 className="h-4 w-4 text-destructive" />
-          </Button>
+          {canEdit && (
+            <Button variant="ghost" size="icon" onClick={() => onEdit(user)} title="Edit User">
+              <Pencil className="h-4 w-4" />
+            </Button>
+          )}
+          {canDelete && (
+            <Button variant="ghost" size="icon" onClick={() => onDelete(user)} title="Delete User">
+              <Trash2 className="h-4 w-4 text-destructive" />
+            </Button>
+          )}
         </div>
       ),
     },

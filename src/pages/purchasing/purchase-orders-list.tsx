@@ -5,12 +5,13 @@ import { purchaseOrdersService } from "@/api/services/purchase-orders.service";
 import { suppliersService } from "@/api/services/suppliers.service";
 import type { PurchaseOrderDto, SupplierDto, QuerySpec } from "@/types/api.types";
 import { CreatePurchaseOrderDialog } from "@/components/purchasing/create-purchase-order-dialog";
-import { handleApiError, getErrorMessage } from "@/lib/error-handling";
+import { handleApiError } from "@/lib/error-handling";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useListActions } from "@/hooks/use-list-actions";
+import { useModulePermissions } from "@/hooks/use-permissions";
+import { useExport } from "@/hooks/use-export";
 import { ListPageLayout } from "@/components/layout/list-page-layout";
 import { getPurchaseOrderColumns } from "./purchase-orders.columns";
-import { downloadBlob } from "@/lib/export.utils";
 
 export function PurchaseOrdersListPage() {
   const [suppliers, setSuppliers] = useState<SupplierDto[]>([]);
@@ -20,12 +21,11 @@ export function PurchaseOrdersListPage() {
   const {
     data: purchaseOrders,
     isLoading,
-    error,
+    error: dataError,
     querySpec,
     handleSearch,
     handleSort,
     handlePageChange,
-    setError,
     refresh,
   } = useDataTable<PurchaseOrderDto>({
     fetcher,
@@ -38,11 +38,24 @@ export function PurchaseOrdersListPage() {
     resourceName: "purchase orders",
   });
 
+  // Permissions
+  const { canCreate, canExport } = useModulePermissions("purchasing");
+
+  // Actions
   const {
     isCreateOpen,
     setIsCreateOpen,
     handleCreated,
   } = useListActions<PurchaseOrderDto>({ refresh });
+
+  // Export
+  const { handleExport, exportError } = useExport({
+    resourceName: "PurchaseOrders",
+    onExport: (format) =>
+      format === "xlsx"
+        ? purchaseOrdersService.exportToXlsx()
+        : purchaseOrdersService.exportToPdf(),
+  });
 
   const fetchSuppliers = async () => {
     try {
@@ -63,20 +76,7 @@ export function PurchaseOrdersListPage() {
     return supplier?.name || supplierId;
   };
 
-  const handleExport = async (format: "xlsx" | "pdf") => {
-    try {
-      const blob =
-        format === "xlsx"
-          ? await purchaseOrdersService.exportToXlsx()
-          : await purchaseOrdersService.exportToPdf();
-
-      await downloadBlob(blob, `PurchaseOrders.${format}`);
-    } catch (err) {
-      const apiError = handleApiError(err);
-      setError(getErrorMessage(apiError, `Failed to export purchase orders to ${format}`));
-    }
-  };
-
+  const error = dataError || exportError;
   const columns = getPurchaseOrderColumns({ getSupplierName });
 
   return (
@@ -91,8 +91,8 @@ export function PurchaseOrdersListPage() {
       onSearch={handleSearch}
       onSort={handleSort}
       onPageChange={handlePageChange}
-      onExport={handleExport}
-      onCreateOpen={() => setIsCreateOpen(true)}
+      onExport={canExport ? handleExport : undefined}
+      onCreateOpen={canCreate ? () => setIsCreateOpen(true) : undefined}
       columns={columns}
       searchPlaceholder="Search by order number, supplier..."
       cardTitle="All Purchase Orders"

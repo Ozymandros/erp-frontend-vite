@@ -158,7 +158,6 @@ export function CreatePurchaseOrderDialog({
     try {
       const payload = {
         ...validation.data,
-        orderNumber: `PO-${Date.now()}`, // Auto-generate
         // Maps to backend DTO
         // Check if expectedDeliveryDate needs simple transformation if undefined
         expectedDeliveryDate: validation.data.expectedDeliveryDate || undefined

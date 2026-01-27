@@ -1,17 +1,16 @@
 "use client";
 
-
 import { usersService } from "@/api/services/users.service";
 import type { User, QuerySpec } from "@/types/api.types";
 import { CreateUserDialog } from "@/components/users/create-user-dialog";
 import { EditUserDialog } from "@/components/users/edit-user-dialog";
 import { DeleteUserDialog } from "@/components/users/delete-user-dialog";
-import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useListActions } from "@/hooks/use-list-actions";
+import { useModulePermissions } from "@/hooks/use-permissions";
+import { useExport } from "@/hooks/use-export";
 import { ListPageLayout } from "@/components/layout/list-page-layout";
 import { getUserColumns } from "./users.columns";
-import { downloadBlob } from "@/lib/export.utils";
 
 export function UsersListPage() {
   const fetcher = (qs: QuerySpec) => usersService.searchUsers(qs);
@@ -19,12 +18,11 @@ export function UsersListPage() {
   const {
     data: users,
     isLoading,
-    error,
+    error: dataError,
     querySpec,
     handleSearch,
     handleSort,
     handlePageChange,
-    setError,
     refresh,
   } = useDataTable<User>({
     fetcher,
@@ -34,6 +32,10 @@ export function UsersListPage() {
     resourceName: "users",
   });
 
+  // Permissions
+  const { canCreate, canUpdate, canDelete, canExport } = useModulePermissions("users");
+
+  // Actions
   const {
     isCreateOpen,
     setIsCreateOpen,
@@ -46,23 +48,22 @@ export function UsersListPage() {
     handleDeleted,
   } = useListActions<User>({ refresh });
 
-  const handleExport = async (format: "xlsx" | "pdf") => {
-    try {
-      const blob =
-        format === "xlsx"
-          ? await usersService.exportToXlsx()
-          : await usersService.exportToPdf();
+  // Export
+  const { handleExport, exportError } = useExport({
+    resourceName: "Users",
+    onExport: (format) =>
+      format === "xlsx"
+        ? usersService.exportToXlsx()
+        : usersService.exportToPdf(),
+  });
 
-      await downloadBlob(blob, `Users.${format}`);
-    } catch (err) {
-      const apiError = handleApiError(err);
-      setError(getErrorMessage(apiError, `Failed to export users to ${format}`));
-    }
-  };
+  const error = dataError || exportError;
 
   const columns = getUserColumns({
     onEdit: setEditingItem,
     onDelete: setDeletingItem,
+    canEdit: canUpdate,
+    canDelete: canDelete,
   });
 
   return (
@@ -77,8 +78,8 @@ export function UsersListPage() {
       onSearch={handleSearch}
       onSort={handleSort}
       onPageChange={handlePageChange}
-      onExport={handleExport}
-      onCreateOpen={() => setIsCreateOpen(true)}
+      onExport={canExport ? handleExport : undefined}
+      onCreateOpen={canCreate ? () => setIsCreateOpen(true) : undefined}
       columns={columns}
       searchPlaceholder="Search users by username, email, or name..."
       cardTitle="All Users"

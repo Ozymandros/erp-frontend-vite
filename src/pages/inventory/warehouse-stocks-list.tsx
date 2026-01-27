@@ -12,11 +12,11 @@ import type {
 } from "@/types/api.types";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
-import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 import { useDataTable } from "@/hooks/use-data-table";
+import { useModulePermissions } from "@/hooks/use-permissions";
+import { useExport } from "@/hooks/use-export";
 import { ListPageLayout } from "@/components/layout/list-page-layout";
 import { getWarehouseStockColumns } from "./warehouse-stocks.columns";
-import { downloadBlob } from "@/lib/export.utils";
 
 export function WarehouseStocksListPage() {
   const [products, setProducts] = useState<ProductDto[]>([]);
@@ -51,16 +51,27 @@ export function WarehouseStocksListPage() {
   const {
     data: stocks,
     isLoading,
-    error,
+    error: dataError,
     querySpec,
     handleSearch,
     handleSort,
     handlePageChange,
-    setError,
     refresh,
   } = useDataTable<WarehouseStockDto>({
     fetcher,
     resourceName: "warehouse stocks",
+  });
+
+  // Permissions
+  const { canExport } = useModulePermissions("inventory");
+
+  // Export
+  const { handleExport, exportError } = useExport({
+    resourceName: "WarehouseStocks",
+    onExport: (format) =>
+      format === "xlsx"
+        ? warehouseStocksService.exportToXlsx()
+        : warehouseStocksService.exportToPdf(),
   });
 
   const fetchProducts = async () => {
@@ -100,20 +111,7 @@ export function WarehouseStocksListPage() {
     return warehouse?.name || warehouseId;
   };
 
-  const handleExport = async (format: "xlsx" | "pdf") => {
-    try {
-      const blob =
-        format === "xlsx"
-          ? await warehouseStocksService.exportToXlsx()
-          : await warehouseStocksService.exportToPdf();
-
-      await downloadBlob(blob, `WarehouseStocks.${format}`);
-    } catch (err) {
-      const apiError = handleApiError(err);
-      setError(getErrorMessage(apiError, `Failed to export stocks to ${format}`));
-    }
-  };
-
+  const error = dataError || exportError;
   const columns = getWarehouseStockColumns({ getProductName, getWarehouseName });
 
   return (
@@ -128,8 +126,7 @@ export function WarehouseStocksListPage() {
       onSearch={handleSearch}
       onSort={handleSort}
       onPageChange={handlePageChange}
-      onExport={handleExport}
-      onCreateOpen={() => { }} // Disabled as there's no manual record creation
+      onExport={canExport ? handleExport : undefined}
       columns={columns}
       cardTitle="Stock Levels"
       cardDescription={

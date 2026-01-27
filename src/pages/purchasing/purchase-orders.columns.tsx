@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -69,7 +68,7 @@ export function getPurchaseOrderColumns({ getSupplierName }: PurchaseOrderColumn
       header: "Actions",
       className: "text-right",
       accessor: (order) => (
-        <Button variant="ghost" size="sm" asChild>
+        <Button variant="ghost" size="sm" asChild title="View Details">
           <Link to={`/purchasing/orders/${order.id}`}>
             <Eye className="h-4 w-4" />
           </Link>

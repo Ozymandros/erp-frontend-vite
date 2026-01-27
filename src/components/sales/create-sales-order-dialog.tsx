@@ -150,37 +150,8 @@ export function CreateSalesOrderDialog({
 
     setIsLoading(true);
     try {
-      // Need to include orderNumber for backend. DTO requires it.
-      // Assuming auto-generated or manual input. 
-      // Schema CreateSalesOrderSchema does NOT include orderNumber in src/lib/validation/sales/sales-order.schemas.ts
-      // But CreateUpdateSalesOrderDto in api.types.ts HAS orderNumber.
-      // This is a mismatch. I will generate a temporary one or add an input if needed.
-      // Usually backend generates it, or it's required input.
-      // Let's check api.types.ts again.
-      // CreateUpdateSalesOrderDto: orderNumber: string;
-      
-      // I'll add orderNumber to component state and form, but schema update might be needed.
-      // Wait, I saw CreateSalesOrderSchema in previous step:
-      /*
-      export const CreateSalesOrderSchema = z.object({
-        customerId: z.string().min(1, "Customer is required"),
-        orderDate: z.string().min(1, "Order date is required"),
-        orderLines: z
-            .array(SalesOrderLineSchema)
-            .min(1, "At least one order line is required"),
-        });
-      */
-      // It implies orderNumber is NOT validated by Zod schema, but might be required by API.
-      // I will assume the API might accept it or I should add it.
-      // To be safe, I'll generate a timestamp-based order number or let the user input it.
-      // For now, let's include 'orderNumber' in the API payload from a generated value or input.
-      // Actually, ideally we should update the Schema to include it if it's in the DTO.
-      // I'll inject a placeholder order number for now to satisfy the TS type if I cast it, 
-      // or better, I will assume the backend handles it or I should add an arbitrary one.
-      
       const payload = {
         ...validation.data,
-        orderNumber: `SO-${Date.now()}`, // Auto-generate for now
       };
 
       await salesOrdersService.createSalesOrder(payload);

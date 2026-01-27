@@ -27,8 +27,10 @@ interface ListPageLayoutProps<T> {
   onSearch: (value: string) => void;
   onSort: (field: string) => void;
   onPageChange: (page: number) => void;
-  onExport: (format: "xlsx" | "pdf") => void;
-  onCreateOpen: () => void;
+  /** If provided, export buttons will be shown */
+  onExport?: (format: "xlsx" | "pdf") => void;
+  /** If provided, the "Add" button will be shown */
+  onCreateOpen?: () => void;
   
   // Customization
   columns: Column<T>[];
@@ -39,6 +41,10 @@ interface ListPageLayoutProps<T> {
   children?: React.ReactNode; // For dialogs or extra components
 }
 
+/**
+ * A standardized layout for list pages.
+ * Handles search, sorting, pagination, and provides slots for actions.
+ */
 export function ListPageLayout<T>({
   title,
   description,
@@ -67,19 +73,27 @@ export function ListPageLayout<T>({
           <p className="text-muted-foreground mt-1">{description}</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => onExport("xlsx")}>
-            <FileDown className="mr-2 h-4 w-4" />
-            Export XLSX
-          </Button>
-          <Button variant="outline" onClick={() => onExport("pdf")}>
-            <FileDown className="mr-2 h-4 w-4" />
-            Export PDF
-          </Button>
+          {onExport && (
+            <>
+              <Button variant="outline" onClick={() => onExport("xlsx")}>
+                <FileDown className="mr-2 h-4 w-4" />
+                Export XLSX
+              </Button>
+              <Button variant="outline" onClick={() => onExport("pdf")}>
+                <FileDown className="mr-2 h-4 w-4" />
+                Export PDF
+              </Button>
+            </>
+          )}
+          
           {extraHeaderActions}
-          <Button onClick={onCreateOpen}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add {resourceName}
-          </Button>
+          
+          {onCreateOpen && (
+            <Button onClick={onCreateOpen}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add {resourceName}
+            </Button>
+          )}
         </div>
       </div>
 

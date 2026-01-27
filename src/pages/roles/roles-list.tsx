@@ -1,17 +1,16 @@
 "use client"
 
-
 import { rolesService } from "@/api/services/roles.service"
 import type { Role, QuerySpec } from "@/types/api.types"
 import { CreateRoleDialog } from "@/components/roles/create-role-dialog"
 import { EditRoleDialog } from "@/components/roles/edit-role-dialog"
 import { DeleteRoleDialog } from "@/components/roles/delete-role-dialog"
-import { handleApiError, getErrorMessage } from "@/lib/error-handling"
 import { useDataTable } from "@/hooks/use-data-table"
 import { useListActions } from "@/hooks/use-list-actions"
+import { useModulePermissions } from "@/hooks/use-permissions"
+import { useExport } from "@/hooks/use-export"
 import { ListPageLayout } from "@/components/layout/list-page-layout"
 import { getRoleColumns } from "./roles.columns"
-import { downloadBlob } from "@/lib/export.utils"
 
 export function RolesListPage() {
   const fetcher = (qs: QuerySpec) =>
@@ -24,18 +23,21 @@ export function RolesListPage() {
   const {
     data: roles,
     isLoading,
-    error,
+    error: dataError,
     querySpec,
     handleSearch,
     handleSort,
     handlePageChange,
-    setError,
     refresh,
   } = useDataTable<Role>({
     fetcher,
     resourceName: "roles",
   })
 
+  // Permissions
+  const { canCreate, canUpdate, canDelete, canExport } = useModulePermissions("roles");
+
+  // Actions
   const {
     isCreateOpen,
     setIsCreateOpen,
@@ -46,21 +48,24 @@ export function RolesListPage() {
     handleCreated,
     handleUpdated,
     handleDeleted,
-  } = useListActions<Role>({ refresh })
+  } = useListActions<Role>({ refresh });
 
-  const handleExport = async (format: "xlsx" | "pdf") => {
-    try {
-      const blob = format === "xlsx" ? await rolesService.exportToXlsx() : await rolesService.exportToPdf()
-      await downloadBlob(blob, `Roles.${format}`)
-    } catch (error) {
-      const apiError = handleApiError(error)
-      setError(getErrorMessage(apiError, `Failed to export roles to ${format}`))
-    }
-  }
+  // Export
+  const { handleExport, exportError } = useExport({
+    resourceName: "Roles",
+    onExport: (format) =>
+      format === "xlsx"
+        ? rolesService.exportToXlsx()
+        : rolesService.exportToPdf(),
+  });
+
+  const error = dataError || exportError;
 
   const columns = getRoleColumns({
     onEdit: setEditingItem,
     onDelete: setDeletingItem,
+    canEdit: canUpdate,
+    canDelete: canDelete,
   })
 
   return (
@@ -75,8 +80,8 @@ export function RolesListPage() {
       onSearch={handleSearch}
       onSort={handleSort}
       onPageChange={handlePageChange}
-      onExport={handleExport}
-      onCreateOpen={() => setIsCreateOpen(true)}
+      onExport={canExport ? handleExport : undefined}
+      onCreateOpen={canCreate ? () => setIsCreateOpen(true) : undefined}
       columns={columns}
       searchPlaceholder="Search roles by name..."
       cardTitle="All Roles"

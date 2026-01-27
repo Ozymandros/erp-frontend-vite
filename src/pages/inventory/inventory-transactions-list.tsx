@@ -9,11 +9,11 @@ import type {
   TransactionType,
   QuerySpec,
 } from "@/types/api.types";
-import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 import { useDataTable } from "@/hooks/use-data-table";
+import { useModulePermissions } from "@/hooks/use-permissions";
+import { useExport } from "@/hooks/use-export";
 import { ListPageLayout } from "@/components/layout/list-page-layout";
 import { getInventoryTransactionColumns } from "./inventory-transactions.columns";
-import { downloadBlob } from "@/lib/export.utils";
 import { TransactionType as TransactionTypeEnum } from "@/types/api.types";
 
 const TRANSACTION_TYPES: { value: TransactionType; label: string }[] = [
@@ -33,6 +33,16 @@ export function InventoryTransactionsListPage() {
   const [filterWarehouse, setFilterWarehouse] = useState<string>("");
   const [filterType, setFilterType] = useState<TransactionType | "">("");
 
+  const wrapItems = (items: InventoryTransactionDto[]) => ({
+    items,
+    page: 1,
+    pageSize: items.length,
+    total: items.length,
+    totalPages: 1,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  });
+
   const fetcher = async (qs: QuerySpec) => {
     if (filterProduct) {
       const txns = await inventoryTransactionsService.getTransactionsByProduct(filterProduct);
@@ -50,12 +60,11 @@ export function InventoryTransactionsListPage() {
   const {
     data: transactions,
     isLoading,
-    error,
+    error: dataError,
     querySpec,
     handleSearch,
     handleSort,
     handlePageChange,
-    setError,
     refresh,
   } = useDataTable<InventoryTransactionDto>({
     fetcher,
@@ -68,14 +77,16 @@ export function InventoryTransactionsListPage() {
     resourceName: "inventory transactions",
   });
 
-  const wrapItems = (items: InventoryTransactionDto[]) => ({
-    items,
-    page: 1,
-    pageSize: items.length,
-    total: items.length,
-    totalPages: 1,
-    hasNextPage: false,
-    hasPreviousPage: false,
+  // Permissions
+  const { canExport } = useModulePermissions("inventory");
+
+  // Export
+  const { handleExport, exportError } = useExport({
+    resourceName: "InventoryTransactions",
+    onExport: (format) =>
+      format === "xlsx"
+        ? inventoryTransactionsService.exportToXlsx()
+        : inventoryTransactionsService.exportToPdf(),
   });
 
   const fetchProducts = async () => {
@@ -117,16 +128,16 @@ export function InventoryTransactionsListPage() {
 
   const getTypeBadgeVariant = (type: TransactionType) => {
     switch (type) {
-      case "Purchase":
-      case "Return":
+      case TransactionTypeEnum.Purchase:
+      case TransactionTypeEnum.Return:
         return "default";
-      case "Sale":
-      case "Damage":
-      case "Loss":
+      case TransactionTypeEnum.Sale:
+      case TransactionTypeEnum.Damage:
+      case TransactionTypeEnum.Loss:
         return "destructive";
-      case "Adjustment":
+      case TransactionTypeEnum.Adjustment:
         return "secondary";
-      case "Transfer":
+      case TransactionTypeEnum.Transfer:
         return "outline";
       default:
         return "secondary";
@@ -137,20 +148,7 @@ export function InventoryTransactionsListPage() {
     return TRANSACTION_TYPES.find((t) => t.value === type)?.label || type;
   };
 
-  const handleExport = async (format: "xlsx" | "pdf") => {
-    try {
-      const blob =
-        format === "xlsx"
-          ? await inventoryTransactionsService.exportToXlsx()
-          : await inventoryTransactionsService.exportToPdf();
-
-      await downloadBlob(blob, `InventoryTransactions.${format}`);
-    } catch (err) {
-      const apiError = handleApiError(err);
-      setError(getErrorMessage(apiError, `Failed to export transactions to ${format}`));
-    }
-  };
-
+  const error = dataError || exportError;
   const columns = getInventoryTransactionColumns({
     getProductName,
     getWarehouseName,
@@ -170,8 +168,7 @@ export function InventoryTransactionsListPage() {
       onSearch={handleSearch}
       onSort={handleSort}
       onPageChange={handlePageChange}
-      onExport={handleExport}
-      onCreateOpen={() => {}}
+      onExport={canExport ? handleExport : undefined}
       columns={columns}
       cardTitle="Transaction Log"
       cardDescription={transactions ? `${transactions.total} total transactions` : "Loading..."}

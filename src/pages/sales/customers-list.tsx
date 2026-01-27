@@ -1,15 +1,14 @@
 "use client";
 
-
 import { customersService } from "@/api/services/customers.service";
 import type { CustomerDto, QuerySpec } from "@/types/api.types";
 import { CreateCustomerDialog } from "@/components/sales/create-customer-dialog";
-import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useListActions } from "@/hooks/use-list-actions";
+import { useModulePermissions } from "@/hooks/use-permissions";
+import { useExport } from "@/hooks/use-export";
 import { ListPageLayout } from "@/components/layout/list-page-layout";
-import { customerColumns } from "./customers.columns";
-import { downloadBlob } from "@/lib/export.utils";
+import { getCustomerColumns } from "./customers.columns";
 
 export function CustomersListPage() {
   const fetcher = (qs: QuerySpec) => customersService.searchCustomers(qs);
@@ -17,12 +16,11 @@ export function CustomersListPage() {
   const {
     data: customers,
     isLoading,
-    error,
+    error: dataError,
     querySpec,
     handleSearch,
     handleSort,
     handlePageChange,
-    setError,
     refresh,
   } = useDataTable<CustomerDto>({
     fetcher,
@@ -32,25 +30,27 @@ export function CustomersListPage() {
     resourceName: "customers",
   });
 
+  // Permissions
+  const { canCreate, canExport } = useModulePermissions("customers");
+
+  // Actions
   const {
     isCreateOpen,
     setIsCreateOpen,
     handleCreated,
   } = useListActions<CustomerDto>({ refresh });
 
-  const handleExport = async (format: "xlsx" | "pdf") => {
-    try {
-      const blob =
-        format === "xlsx"
-          ? await customersService.exportToXlsx()
-          : await customersService.exportToPdf();
+  // Export
+  const { handleExport, exportError } = useExport({
+    resourceName: "Customers",
+    onExport: (format) =>
+      format === "xlsx"
+        ? customersService.exportToXlsx()
+        : customersService.exportToPdf(),
+  });
 
-      await downloadBlob(blob, `Customers.${format}`);
-    } catch (error) {
-      const apiError = handleApiError(error);
-      setError(getErrorMessage(apiError, `Failed to export customers to ${format}`));
-    }
-  };
+  const error = dataError || exportError;
+  const columns = getCustomerColumns();
 
   return (
     <ListPageLayout
@@ -64,9 +64,9 @@ export function CustomersListPage() {
       onSearch={handleSearch}
       onSort={handleSort}
       onPageChange={handlePageChange}
-      onExport={handleExport}
-      onCreateOpen={() => setIsCreateOpen(true)}
-      columns={customerColumns}
+      onExport={canExport ? handleExport : undefined}
+      onCreateOpen={canCreate ? () => setIsCreateOpen(true) : undefined}
+      columns={columns}
       searchPlaceholder="Search by name or email..."
       cardTitle="All Customers"
       cardDescription={customers ? `${customers.total} total customers` : "Loading..."}

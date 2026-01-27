@@ -5,12 +5,13 @@ import { ordersService } from "@/api/services/orders.service";
 import { customersService } from "@/api/services/customers.service";
 import type { OrderDto, CustomerDto, QuerySpec } from "@/types/api.types";
 import { CreateOrderDialog } from "@/components/orders/create-order-dialog";
-import { handleApiError, getErrorMessage } from "@/lib/error-handling";
+import { handleApiError } from "@/lib/error-handling";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useListActions } from "@/hooks/use-list-actions";
+import { useModulePermissions } from "@/hooks/use-permissions";
+import { useExport } from "@/hooks/use-export";
 import { ListPageLayout } from "@/components/layout/list-page-layout";
 import { getOrderColumns } from "./orders.columns";
-import { downloadBlob } from "@/lib/export.utils";
 
 export function OrdersListPage() {
   const [customers, setCustomers] = useState<CustomerDto[]>([]);
@@ -31,23 +32,35 @@ export function OrdersListPage() {
   const {
     data: ordersResponse,
     isLoading,
-    error,
+    error: dataError,
     querySpec,
     handleSearch,
     handleSort,
     handlePageChange,
-    setError,
     refresh,
   } = useDataTable<OrderDto>({
     fetcher,
     resourceName: "orders",
   });
 
+  // Permissions
+  const { canCreate, canExport } = useModulePermissions("orders");
+
+  // Actions
   const {
     isCreateOpen,
     setIsCreateOpen,
     handleCreated,
   } = useListActions<OrderDto>({ refresh });
+
+  // Export
+  const { handleExport, exportError } = useExport({
+    resourceName: "Orders",
+    onExport: (format) =>
+      format === "xlsx"
+        ? ordersService.exportToXlsx()
+        : ordersService.exportToPdf(),
+  });
 
   const fetchCustomers = async () => {
     try {
@@ -68,20 +81,7 @@ export function OrdersListPage() {
     return customer?.name || customerId;
   };
 
-  const handleExport = async (format: "xlsx" | "pdf") => {
-    try {
-      const blob =
-        format === "xlsx"
-          ? await ordersService.exportToXlsx()
-          : await ordersService.exportToPdf();
-
-      await downloadBlob(blob, `Orders.${format}`);
-    } catch (err) {
-      const apiError = handleApiError(err);
-      setError(getErrorMessage(apiError, `Failed to export orders to ${format}`));
-    }
-  };
-
+  const error = dataError || exportError;
   const columns = getOrderColumns({
     getCustomerName,
   });
@@ -98,8 +98,8 @@ export function OrdersListPage() {
       onSearch={handleSearch}
       onSort={handleSort}
       onPageChange={handlePageChange}
-      onExport={handleExport}
-      onCreateOpen={() => setIsCreateOpen(true)}
+      onExport={canExport ? handleExport : undefined}
+      onCreateOpen={canCreate ? () => setIsCreateOpen(true) : undefined}
       columns={columns}
       cardTitle="All Orders"
       cardDescription={ordersResponse ? `${ordersResponse.total} total orders` : "Loading..."}

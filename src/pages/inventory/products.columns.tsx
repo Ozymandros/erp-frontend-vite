@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { Eye, Pencil, Trash2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,9 +8,11 @@ import { formatCurrency } from "@/lib/utils";
 interface ProductColumnsProps {
   onEdit: (product: ProductDto) => void;
   onDelete: (product: ProductDto) => void;
+  canEdit?: boolean;
+  canDelete?: boolean;
 }
 
-export function getProductColumns({ onEdit, onDelete }: ProductColumnsProps): Column<ProductDto>[] {
+export function getProductColumns({ onEdit, onDelete, canEdit = true, canDelete = true }: ProductColumnsProps): Column<ProductDto>[] {
   return [
     {
       header: "SKU",
@@ -46,25 +47,31 @@ export function getProductColumns({ onEdit, onDelete }: ProductColumnsProps): Co
       className: "text-right",
       accessor: (product) => (
         <div className="flex items-center justify-end gap-2">
-          <Button variant="ghost" size="sm" asChild>
+          <Button variant="ghost" size="sm" asChild title="View Details">
             <Link to={`/inventory/products/${product.id}`}>
               <Eye className="h-4 w-4" />
             </Link>
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onEdit(product)}
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onDelete(product)}
-          >
-            <Trash2 className="h-4 w-4 text-red-600" />
-          </Button>
+          {canEdit && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEdit(product)}
+              title="Edit Product"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+          )}
+          {canDelete && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onDelete(product)}
+              title="Delete Product"
+            >
+              <Trash2 className="h-4 w-4 text-red-600" />
+            </Button>
+          )}
         </div>
       ),
     },

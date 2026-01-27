@@ -1,17 +1,16 @@
 "use client";
 
-
 import { warehousesService } from "@/api/services/warehouses.service";
 import type { WarehouseDto, QuerySpec } from "@/types/api.types";
 import { CreateWarehouseDialog } from "@/components/inventory/create-warehouse-dialog";
 import { EditWarehouseDialog } from "@/components/inventory/edit-warehouse-dialog";
 import { DeleteWarehouseDialog } from "@/components/inventory/delete-warehouse-dialog";
-import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useListActions } from "@/hooks/use-list-actions";
+import { useModulePermissions } from "@/hooks/use-permissions";
+import { useExport } from "@/hooks/use-export";
 import { ListPageLayout } from "@/components/layout/list-page-layout";
 import { getWarehouseColumns } from "./warehouses.columns";
-import { downloadBlob } from "@/lib/export.utils";
 
 export function WarehousesListPage() {
   const fetcher = (qs: QuerySpec) => warehousesService.searchWarehouses(qs);
@@ -19,12 +18,11 @@ export function WarehousesListPage() {
   const {
     data: warehouses,
     isLoading,
-    error,
+    error: dataError,
     querySpec,
     handleSearch,
     handleSort,
     handlePageChange,
-    setError,
     refresh,
   } = useDataTable<WarehouseDto>({
     fetcher,
@@ -34,6 +32,10 @@ export function WarehousesListPage() {
     resourceName: "warehouses",
   });
 
+  // Permissions
+  const { canCreate, canUpdate, canDelete, canExport } = useModulePermissions("warehouses");
+
+  // Actions
   const {
     isCreateOpen,
     setIsCreateOpen,
@@ -46,23 +48,22 @@ export function WarehousesListPage() {
     handleDeleted,
   } = useListActions<WarehouseDto>({ refresh });
 
-  const handleExport = async (format: "xlsx" | "pdf") => {
-    try {
-      const blob =
-        format === "xlsx"
-          ? await warehousesService.exportToXlsx()
-          : await warehousesService.exportToPdf();
+  // Export
+  const { handleExport, exportError } = useExport({
+    resourceName: "Warehouses",
+    onExport: (format) =>
+      format === "xlsx"
+        ? warehousesService.exportToXlsx()
+        : warehousesService.exportToPdf(),
+  });
 
-      await downloadBlob(blob, `Warehouses.${format}`);
-    } catch (error) {
-      const apiError = handleApiError(error);
-      setError(getErrorMessage(apiError, `Failed to export warehouses to ${format}`));
-    }
-  };
+  const error = dataError || exportError;
 
   const columns = getWarehouseColumns({
     onEdit: setEditingItem,
     onDelete: setDeletingItem,
+    canEdit: canUpdate,
+    canDelete: canDelete,
   });
 
   return (
@@ -77,8 +78,8 @@ export function WarehousesListPage() {
       onSearch={handleSearch}
       onSort={handleSort}
       onPageChange={handlePageChange}
-      onExport={handleExport}
-      onCreateOpen={() => setIsCreateOpen(true)}
+      onExport={canExport ? handleExport : undefined}
+      onCreateOpen={canCreate ? () => setIsCreateOpen(true) : undefined}
       columns={columns}
       searchPlaceholder="Search by name or location..."
       cardTitle="All Warehouses"

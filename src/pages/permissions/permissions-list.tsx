@@ -1,17 +1,16 @@
 "use client"
 
-
 import { permissionsService } from "@/api/services/permissions.service"
 import type { Permission, QuerySpec } from "@/types/api.types"
 import { CreatePermissionDialog } from "@/components/permissions/create-permission-dialog"
 import { EditPermissionDialog } from "@/components/permissions/edit-permission-dialog"
 import { DeletePermissionDialog } from "@/components/permissions/delete-permission-dialog"
-import { handleApiError, getErrorMessage } from "@/lib/error-handling"
 import { useDataTable } from "@/hooks/use-data-table"
 import { useListActions } from "@/hooks/use-list-actions"
+import { useModulePermissions } from "@/hooks/use-permissions"
+import { useExport } from "@/hooks/use-export"
 import { ListPageLayout } from "@/components/layout/list-page-layout"
 import { getPermissionColumns } from "./permissions.columns"
-import { downloadBlob } from "@/lib/export.utils"
 import { PermissionFilterHeader } from "@/components/permissions/permission-filter-header"
 
 export function PermissionsListPage() {
@@ -25,18 +24,21 @@ export function PermissionsListPage() {
   const {
     data: permissions,
     isLoading,
-    error,
+    error: dataError,
     querySpec,
     handleSearch,
     handleSort,
     handlePageChange,
-    setError,
     refresh,
   } = useDataTable<Permission>({
     fetcher,
     resourceName: "permissions",
   })
 
+  // Permissions
+  const { canCreate, canUpdate, canDelete, canExport } = useModulePermissions("permissions");
+
+  // Actions
   const {
     isCreateOpen,
     setIsCreateOpen,
@@ -47,21 +49,24 @@ export function PermissionsListPage() {
     handleCreated,
     handleUpdated,
     handleDeleted,
-  } = useListActions<Permission>({ refresh })
+  } = useListActions<Permission>({ refresh });
 
-  const handleExport = async (format: "xlsx" | "pdf") => {
-    try {
-      const blob = format === "xlsx" ? await permissionsService.exportToXlsx() : await permissionsService.exportToPdf()
-      await downloadBlob(blob, `Permissions.${format}`)
-    } catch (err: unknown) {
-      const apiError = handleApiError(err)
-      setError(getErrorMessage(apiError, `Failed to export permissions to ${format}`))
-    }
-  }
+  // Export
+  const { handleExport, exportError } = useExport({
+    resourceName: "Permissions",
+    onExport: (format) =>
+      format === "xlsx"
+        ? permissionsService.exportToXlsx()
+        : permissionsService.exportToPdf(),
+  });
+
+  const error = dataError || exportError;
 
   const columns = getPermissionColumns({
     onEdit: setEditingItem,
     onDelete: setDeletingItem,
+    canEdit: canUpdate,
+    canDelete: canDelete,
   })
 
   return (
@@ -76,8 +81,8 @@ export function PermissionsListPage() {
       onSearch={(val) => handleSearch(val)}
       onSort={handleSort}
       onPageChange={handlePageChange}
-      onExport={handleExport}
-      onCreateOpen={() => setIsCreateOpen(true)}
+      onExport={canExport ? handleExport : undefined}
+      onCreateOpen={canCreate ? () => setIsCreateOpen(true) : undefined}
       columns={columns}
       cardTitle="All Permissions"
       cardDescription="A list of all permissions in the system"

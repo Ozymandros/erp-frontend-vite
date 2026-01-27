@@ -31,6 +31,9 @@ export function AdjustStockForm({ products, warehouses }: AdjustStockFormProps) 
     };
 
     try {
+      // NOTE: This directly calls the inventory service. 
+      // Architectural rule check: "Only the Orders service should directly modify Inventory stock".
+      // Ad-hoc adjustments might be an exception or should be routed through an Adjustment Order.
       await stockOperationsService.adjustStock(data);
       setSuccess(true);
       (e.target as HTMLFormElement).reset();

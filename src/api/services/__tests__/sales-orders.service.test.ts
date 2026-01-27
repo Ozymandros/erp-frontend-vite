@@ -60,7 +60,6 @@ describe("SalesOrdersService", () => {
     it("should create a new sales order", async () => {
       const newOrder: CreateUpdateSalesOrderDto = {
         customerId: "customer-1",
-        orderNumber: "SO-NEW-001",
         orderDate: "2024-01-01",
         orderLines: [
           {
@@ -73,6 +72,7 @@ describe("SalesOrdersService", () => {
 
       const mockOrder: SalesOrderDto = {
         id: "1",
+        orderNumber: "SO-001",
         ...newOrder,
         status: SalesOrderStatus.Draft,
         totalAmount: 499.95,
@@ -106,7 +106,6 @@ describe("SalesOrdersService", () => {
     it("should create a quote", async () => {
       const quoteData: CreateQuoteDto = {
         customerId: "customer-1",
-        orderNumber: "QUOTE-NEW-001",
         orderDate: "2024-01-01",
         orderLines: [
           {

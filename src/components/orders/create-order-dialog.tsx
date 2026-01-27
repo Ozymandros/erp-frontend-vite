@@ -50,12 +50,7 @@ export function CreateOrderDialog({
     return now.toISOString().slice(0, 16);
   };
 
-  const generateOrderNumber = () => {
-    return `ORD-${Date.now().toString().slice(-6)}`;
-  };
-
   const [formData, setFormData] = useState<CreateOrderFormData>({
-    orderNumber: generateOrderNumber(),
     customerId: "",
     orderDate: getDefaultDate(),
     orderLines: [],
@@ -78,7 +73,6 @@ export function CreateOrderDialog({
       loadData();
       // Reset form on open
       setFormData({
-        orderNumber: generateOrderNumber(),
         customerId: "",
         orderDate: getDefaultDate(),
         orderLines: [],
@@ -194,27 +188,6 @@ export function CreateOrderDialog({
             )}
 
             <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="orderNumber">Order Number</Label>
-                <Input
-                  id="orderNumber"
-                  value={formData.orderNumber}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      orderNumber: e.target.value,
-                    }))
-                  }
-                  placeholder="e.g., ORD-001"
-                  disabled={isLoading}
-                  required
-                />
-                {fieldErrors.orderNumber && (
-                  <p className="text-sm text-red-500">
-                    {fieldErrors.orderNumber}
-                  </p>
-                )}
-              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
