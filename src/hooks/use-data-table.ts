@@ -1,10 +1,10 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { QuerySpec, PaginatedResponse } from "@/types/api.types";
-import { 
-  handleApiError, 
-  isForbiddenError, 
-  getForbiddenMessage, 
-  getErrorMessage 
+import {
+  handleApiError,
+  isForbiddenError,
+  getForbiddenMessage,
+  getErrorMessage,
 } from "@/lib/error-handling";
 
 interface UseDataTableOptions<T> {
@@ -13,11 +13,15 @@ interface UseDataTableOptions<T> {
   resourceName: string;
 }
 
-export function useDataTable<T>({ fetcher, initialQuery, resourceName }: UseDataTableOptions<T>) {
+export function useDataTable<T>({
+  fetcher,
+  initialQuery,
+  resourceName,
+}: UseDataTableOptions<T>) {
   const [data, setData] = useState<PaginatedResponse<T> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const fetcherRef = useRef(fetcher);
   fetcherRef.current = fetcher;
 

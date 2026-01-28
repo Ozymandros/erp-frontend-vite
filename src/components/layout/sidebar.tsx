@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
@@ -20,79 +20,50 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/auth.context";
+import { NAV_ITEMS_CONFIG } from "@/config/routes.config";
 
 interface NavItem {
   title: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
+  permission?: { module: string; action: string };
 }
 
-const navItems: NavItem[] = [
-  {
-    title: "Users",
-    href: "/users",
-    icon: Users,
-  },
-  {
-    title: "Roles",
-    href: "/roles",
-    icon: Shield,
-  },
-  {
-    title: "Permissions",
-    href: "/permissions",
-    icon: Key,
-  },
-  {
-    title: "Products",
-    href: "/inventory/products",
-    icon: Package,
-  },
-  {
-    title: "Warehouses",
-    href: "/inventory/warehouses",
-    icon: Warehouse,
-  },
-  {
-    title: "Customers",
-    href: "/sales/customers",
-    icon: DollarSign,
-  },
-  {
-    title: "Sales Orders",
-    href: "/sales/orders",
-    icon: ShoppingCart,
-  },
-  {
-    title: "Purchase Orders",
-    href: "/purchasing/orders",
-    icon: ShoppingBag,
-  },
-  {
-    title: "Warehouse Stocks",
-    href: "/inventory/warehouse-stocks",
-    icon: TrendingUp,
-  },
-  {
-    title: "Transactions",
-    href: "/inventory/transactions",
-    icon: FileText,
-  },
-  {
-    title: "Stock Operations",
-    href: "/inventory/stock-operations",
-    icon: TrendingUp,
-  },
-  {
-    title: "Orders",
-    href: "/orders",
-    icon: ShoppingCart,
-  },
-];
+// Map icon names to components
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Users,
+  Shield,
+  Key,
+  Package,
+  Warehouse,
+  ShoppingCart,
+  DollarSign,
+  TrendingUp,
+  FileText,
+  ShoppingBag,
+};
 
-export function Sidebar() {
+  export function Sidebar() {
   const location = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { user, hasPermission } = useAuth();
+
+  // Filter navigation items based on user permissions
+  const visibleNavItems = useMemo(() => {
+    if (!user) return [];
+
+    return NAV_ITEMS_CONFIG.filter((item) => {
+      // If no permission required, show the item
+      if (!item.permission) return true;
+
+      // Admin has full access
+      if (user.isAdmin) return true;
+
+      // Check against cached permissions from context
+      return hasPermission(item.permission.module, item.permission.action);
+    });
+  }, [user, hasPermission]);
 
   return (
     <>
@@ -136,8 +107,8 @@ export function Sidebar() {
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto p-4">
             <ul className="space-y-2">
-              {navItems?.map(item => {
-                const Icon = item.icon;
+              {visibleNavItems.map((item) => {
+                const Icon = iconMap[item.icon];
                 const isActive = location.pathname.startsWith(item.href);
 
                 return (
@@ -152,7 +123,7 @@ export function Sidebar() {
                           : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                       )}
                     >
-                      <Icon className="h-5 w-5" />
+                      {Icon && <Icon className="h-5 w-5" />}
                       {item.title}
                     </Link>
                   </li>

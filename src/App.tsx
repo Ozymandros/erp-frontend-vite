@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "@/contexts/auth.context";
 import { ProtectedRoute } from "@/components/auth/protected-route";
+import { PermissionRoute } from "@/components/auth/permission-route";
 import { AppLayout } from "@/components/layout/app-layout";
 import { LoginPage } from "@/pages/auth/login";
 import { RegisterPage } from "@/pages/auth/register";
@@ -48,42 +49,183 @@ function App() {
                 </ProtectedRoute>
               }
             >
+              {/* Dashboard and Profile - no specific permission required */}
               <Route path="/" element={<DashboardPage />} />
               <Route path="/profile" element={<ProfilePage />} />
 
               {/* Users Management */}
-              <Route path="/users" element={<UsersListPage />} />
-              <Route path="/users/:id" element={<UserDetailPage />} />
+              <Route
+                path="/users"
+                element={
+                  <PermissionRoute path="/users">
+                    <UsersListPage />
+                  </PermissionRoute>
+                }
+              />
+              <Route
+                path="/users/:id"
+                element={
+                  <PermissionRoute path="/users/:id">
+                    <UserDetailPage />
+                  </PermissionRoute>
+                }
+              />
 
               {/* Roles Management */}
-              <Route path="/roles" element={<RolesListPage />} />
-              <Route path="/roles/:id" element={<RoleDetailPage />} />
+              <Route
+                path="/roles"
+                element={
+                  <PermissionRoute path="/roles">
+                    <RolesListPage />
+                  </PermissionRoute>
+                }
+              />
+              <Route
+                path="/roles/:id"
+                element={
+                  <PermissionRoute path="/roles/:id">
+                    <RoleDetailPage />
+                  </PermissionRoute>
+                }
+              />
 
               {/* Permissions Management */}
-              <Route path="/permissions" element={<PermissionsListPage />} />
+              <Route
+                path="/permissions"
+                element={
+                  <PermissionRoute path="/permissions">
+                    <PermissionsListPage />
+                  </PermissionRoute>
+                }
+              />
 
               {/* Inventory Management */}
-              <Route path="/inventory/products" element={<ProductsListPage />} />
-              <Route path="/inventory/products/:id" element={<ProductDetailPage />} />
-              <Route path="/inventory/warehouses" element={<WarehousesListPage />} />
-              <Route path="/inventory/warehouses/:id" element={<WarehouseDetailPage />} />
-              <Route path="/inventory/warehouse-stocks" element={<WarehouseStocksListPage />} />
-              <Route path="/inventory/transactions" element={<InventoryTransactionsListPage />} />
-              <Route path="/inventory/stock-operations" element={<StockOperationsPage />} />
+              <Route
+                path="/inventory/products"
+                element={
+                  <PermissionRoute path="/inventory/products">
+                    <ProductsListPage />
+                  </PermissionRoute>
+                }
+              />
+              <Route
+                path="/inventory/products/:id"
+                element={
+                  <PermissionRoute path="/inventory/products/:id">
+                    <ProductDetailPage />
+                  </PermissionRoute>
+                }
+              />
+              <Route
+                path="/inventory/warehouses"
+                element={
+                  <PermissionRoute path="/inventory/warehouses">
+                    <WarehousesListPage />
+                  </PermissionRoute>
+                }
+              />
+              <Route
+                path="/inventory/warehouses/:id"
+                element={
+                  <PermissionRoute path="/inventory/warehouses/:id">
+                    <WarehouseDetailPage />
+                  </PermissionRoute>
+                }
+              />
+              <Route
+                path="/inventory/warehouse-stocks"
+                element={
+                  <PermissionRoute path="/inventory/warehouse-stocks">
+                    <WarehouseStocksListPage />
+                  </PermissionRoute>
+                }
+              />
+              <Route
+                path="/inventory/transactions"
+                element={
+                  <PermissionRoute path="/inventory/transactions">
+                    <InventoryTransactionsListPage />
+                  </PermissionRoute>
+                }
+              />
+              <Route
+                path="/inventory/stock-operations"
+                element={
+                  <PermissionRoute path="/inventory/stock-operations">
+                    <StockOperationsPage />
+                  </PermissionRoute>
+                }
+              />
 
               {/* Orders Management */}
-              <Route path="/orders" element={<OrdersListPage />} />
-              <Route path="/orders/:id" element={<OrderDetailPage />} />
+              <Route
+                path="/orders"
+                element={
+                  <PermissionRoute path="/orders">
+                    <OrdersListPage />
+                  </PermissionRoute>
+                }
+              />
+              <Route
+                path="/orders/:id"
+                element={
+                  <PermissionRoute path="/orders/:id">
+                    <OrderDetailPage />
+                  </PermissionRoute>
+                }
+              />
 
               {/* Sales Management */}
-              <Route path="/sales/customers" element={<CustomersListPage />} />
-              <Route path="/sales/customers/:id" element={<CustomerDetailPage />} />
-              <Route path="/sales/orders" element={<SalesOrdersListPage />} />
-              <Route path="/sales/orders/:id" element={<SalesOrderDetailPage />} />
+              <Route
+                path="/sales/customers"
+                element={
+                  <PermissionRoute path="/sales/customers">
+                    <CustomersListPage />
+                  </PermissionRoute>
+                }
+              />
+              <Route
+                path="/sales/customers/:id"
+                element={
+                  <PermissionRoute path="/sales/customers/:id">
+                    <CustomerDetailPage />
+                  </PermissionRoute>
+                }
+              />
+              <Route
+                path="/sales/orders"
+                element={
+                  <PermissionRoute path="/sales/orders">
+                    <SalesOrdersListPage />
+                  </PermissionRoute>
+                }
+              />
+              <Route
+                path="/sales/orders/:id"
+                element={
+                  <PermissionRoute path="/sales/orders/:id">
+                    <SalesOrderDetailPage />
+                  </PermissionRoute>
+                }
+              />
 
               {/* Purchasing Management */}
-              <Route path="/purchasing/orders" element={<PurchaseOrdersListPage />} />
-              <Route path="/purchasing/orders/:id" element={<PurchaseOrderDetailPage />} />
+              <Route
+                path="/purchasing/orders"
+                element={
+                  <PermissionRoute path="/purchasing/orders">
+                    <PurchaseOrdersListPage />
+                  </PermissionRoute>
+                }
+              />
+              <Route
+                path="/purchasing/orders/:id"
+                element={
+                  <PermissionRoute path="/purchasing/orders/:id">
+                    <PurchaseOrderDetailPage />
+                  </PermissionRoute>
+                }
+              />
             </Route>
 
             {/* Catch all */}

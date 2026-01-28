@@ -78,7 +78,7 @@ export class AxiosApiClient implements ApiClient {
         }
         return config;
       },
-      error => Promise.reject(error)
+      error => Promise.reject(error),
     );
 
     // Response interceptor
@@ -95,7 +95,7 @@ export class AxiosApiClient implements ApiClient {
           this.onError(apiError);
         }
         return Promise.reject(apiError);
-      }
+      },
     );
   }
 
@@ -142,7 +142,7 @@ export class AxiosApiClient implements ApiClient {
         message,
         status,
         errorData?.code || errorData?.type,
-        details
+        details,
       );
 
       // show typed toast (queued if provider not ready)
@@ -152,7 +152,7 @@ export class AxiosApiClient implements ApiClient {
           console.debug(
             "[AxiosApiClient] emitting toast error",
             status,
-            apiErr.message
+            apiErr.message,
           );
           showToastError(status ? `Error ${status}` : "Error", apiErr.message);
         } catch (e) {
@@ -165,12 +165,12 @@ export class AxiosApiClient implements ApiClient {
       const netErr = new ApiClientError(
         "No response received from server",
         undefined,
-        "NETWORK_ERROR"
+        "NETWORK_ERROR",
       );
       try {
         console.debug(
           "[AxiosApiClient] emitting network toast",
-          netErr.message
+          netErr.message,
         );
         showToastError("Network Error", netErr.message);
       } catch (e) {}
@@ -179,12 +179,12 @@ export class AxiosApiClient implements ApiClient {
       const reqErr = new ApiClientError(
         error.message || "Request setup failed",
         undefined,
-        "REQUEST_ERROR"
+        "REQUEST_ERROR",
       );
       try {
         console.debug(
           "[AxiosApiClient] emitting request toast",
-          reqErr.message
+          reqErr.message,
         );
         showToastError("Request Error", reqErr.message);
       } catch (e) {}
@@ -204,7 +204,7 @@ export class AxiosApiClient implements ApiClient {
   async post<T = any>(
     url: string,
     data?: any,
-    config?: RequestConfig
+    config?: RequestConfig,
   ): Promise<T> {
     // #region agent log
     silentAnalyticsLog({
@@ -245,7 +245,7 @@ export class AxiosApiClient implements ApiClient {
   async put<T = any>(
     url: string,
     data?: any,
-    config?: RequestConfig
+    config?: RequestConfig,
   ): Promise<T> {
     const response = await this.client.put<T>(url, data, config);
     return response.data;
@@ -254,7 +254,7 @@ export class AxiosApiClient implements ApiClient {
   async patch<T = any>(
     url: string,
     data?: any,
-    config?: RequestConfig
+    config?: RequestConfig,
   ): Promise<T> {
     const response = await this.client.patch<T>(url, data, config);
     return response.data;
