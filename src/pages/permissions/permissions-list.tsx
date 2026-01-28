@@ -15,10 +15,14 @@ import { PermissionFilterHeader } from "@/components/permissions/permission-filt
 
 export function PermissionsListPage() {
   const fetcher = (qs: QuerySpec) =>
-    permissionsService.getPermissionsPaginated({
+    permissionsService.searchPermissions({
       page: qs.page || 1,
       pageSize: qs.pageSize || 10,
-      search: qs.searchTerm || undefined,
+      searchTerm: qs.searchTerm,
+      searchFields: "module,action,description",
+      sortBy: qs.sortBy || "module",
+      sortDesc: qs.sortDesc ?? false,
+      filters: qs.filters,
     });
 
   const {

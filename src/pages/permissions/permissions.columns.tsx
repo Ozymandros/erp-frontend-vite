@@ -17,10 +17,14 @@ export function getPermissionColumns({ onEdit, onDelete, canEdit = true, canDele
     {
       header: "Module",
       accessor: (permission) => <Badge variant="secondary">{permission.module}</Badge>,
+      sortable: true,
+      sortField: "module",
     },
     {
       header: "Action",
       accessor: (permission) => <Badge variant="outline">{permission.action}</Badge>,
+      sortable: true,
+      sortField: "action",
     },
     {
       header: "Description",
@@ -29,6 +33,8 @@ export function getPermissionColumns({ onEdit, onDelete, canEdit = true, canDele
     {
       header: "Created",
       accessor: (permission) => <span className="text-sm text-muted-foreground">{formatDateTime(permission.createdAt)}</span>,
+      sortable: true,
+      sortField: "createdAt",
     },
     {
       header: "Actions",

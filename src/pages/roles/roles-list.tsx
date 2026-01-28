@@ -14,10 +14,14 @@ import { getRoleColumns } from "./roles.columns"
 
 export function RolesListPage() {
   const fetcher = (qs: QuerySpec) =>
-    rolesService.getRolesPaginated({
+    rolesService.searchRoles({
       page: qs.page || 1,
       pageSize: qs.pageSize || 10,
-      search: qs.searchTerm || undefined,
+      searchTerm: qs.searchTerm,
+      searchFields: "name,description",
+      sortBy: qs.sortBy || "createdAt",
+      sortDesc: qs.sortDesc ?? true,
+      filters: qs.filters,
     });
 
   const {
@@ -36,6 +40,7 @@ export function RolesListPage() {
 
   // Permissions
   const { canCreate, canUpdate, canDelete, canExport } = useModulePermissions("roles");
+  const canManagePermissions = canUpdate; // Managing permissions requires update permission
 
   // Actions
   const {
@@ -66,6 +71,7 @@ export function RolesListPage() {
     onDelete: setDeletingItem,
     canEdit: canUpdate,
     canDelete: canDelete,
+    canManagePermissions: canManagePermissions,
   })
 
   return (

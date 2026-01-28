@@ -45,6 +45,8 @@ export class AxiosApiClient implements ApiClient {
         "Content-Type": "application/json",
         ...config.headers,
       },
+      // Ensure 204 responses are treated as success
+      validateStatus: (status) => status >= 200 && status < 300,
     });
 
     this.setupInterceptors();
@@ -84,6 +86,16 @@ export class AxiosApiClient implements ApiClient {
     // Response interceptor
     this.client.interceptors.response.use(
       response => {
+        // Handle 204 No Content responses (common for DELETE operations)
+        // Axios may return empty string "" for 204 responses
+        if (response.status === 204) {
+          // Return response with undefined data to avoid JSON parsing issues
+          return { ...response, data: undefined };
+        }
+        // Also handle empty string responses (some servers return "" for successful DELETE)
+        if (response.data === "" || response.data === null || response.data === undefined) {
+          return { ...response, data: undefined };
+        }
         if (this.onResponse) {
           return this.onResponse(response);
         }
@@ -261,8 +273,24 @@ export class AxiosApiClient implements ApiClient {
   }
 
   async delete<T = any>(url: string, config?: RequestConfig): Promise<T> {
-    const response = await this.client.delete<T>(url, config);
-    return response.data;
+    if (import.meta.env.DEV) {
+      const fullUrl = this.client.defaults.baseURL + url;
+      console.debug("[AxiosApiClient] DELETE", url, "→ Full URL:", fullUrl);
+    }
+    try {
+      const response = await this.client.delete<T>(url, config);
+      // Handle 204 No Content and empty responses
+      // Axios returns empty string "" for 204 responses
+      if (response.status === 204 || !response.data || response.data === "") {
+        return undefined as T;
+      }
+      return response.data;
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error("[AxiosApiClient] DELETE error for", url, error);
+      }
+      throw error;
+    }
   }
 
   setAuthToken(token: string | null): void {

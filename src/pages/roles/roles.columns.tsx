@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { Eye, Pencil, Trash2 } from "lucide-react"
+import { Eye, Pencil, Trash2, Shield } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Column } from "@/components/ui/data-table"
@@ -11,19 +11,28 @@ interface RoleColumnsProps {
   onDelete: (role: Role) => void;
   canEdit?: boolean;
   canDelete?: boolean;
+  canManagePermissions?: boolean;
 }
 
-export function getRoleColumns({ onEdit, onDelete, canEdit = true, canDelete = true }: RoleColumnsProps): Column<Role>[] {
+export function getRoleColumns({ onEdit, onDelete, canEdit = true, canDelete = true, canManagePermissions = true }: RoleColumnsProps): Column<Role>[] {
   return [
     {
       header: "Name",
-      accessor: "name",
+      accessor: (role) => (
+        <Link
+          to={`/roles/${role.id}`}
+          className="font-medium text-primary hover:underline"
+        >
+          {role.name}
+        </Link>
+      ),
       sortable: true,
       className: "font-medium",
     },
     {
       header: "Description",
       accessor: (role) => <div className="max-w-md truncate">{role.description || "-"}</div>,
+      sortable: false,
     },
     {
       header: "Permissions",
@@ -50,6 +59,13 @@ export function getRoleColumns({ onEdit, onDelete, canEdit = true, canDelete = t
               <Eye className="h-4 w-4" />
             </Link>
           </Button>
+          {canManagePermissions && (
+            <Button variant="ghost" size="icon" asChild title="Manage Permissions">
+              <Link to={`/roles/${role.id}#permissions`}>
+                <Shield className="h-4 w-4" />
+              </Link>
+            </Button>
+          )}
           {canEdit && (
             <Button variant="ghost" size="icon" onClick={() => onEdit(role)} title="Edit Role">
               <Pencil className="h-4 w-4" />
