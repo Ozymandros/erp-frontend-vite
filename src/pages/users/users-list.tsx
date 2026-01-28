@@ -34,6 +34,7 @@ export function UsersListPage() {
 
   // Permissions
   const { canCreate, canUpdate, canDelete, canExport } = useModulePermissions("users");
+  const canManageRoles = canUpdate; // Managing roles requires update permission
 
   // Actions
   const {
@@ -64,6 +65,7 @@ export function UsersListPage() {
     onDelete: setDeletingItem,
     canEdit: canUpdate,
     canDelete: canDelete,
+    canManageRoles: canManageRoles,
   });
 
   return (

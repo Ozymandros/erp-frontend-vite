@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, Trash2, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Column } from "@/components/ui/data-table";
@@ -12,9 +12,10 @@ interface UserColumnsProps {
   onDelete: (user: User) => void;
   canEdit?: boolean;
   canDelete?: boolean;
+  canManageRoles?: boolean;
 }
 
-export function getUserColumns({ onEdit, onDelete, canEdit = true, canDelete = true }: UserColumnsProps): Column<User>[] {
+export function getUserColumns({ onEdit, onDelete, canEdit = true, canDelete = true, canManageRoles = true }: UserColumnsProps): Column<User>[] {
   return [
     {
       header: "Username",
@@ -73,6 +74,13 @@ export function getUserColumns({ onEdit, onDelete, canEdit = true, canDelete = t
               <Eye className="h-4 w-4" />
             </Link>
           </Button>
+          {canManageRoles && (
+            <Button variant="ghost" size="icon" asChild title="Manage Roles">
+              <Link to={`/users/${user.id}#roles`}>
+                <Shield className="h-4 w-4" />
+              </Link>
+            </Button>
+          )}
           {canEdit && (
             <Button variant="ghost" size="icon" onClick={() => onEdit(user)} title="Edit User">
               <Pencil className="h-4 w-4" />
