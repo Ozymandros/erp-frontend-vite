@@ -90,7 +90,7 @@ export function RoleSelector({
     if (userId) {
       loadData()
     }
-  }, [userId])
+  }, [userId, initialRoles])
 
   // Update selected roles when initialRoles prop changes
   useEffect(() => {
