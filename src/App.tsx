@@ -27,6 +27,8 @@ import { SalesOrderDetailPage } from "@/pages/sales/sales-order-detail";
 import { OrdersListPage } from "@/pages/orders/orders-list";
 import { PurchaseOrdersListPage } from "@/pages/purchasing/purchase-orders-list";
 import { PurchaseOrderDetailPage } from "@/pages/purchasing/purchase-order-detail";
+import { SuppliersListPage } from "@/pages/purchasing/suppliers-list";
+import { SupplierDetailPage } from "@/pages/purchasing/supplier-detail";
 import { OrderDetailPage } from "@/pages/orders/order-detail";
 import { ToastContextProvider } from "@/contexts/toast.context";
 
@@ -210,6 +212,22 @@ function App() {
               />
 
               {/* Purchasing Management */}
+              <Route
+                path="/purchasing/suppliers"
+                element={
+                  <PermissionRoute path="/purchasing/suppliers">
+                    <SuppliersListPage />
+                  </PermissionRoute>
+                }
+              />
+              <Route
+                path="/purchasing/suppliers/:id"
+                element={
+                  <PermissionRoute path="/purchasing/suppliers/:id">
+                    <SupplierDetailPage />
+                  </PermissionRoute>
+                }
+              />
               <Route
                 path="/purchasing/orders"
                 element={

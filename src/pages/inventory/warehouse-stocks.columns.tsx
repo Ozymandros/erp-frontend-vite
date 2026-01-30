@@ -1,4 +1,3 @@
-import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Column } from "@/components/ui/data-table";
 import { WarehouseStockDto } from "@/types/api.types";

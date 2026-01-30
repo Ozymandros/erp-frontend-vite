@@ -49,7 +49,6 @@ export function CreateRoleDialog({ open, onOpenChange, onSuccess }: CreateRoleDi
         ...formData,
         description: formData.description || undefined,
       })
-      setCreatedRole(newRole)
       onSuccess()
       setFormData({ name: "", description: "" })
       // Navigate to role detail page to assign permissions

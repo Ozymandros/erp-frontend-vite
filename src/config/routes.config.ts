@@ -54,91 +54,131 @@ export const ROUTE_PERMISSIONS: Record<string, RoutePermission> = {
   // Purchasing Management
   "/purchasing/orders": createPermission(PERMISSION_MODULES.PURCHASING, PERMISSION_ACTIONS.READ),
   "/purchasing/orders/:id": createPermission(PERMISSION_MODULES.PURCHASING, PERMISSION_ACTIONS.READ),
+  "/purchasing/suppliers": createPermission(PERMISSION_MODULES.PURCHASING, PERMISSION_ACTIONS.READ),
+  "/purchasing/suppliers/:id": createPermission(PERMISSION_MODULES.PURCHASING, PERMISSION_ACTIONS.READ),
 };
 
 /**
  * Navigation items configuration with permissions.
  * Used by the Sidebar component to filter visible navigation items.
+ * Items with `children` are groups (menu-submenu); they have no href.
  */
 export interface NavItemConfig {
   title: string;
-  href: string;
-  icon: string; // Icon component name (for reference)
+  href?: string; // optional for groups
+  icon: string;
   permission?: RoutePermission;
+  children?: NavItemConfig[];
 }
 
 export const NAV_ITEMS_CONFIG: NavItemConfig[] = [
   {
-    title: "Users",
-    href: "/users",
-    icon: "Users",
-    permission: createPermission(PERMISSION_MODULES.USERS, PERMISSION_ACTIONS.READ),
-  },
-  {
-    title: "Roles",
-    href: "/roles",
+    title: "Auth",
     icon: "Shield",
-    permission: createPermission(PERMISSION_MODULES.ROLES, PERMISSION_ACTIONS.READ),
+    children: [
+      {
+        title: "Users",
+        href: "/users",
+        icon: "Users",
+        permission: createPermission(PERMISSION_MODULES.USERS, PERMISSION_ACTIONS.READ),
+      },
+      {
+        title: "Roles",
+        href: "/roles",
+        icon: "Shield",
+        permission: createPermission(PERMISSION_MODULES.ROLES, PERMISSION_ACTIONS.READ),
+      },
+      {
+        title: "Permissions",
+        href: "/permissions",
+        icon: "Key",
+        permission: createPermission(PERMISSION_MODULES.PERMISSIONS, PERMISSION_ACTIONS.READ),
+      },
+    ],
   },
   {
-    title: "Permissions",
-    href: "/permissions",
-    icon: "Key",
-    permission: createPermission(PERMISSION_MODULES.PERMISSIONS, PERMISSION_ACTIONS.READ),
-  },
-  {
-    title: "Products",
-    href: "/inventory/products",
+    title: "Inventory",
     icon: "Package",
-    permission: createPermission(PERMISSION_MODULES.INVENTORY, PERMISSION_ACTIONS.READ),
+    children: [
+      {
+        title: "Products",
+        href: "/inventory/products",
+        icon: "Package",
+        permission: createPermission(PERMISSION_MODULES.INVENTORY, PERMISSION_ACTIONS.READ),
+      },
+      {
+        title: "Warehouses",
+        href: "/inventory/warehouses",
+        icon: "Warehouse",
+        permission: createPermission(PERMISSION_MODULES.INVENTORY, PERMISSION_ACTIONS.READ),
+      },
+      {
+        title: "Warehouse Stocks",
+        href: "/inventory/warehouse-stocks",
+        icon: "TrendingUp",
+        permission: createPermission(PERMISSION_MODULES.INVENTORY, PERMISSION_ACTIONS.READ),
+      },
+      {
+        title: "Transactions",
+        href: "/inventory/transactions",
+        icon: "FileText",
+        permission: createPermission(PERMISSION_MODULES.INVENTORY, PERMISSION_ACTIONS.READ),
+      },
+      {
+        title: "Stock Operations",
+        href: "/inventory/stock-operations",
+        icon: "TrendingUp",
+        permission: createPermission(PERMISSION_MODULES.INVENTORY, PERMISSION_ACTIONS.READ),
+      },
+    ],
   },
   {
-    title: "Warehouses",
-    href: "/inventory/warehouses",
-    icon: "Warehouse",
-    permission: createPermission(PERMISSION_MODULES.INVENTORY, PERMISSION_ACTIONS.READ),
-  },
-  {
-    title: "Customers",
-    href: "/sales/customers",
+    title: "Sales",
     icon: "DollarSign",
-    permission: createPermission(PERMISSION_MODULES.SALES, PERMISSION_ACTIONS.READ),
+    children: [
+      {
+        title: "Customers",
+        href: "/sales/customers",
+        icon: "DollarSign",
+        permission: createPermission(PERMISSION_MODULES.SALES, PERMISSION_ACTIONS.READ),
+      },
+      {
+        title: "Sales Orders",
+        href: "/sales/orders",
+        icon: "ShoppingCart",
+        permission: createPermission(PERMISSION_MODULES.SALES, PERMISSION_ACTIONS.READ),
+      },
+    ],
   },
   {
-    title: "Sales Orders",
-    href: "/sales/orders",
-    icon: "ShoppingCart",
-    permission: createPermission(PERMISSION_MODULES.SALES, PERMISSION_ACTIONS.READ),
-  },
-  {
-    title: "Purchase Orders",
-    href: "/purchasing/orders",
+    title: "Purchasing",
     icon: "ShoppingBag",
-    permission: createPermission(PERMISSION_MODULES.PURCHASING, PERMISSION_ACTIONS.READ),
-  },
-  {
-    title: "Warehouse Stocks",
-    href: "/inventory/warehouse-stocks",
-    icon: "TrendingUp",
-    permission: createPermission(PERMISSION_MODULES.INVENTORY, PERMISSION_ACTIONS.READ),
-  },
-  {
-    title: "Transactions",
-    href: "/inventory/transactions",
-    icon: "FileText",
-    permission: createPermission(PERMISSION_MODULES.INVENTORY, PERMISSION_ACTIONS.READ),
-  },
-  {
-    title: "Stock Operations",
-    href: "/inventory/stock-operations",
-    icon: "TrendingUp",
-    permission: createPermission(PERMISSION_MODULES.INVENTORY, PERMISSION_ACTIONS.READ),
+    children: [
+      {
+        title: "Suppliers",
+        href: "/purchasing/suppliers",
+        icon: "ShoppingBag",
+        permission: createPermission(PERMISSION_MODULES.PURCHASING, PERMISSION_ACTIONS.READ),
+      },
+      {
+        title: "Purchase Orders",
+        href: "/purchasing/orders",
+        icon: "ShoppingBag",
+        permission: createPermission(PERMISSION_MODULES.PURCHASING, PERMISSION_ACTIONS.READ),
+      },
+    ],
   },
   {
     title: "Orders",
-    href: "/orders",
     icon: "ShoppingCart",
-    permission: createPermission(PERMISSION_MODULES.ORDERS, PERMISSION_ACTIONS.READ),
+    children: [
+      {
+        title: "Orders",
+        href: "/orders",
+        icon: "ShoppingCart",
+        permission: createPermission(PERMISSION_MODULES.ORDERS, PERMISSION_ACTIONS.READ),
+      },
+    ],
   },
 ];
 

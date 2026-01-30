@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
 
 export interface Column<T> {
-  header: string;
+  header: string | React.ReactNode;
   accessor: keyof T | ((item: T) => React.ReactNode);
   sortable?: boolean;
   sortField?: string;
