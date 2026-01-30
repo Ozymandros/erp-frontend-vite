@@ -114,6 +114,15 @@ export function WarehouseStocksListPage() {
   const error = dataError || exportError;
   const columns = getWarehouseStockColumns({ getProductName, getWarehouseName });
 
+  let cardDescription = "All warehouse stocks";
+  if (filterType === "low") {
+    cardDescription = "Products with low stock levels";
+  } else if (filterType === "product") {
+    cardDescription = `Stock for ${getProductName(selectedProductId)}`;
+  } else if (filterType === "warehouse") {
+    cardDescription = `Stock in ${getWarehouseName(selectedWarehouseId)}`;
+  }
+
   return (
     <ListPageLayout
       title="Warehouse Stocks"
@@ -129,15 +138,7 @@ export function WarehouseStocksListPage() {
       onExport={canExport ? handleExport : undefined}
       columns={columns}
       cardTitle="Stock Levels"
-      cardDescription={
-        filterType === "low"
-          ? "Products with low stock levels"
-          : filterType === "product"
-            ? `Stock for ${getProductName(selectedProductId)}`
-            : filterType === "warehouse"
-              ? `Stock in ${getWarehouseName(selectedWarehouseId)}`
-              : "All warehouse stocks"
-      }
+      cardDescription={cardDescription}
       extraHeaderActions={
         <div className="flex flex-wrap gap-4">
           <Button

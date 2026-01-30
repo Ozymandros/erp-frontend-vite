@@ -34,7 +34,7 @@ export function ReleaseReservationForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <label className="text-sm font-medium flex flex-col gap-1">
-          Reservation ID
+          <span>Reservation ID</span>
           <input
             name="reservationId"
             required

@@ -2,10 +2,10 @@ import React from "react";
 import { usePermission } from "@/hooks/use-permissions";
 
 interface CanProps {
-  module: string;
-  action: string;
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
+  readonly module: string;
+  readonly action: string;
+  readonly children: React.ReactNode;
+  readonly fallback?: React.ReactNode;
 }
 
 /**

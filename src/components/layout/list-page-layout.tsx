@@ -13,32 +13,32 @@ import { DataTable, Column } from "@/components/ui/data-table";
 import { PaginatedResponse, QuerySpec } from "@/types/api.types";
 
 interface ListPageLayoutProps<T> {
-  title: string;
-  description: string;
-  resourceName: string;
+  readonly title: string;
+  readonly description: string;
+  readonly resourceName: string;
   
   // Data State
-  data: PaginatedResponse<T> | null;
-  isLoading: boolean;
-  error: string | null;
-  querySpec: QuerySpec;
+  readonly data: PaginatedResponse<T> | null;
+  readonly isLoading: boolean;
+  readonly error: string | null;
+  readonly querySpec: QuerySpec;
   
   // Handlers
-  onSearch: (value: string) => void;
-  onSort: (field: string) => void;
-  onPageChange: (page: number) => void;
+  readonly onSearch: (value: string) => void;
+  readonly onSort: (field: string) => void;
+  readonly onPageChange: (page: number) => void;
   /** If provided, export buttons will be shown */
-  onExport?: (format: "xlsx" | "pdf") => void;
+  readonly onExport?: (format: "xlsx" | "pdf") => void;
   /** If provided, the "Add" button will be shown */
-  onCreateOpen?: () => void;
+  readonly onCreateOpen?: () => void;
   
   // Customization
-  columns: Column<T>[];
-  searchPlaceholder?: string;
-  cardTitle: string;
-  cardDescription: string;
-  extraHeaderActions?: React.ReactNode;
-  children?: React.ReactNode; // For dialogs or extra components
+  readonly columns: Column<T>[];
+  readonly searchPlaceholder?: string;
+  readonly cardTitle: string;
+  readonly cardDescription: string;
+  readonly extraHeaderActions?: React.ReactNode;
+  readonly children?: React.ReactNode; // For dialogs or extra components
 }
 
 /**

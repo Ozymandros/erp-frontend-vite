@@ -13,10 +13,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { handleApiError, getErrorMessage } from "@/lib/error-handling"
 
 interface RoleSelectorProps {
-  userId: string
-  initialRoles?: Role[]
-  onRolesChange?: (roles: Role[]) => void
-  readonly?: boolean
+  readonly userId: string
+  readonly initialRoles?: Role[]
+  readonly onRolesChange?: (roles: Role[]) => void
+  readonly readonly?: boolean
 }
 
 export function RoleSelector({
@@ -58,9 +58,7 @@ export function RoleSelector({
 
       try {
         // Load all available roles
-        const [allRolesData] = await Promise.all([
-          rolesService.getRoles(),
-        ])
+        const allRolesData = await rolesService.getRoles()
         
         setAllRoles(allRolesData)
         
@@ -107,7 +105,7 @@ export function RoleSelector({
     return allRoles.filter(role => {
       return (
         role.name.toLowerCase().includes(term) ||
-        (role.description && role.description.toLowerCase().includes(term))
+        role.description?.toLowerCase().includes(term)
       )
     })
   }, [allRoles, searchTerm])

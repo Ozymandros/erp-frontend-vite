@@ -8,11 +8,11 @@ import {
 import { showToastError } from "@/contexts/toast.service";
 
 export class DaprHttpClient implements ApiClient {
-  private timeout: number;
-  private defaultHeaders: Record<string, string>;
+  private readonly timeout: number;
+  private readonly defaultHeaders: Record<string, string>;
   private authToken: string | null = null;
-  private daprAppId: string;
-  private daprPort: number;
+  private readonly daprAppId: string;
+  private readonly daprPort: number;
 
   constructor(
     config: ApiClientConfig & { daprAppId?: string; daprPort?: number },
@@ -27,7 +27,6 @@ export class DaprHttpClient implements ApiClient {
   }
 
   private getDaprUrl(url: string): string {
-    // Dapr HTTP proxy format: http://localhost:<daprPort>/v1.0/invoke/<appId>/method/<method-name>
     const cleanUrl = url.startsWith("/") ? url.slice(1) : url;
     return `http://localhost:${this.daprPort}/v1.0/invoke/${this.daprAppId}/method/${cleanUrl}`;
   }
@@ -45,13 +44,111 @@ export class DaprHttpClient implements ApiClient {
     return headers;
   }
 
+  private buildFinalUrl(url: string, config?: RequestConfig): string {
+    const daprUrl = this.getDaprUrl(url);
+    if (!config?.params) return daprUrl;
+
+    const searchParams = new URLSearchParams();
+    Object.entries(config.params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        searchParams.append(key, String(value));
+      }
+    });
+
+    const queryString = searchParams.toString();
+    return queryString ? `${daprUrl}?${queryString}` : daprUrl;
+  }
+
+  private async parseError(response: Response): Promise<ApiClientError> {
+    const errorData = await response.json().catch(() => ({}));
+    let message =
+      errorData.message || `HTTP ${response.status}: ${response.statusText}`;
+    let details = errorData.details;
+
+    if (errorData?.title || errorData?.errors) {
+      message = errorData?.title || errorData?.detail || message;
+      if (errorData?.errors && typeof errorData.errors === "object") {
+        details = errorData.errors;
+        const validationMessages = Object.entries(errorData.errors)
+          ?.map(([field, messages]: [string, any]) => {
+            const fieldMessages = Array.isArray(messages)
+              ? messages
+              : [messages];
+            return `${field}: ${fieldMessages.join(", ")}`;
+          })
+          .join("; ");
+        if (validationMessages) message = validationMessages;
+      }
+    }
+
+    return new ApiClientError(
+      message,
+      response.status,
+      errorData.code || errorData.type,
+      details,
+    );
+  }
+
+  private async handleResponse<T>(
+    response: Response,
+    config?: RequestConfig,
+  ): Promise<T> {
+    if (!response.ok) {
+      const error = await this.parseError(response);
+      throw error;
+    }
+
+    if (config?.responseType === "blob") {
+      return (await response.blob()) as T;
+    }
+
+    if (config?.responseType === "text") {
+      return (await response.text()) as T;
+    }
+
+    const responseData = await response.json();
+    if (this.onResponse) {
+      this.onResponse(responseData);
+    }
+    return responseData as T;
+  }
+
+  private handleCatchError(error: any, timeoutId: any): never {
+    clearTimeout(timeoutId);
+
+    let apiError: ApiClientError;
+    if (error.name === "AbortError") {
+      apiError = new ApiClientError(
+        "Request timeout",
+        undefined,
+        "TIMEOUT_ERROR",
+      );
+      showToastError("Request timeout", apiError.message);
+    } else if (error instanceof ApiClientError) {
+      apiError = error;
+      showToastError("Error", apiError.message);
+    } else {
+      apiError = new ApiClientError(
+        error.message || "Network request failed",
+        undefined,
+        "NETWORK_ERROR",
+      );
+      showToastError("Network Error", apiError.message);
+    }
+
+    if (this.onError) {
+      this.onError(apiError);
+    }
+    throw apiError;
+  }
+
   private async request<T>(
     method: string,
     url: string,
     data?: any,
     config?: RequestConfig,
   ): Promise<T> {
-    const daprUrl = this.getDaprUrl(url);
+    const finalUrl = this.buildFinalUrl(url, config);
     const headers = this.getHeaders(config);
 
     const controller = new AbortController();
@@ -71,21 +168,6 @@ export class DaprHttpClient implements ApiClient {
         options.body = JSON.stringify(data);
       }
 
-      // Add query parameters
-      let finalUrl = daprUrl;
-      if (config?.params) {
-        const searchParams = new URLSearchParams();
-        Object.entries(config.params).forEach(([key, value]) => {
-          if (value !== undefined && value !== null) {
-            searchParams.append(key, String(value));
-          }
-        });
-        const queryString = searchParams.toString();
-        if (queryString) {
-          finalUrl += `?${queryString}`;
-        }
-      }
-
       if (this.onRequest) {
         this.onRequest({ url: finalUrl, ...options });
       }
@@ -93,112 +175,12 @@ export class DaprHttpClient implements ApiClient {
       const response = await fetch(finalUrl, options);
       clearTimeout(timeoutId);
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-
-        // Check for ASP.NET Core ProblemDetails format
-        let message =
-          errorData.message ||
-          `HTTP ${response.status}: ${response.statusText}`;
-        let details = errorData.details;
-
-        // Handle ProblemDetails validation errors
-        if (errorData?.title || errorData?.errors) {
-          message = errorData?.title || errorData?.detail || message;
-          // Extract validation errors from ProblemDetails.errors
-          if (errorData?.errors && typeof errorData.errors === "object") {
-            details = errorData.errors;
-            // Build a user-friendly message from validation errors
-            const validationMessages = Object.entries(errorData.errors)
-              ?.map(([field, messages]: [string, any]) => {
-                const fieldMessages = Array.isArray(messages)
-                  ? messages
-                  : [messages];
-                return `${field}: ${fieldMessages.join(", ")}`;
-              })
-              .join("; ");
-            if (validationMessages) {
-              message = validationMessages;
-            }
-          }
-        }
-
-        throw new ApiClientError(
-          message,
-          response.status,
-          errorData.code || errorData.type,
-          details,
-        );
-      }
-
-      if (config?.responseType === "blob") {
-        const blob = await response.blob();
-        return blob as T;
-      }
-
-      if (config?.responseType === "text") {
-        const text = await response.text();
-        return text as T;
-      }
-
-      const responseData = await response.json();
-
-      if (this.onResponse) {
-        this.onResponse(responseData);
-      }
-
-      return responseData as T;
+      return await this.handleResponse<T>(response, config);
     } catch (error: any) {
-      clearTimeout(timeoutId);
-
-      if (error.name === "AbortError") {
-        const timeoutError = new ApiClientError(
-          "Request timeout",
-          undefined,
-          "TIMEOUT_ERROR",
-        );
-        if (this.onError) {
-          this.onError(timeoutError);
-        }
-        try {
-          console.debug(
-            "[DaprHttpClient] emitting timeout toast",
-            timeoutError.message,
-          );
-          showToastError("Request timeout", timeoutError.message);
-        } catch (e) {}
-        throw timeoutError;
-      }
-
-      if (error instanceof ApiClientError) {
-        if (this.onError) {
-          this.onError(error);
-        }
-        try {
-          console.debug("[DaprHttpClient] emitting error toast", error.message);
-          showToastError("Error", error.message);
-        } catch (e) {}
-        throw error;
-      }
-
-      const networkError = new ApiClientError(
-        error.message || "Network request failed",
-        undefined,
-        "NETWORK_ERROR",
-      );
-      if (this.onError) {
-        this.onError(networkError);
-      }
-      try {
-        console.debug(
-          "[DaprHttpClient] emitting network toast",
-          networkError.message,
-        );
-        showToastError("Network Error", networkError.message);
-      } catch (e) {}
-      throw networkError;
+      return this.handleCatchError(error, timeoutId);
     }
   }
+
 
   async get<T = any>(url: string, config?: RequestConfig): Promise<T> {
     return this.request<T>("GET", url, undefined, config);

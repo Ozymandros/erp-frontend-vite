@@ -136,27 +136,27 @@ export function UserDetailPage() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Username</label>
+              <span className="text-sm font-medium text-muted-foreground block">Username</span>
               <p className="text-base text-foreground mt-1">{user.username}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Email</label>
+              <span className="text-sm font-medium text-muted-foreground block">Email</span>
               <p className="text-base text-foreground mt-1">{user.email}</p>
             </div>
             {user.firstName && (
               <div>
-                <label className="text-sm font-medium text-muted-foreground">First Name</label>
+                <span className="text-sm font-medium text-muted-foreground block">First Name</span>
                 <p className="text-base text-foreground mt-1">{user.firstName}</p>
               </div>
             )}
             {user.lastName && (
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Last Name</label>
+                <span className="text-sm font-medium text-muted-foreground block">Last Name</span>
                 <p className="text-base text-foreground mt-1">{user.lastName}</p>
               </div>
             )}
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Status</label>
+              <span className="text-sm font-medium text-muted-foreground block">Status</span>
               <div className="mt-1">
                 <Badge variant={user.isActive ? "default" : "destructive"}>
                   {user.isActive ? "Active" : "Inactive"}
@@ -164,7 +164,7 @@ export function UserDetailPage() {
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">User ID</label>
+              <span className="text-sm font-medium text-muted-foreground block">User ID</span>
               <p className="text-base text-foreground mt-1 font-mono text-sm">{user.id}</p>
             </div>
           </div>
@@ -236,11 +236,11 @@ export function UserDetailPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div>
-            <label className="text-sm font-medium text-muted-foreground">Created At</label>
+            <span className="text-sm font-medium text-muted-foreground block">Created At</span>
             <p className="text-base text-foreground mt-1">{formatDateTime(user.createdAt)}</p>
           </div>
           <div>
-            <label className="text-sm font-medium text-muted-foreground">Last Updated</label>
+            <span className="text-sm font-medium text-muted-foreground block">Last Updated</span>
             <p className="text-base text-foreground mt-1">{formatDateTime(user.updatedAt)}</p>
           </div>
         </CardContent>

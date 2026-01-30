@@ -5,8 +5,8 @@ import { stockOperationsService } from "@/api/services/stock-operations.service"
 import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 
 interface TransferStockFormProps {
-  products: Array<{ id: string; name: string; sku: string }>;
-  warehouses: Array<{ id: string; name: string }>;
+  readonly products: Array<{ readonly id: string; readonly name: string; readonly sku: string }>;
+  readonly warehouses: Array<{ readonly id: string; readonly name: string }>;
 }
 
 export function TransferStockForm({ products, warehouses }: TransferStockFormProps) {
@@ -46,7 +46,7 @@ export function TransferStockForm({ products, warehouses }: TransferStockFormPro
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Product
+            <span>Product</span>
             <select
               name="productId"
               required
@@ -63,7 +63,7 @@ export function TransferStockForm({ products, warehouses }: TransferStockFormPro
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Quantity
+            <span>Quantity</span>
             <input
               name="quantity"
               type="number"
@@ -75,7 +75,7 @@ export function TransferStockForm({ products, warehouses }: TransferStockFormPro
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            From Warehouse
+            <span>From Warehouse</span>
             <select
               name="fromWarehouseId"
               required
@@ -92,7 +92,7 @@ export function TransferStockForm({ products, warehouses }: TransferStockFormPro
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            To Warehouse
+            <span>To Warehouse</span>
             <select
               name="toWarehouseId"
               required
@@ -109,7 +109,7 @@ export function TransferStockForm({ products, warehouses }: TransferStockFormPro
         </div>
         <div className="space-y-2 col-span-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Reason
+            <span>Reason</span>
             <textarea
               name="reason"
               required

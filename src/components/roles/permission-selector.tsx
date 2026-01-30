@@ -13,10 +13,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { handleApiError, getErrorMessage } from "@/lib/error-handling"
 
 interface PermissionSelectorProps {
-  roleId: string
-  initialPermissions?: Permission[]
-  onPermissionsChange?: (permissions: Permission[]) => void
-  readonly?: boolean
+  readonly roleId: string
+  readonly initialPermissions?: Permission[]
+  readonly onPermissionsChange?: (permissions: Permission[]) => void
+  readonly readonly?: boolean
 }
 
 export function PermissionSelector({
@@ -56,7 +56,7 @@ export function PermissionSelector({
 
   // Get unique modules for filter dropdown
   const modules = useMemo(() => {
-    return Array.from(new Set(allPermissions.map(p => p.module))).sort()
+    return Array.from(new Set(allPermissions.map(p => p.module))).sort((a, b) => a.localeCompare(b))
   }, [allPermissions])
 
   // Filter permissions based on search and module filter
@@ -69,7 +69,7 @@ export function PermissionSelector({
         p =>
           p.module.toLowerCase().includes(term) ||
           p.action.toLowerCase().includes(term) ||
-          (p.description && p.description.toLowerCase().includes(term))
+          p.description?.toLowerCase().includes(term)
       )
     }
 
@@ -313,7 +313,7 @@ export function PermissionSelector({
               return (
                 p.module.toLowerCase().includes(term) ||
                 p.action.toLowerCase().includes(term) ||
-                (p.description && p.description.toLowerCase().includes(term))
+                p.description?.toLowerCase().includes(term)
               )
             })
           }
@@ -332,7 +332,7 @@ export function PermissionSelector({
                   <div>
                     <CardTitle className="text-lg">{module}</CardTitle>
                     <CardDescription>
-                      {modulePermissions.length} permission{modulePermissions.length !== 1 ? "s" : ""}
+                      {modulePermissions.length} permission{modulePermissions.length === 1 ? "" : "s"}
                     </CardDescription>
                   </div>
                   {!readonly && modulePermissions.length > 0 && (

@@ -6,9 +6,9 @@ import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 import type { OrderDto } from "@/types/api.types";
 
 interface ReserveStockFormProps {
-  products: Array<{ id: string; name: string; sku: string }>;
-  warehouses: Array<{ id: string; name: string }>;
-  orders: OrderDto[];
+  readonly products: Array<{ readonly id: string; readonly name: string; readonly sku: string }>;
+  readonly warehouses: Array<{ readonly id: string; readonly name: string }>;
+  readonly orders: readonly OrderDto[];
 }
 
 export function ReserveStockForm({ products, warehouses, orders }: ReserveStockFormProps) {
@@ -48,7 +48,7 @@ export function ReserveStockForm({ products, warehouses, orders }: ReserveStockF
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Product
+            <span>Product</span>
             <select
               name="productId"
               required
@@ -65,7 +65,7 @@ export function ReserveStockForm({ products, warehouses, orders }: ReserveStockF
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Warehouse
+            <span>Warehouse</span>
             <select
               name="warehouseId"
               required
@@ -82,7 +82,7 @@ export function ReserveStockForm({ products, warehouses, orders }: ReserveStockF
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Quantity
+            <span>Quantity</span>
             <input
               name="quantity"
               type="number"
@@ -94,7 +94,7 @@ export function ReserveStockForm({ products, warehouses, orders }: ReserveStockF
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Order
+            <span>Order</span>
             <select
               name="orderId"
               required
@@ -111,7 +111,7 @@ export function ReserveStockForm({ products, warehouses, orders }: ReserveStockF
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Expires At (optional)
+            <span>Expires At (optional)</span>
             <input
               name="expiresAt"
               type="datetime-local"

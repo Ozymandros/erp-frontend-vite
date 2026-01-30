@@ -116,6 +116,64 @@ export function RoleDetailPage() {
     )
   }
 
+  const renderUsersContent = () => {
+    if (isLoadingUsers) {
+      return (
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      )
+    }
+
+    if (usersInRole.length === 0) {
+      return (
+        <p className="text-muted-foreground text-center py-4">
+          No users have this role assigned. Assign roles to users from the{" "}
+          <Link to="/users" className="text-primary hover:underline">
+            Users page
+          </Link>
+          .
+        </p>
+      )
+    }
+
+    return (
+      <div className="space-y-2">
+        {usersInRole.map((u) => (
+          <div
+            key={u.id}
+            className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-accent"
+          >
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <Link
+                  to={`/users/${u.id}`}
+                  className="font-medium text-foreground hover:underline"
+                >
+                  {u.username}
+                </Link>
+                {u.isAdmin && (
+                  <Badge variant="default" className="text-xs">
+                    Admin
+                  </Badge>
+                )}
+              </div>
+              <p className="text-sm text-muted-foreground">{u.email}</p>
+              {(u.firstName || u.lastName) && (
+                <p className="text-sm text-muted-foreground">
+                  {u.firstName} {u.lastName}
+                </p>
+              )}
+            </div>
+            <Badge variant={u.isActive ? "default" : "destructive"}>
+              {u.isActive ? "Active" : "Inactive"}
+            </Badge>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -154,16 +212,16 @@ export function RoleDetailPage() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Role Name</label>
+              <span className="text-sm font-medium text-muted-foreground block">Role Name</span>
               <p className="text-base text-foreground mt-1">{role.name}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Role ID</label>
+              <span className="text-sm font-medium text-muted-foreground block">Role ID</span>
               <p className="text-base text-foreground mt-1 font-mono text-sm">{role.id}</p>
             </div>
             {role.description && (
               <div className="md:col-span-2">
-                <label className="text-sm font-medium text-muted-foreground">Description</label>
+                <span className="text-sm font-medium text-muted-foreground block">Description</span>
                 <p className="text-base text-foreground mt-1">{role.description}</p>
               </div>
             )}
@@ -207,53 +265,7 @@ export function RoleDetailPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {isLoadingUsers ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            ) : usersInRole.length > 0 ? (
-              <div className="space-y-2">
-                {usersInRole.map((user) => (
-                  <div
-                    key={user.id}
-                    className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-accent"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <Link
-                          to={`/users/${user.id}`}
-                          className="font-medium text-foreground hover:underline"
-                        >
-                          {user.username}
-                        </Link>
-                        {user.isAdmin && (
-                          <Badge variant="default" className="text-xs">
-                            Admin
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground">{user.email}</p>
-                      {user.firstName || user.lastName ? (
-                        <p className="text-sm text-muted-foreground">
-                          {user.firstName} {user.lastName}
-                        </p>
-                      ) : null}
-                    </div>
-                    <Badge variant={user.isActive ? "default" : "destructive"}>
-                      {user.isActive ? "Active" : "Inactive"}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted-foreground text-center py-4">
-                No users have this role assigned. Assign roles to users from the{" "}
-                <Link to="/users" className="text-primary hover:underline">
-                  Users page
-                </Link>
-                .
-              </p>
-            )}
+            {renderUsersContent()}
           </CardContent>
         </Card>
       )}
@@ -265,11 +277,11 @@ export function RoleDetailPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div>
-            <label className="text-sm font-medium text-muted-foreground">Created At</label>
+            <span className="text-sm font-medium text-muted-foreground block">Created At</span>
             <p className="text-base text-foreground mt-1">{formatDateTime(role.createdAt)}</p>
           </div>
           <div>
-            <label className="text-sm font-medium text-muted-foreground">Last Updated</label>
+            <span className="text-sm font-medium text-muted-foreground block">Last Updated</span>
             <p className="text-base text-foreground mt-1">{formatDateTime(role.updatedAt)}</p>
           </div>
         </CardContent>

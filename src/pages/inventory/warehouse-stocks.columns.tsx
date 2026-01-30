@@ -48,8 +48,16 @@ export function getWarehouseStockColumns({
       accessor: (stock) => {
         const available = availableQuantity(stock);
         const low = isLowStock(stock);
+        
+        let colorClass = "";
+        if (low) {
+          colorClass = "text-red-600 font-semibold";
+        } else if (available > 0) {
+          colorClass = "text-green-600";
+        }
+
         return (
-          <span className={low ? "text-red-600 font-semibold" : available > 0 ? "text-green-600" : ""}>
+          <span className={colorClass}>
             {available}
           </span>
         );
@@ -64,6 +72,7 @@ export function getWarehouseStockColumns({
       accessor: (stock) => {
         const available = availableQuantity(stock);
         const low = isLowStock(stock);
+        
         if (low) {
           return (
             <Badge variant="destructive">
@@ -72,7 +81,12 @@ export function getWarehouseStockColumns({
             </Badge>
           );
         }
-        return available > 0 ? <Badge variant="default">In Stock</Badge> : <Badge variant="secondary">Out of Stock</Badge>;
+
+        if (available > 0) {
+          return <Badge variant="default">In Stock</Badge>;
+        }
+
+        return <Badge variant="secondary">Out of Stock</Badge>;
       },
     },
   ];

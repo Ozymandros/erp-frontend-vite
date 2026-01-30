@@ -118,21 +118,21 @@ export function SupplierDetailPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Name</label>
+              <span className="text-sm font-medium text-muted-foreground block">Name</span>
               <p className="text-lg font-semibold">{supplier.name}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Email</label>
+              <span className="text-sm font-medium text-muted-foreground block">Email</span>
               <p className="text-base">{supplier.email}</p>
             </div>
             {supplier.phone && (
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Phone</label>
+                <span className="text-sm font-medium text-muted-foreground block">Phone</span>
                 <p className="text-base">{supplier.phone}</p>
               </div>
             )}
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Status</label>
+              <span className="text-sm font-medium text-muted-foreground block">Status</span>
               <p className="mt-1">
                 <Badge variant={supplier.isActive ? "default" : "secondary"}>
                   {supplier.isActive ? "Active" : "Inactive"}
@@ -150,7 +150,7 @@ export function SupplierDetailPage() {
           <CardContent className="space-y-4">
             {supplier.address && (
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Street Address</label>
+                <span className="text-sm font-medium text-muted-foreground block">Street Address</span>
                 <p className="text-base">{supplier.address}</p>
               </div>
             )}
@@ -158,19 +158,19 @@ export function SupplierDetailPage() {
               <div className="flex flex-wrap gap-x-4 gap-y-2">
                 {supplier.city && (
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">City</label>
+                    <span className="text-sm font-medium text-muted-foreground block">City</span>
                     <p className="text-base">{supplier.city}</p>
                   </div>
                 )}
                 {supplier.country && (
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Country</label>
+                    <span className="text-sm font-medium text-muted-foreground block">Country</span>
                     <p className="text-base">{supplier.country}</p>
                   </div>
                 )}
                 {supplier.postalCode && (
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Postal Code</label>
+                    <span className="text-sm font-medium text-muted-foreground block">Postal Code</span>
                     <p className="text-base">{supplier.postalCode}</p>
                   </div>
                 )}
@@ -189,12 +189,12 @@ export function SupplierDetailPage() {
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Created At</label>
+              <span className="text-sm font-medium text-muted-foreground block">Created At</span>
               <p className="text-base">{formatDateTime(supplier.createdAt)}</p>
             </div>
             {supplier.updatedAt && (
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Last Updated</label>
+                <span className="text-sm font-medium text-muted-foreground block">Last Updated</span>
                 <p className="text-base">{formatDateTime(supplier.updatedAt)}</p>
               </div>
             )}

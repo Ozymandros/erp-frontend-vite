@@ -277,7 +277,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const permissions = React.useMemo(() => user?.permissions || [], [user]);
 
-  const value: AuthContextType = {
+  const value = React.useMemo((): AuthContextType => ({
     user,
     permissions,
     isAuthenticated: !!user,
@@ -288,7 +288,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkApiPermission,
     hasPermission,
     refreshUserData,
-  };
+  }), [
+    user,
+    permissions,
+    isLoading,
+    login,
+    register,
+    logout,
+    checkApiPermission,
+    hasPermission,
+    refreshUserData,
+  ]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

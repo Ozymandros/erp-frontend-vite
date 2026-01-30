@@ -101,7 +101,7 @@ export function Sidebar() {
 
     return NAV_ITEMS_CONFIG.filter((item) => {
       if (item.children?.length) {
-        const visibleChildren = item.children.filter(canSeeItem);
+        const visibleChildren = item.children.filter((child) => canSeeItem(child));
         return visibleChildren.length > 0;
       }
       return canSeeItem(item);
@@ -154,7 +154,7 @@ export function Sidebar() {
                 const GroupIcon = iconMap[item.icon];
 
                 if (item.children?.length) {
-                  const visibleChildren = item.children.filter(canSeeItem);
+                  const visibleChildren = item.children.filter((child) => canSeeItem(child));
                   if (visibleChildren.length === 0) return null;
 
                   const isOpen = openGroups[item.title] !== false;

@@ -56,12 +56,22 @@ export function getInventoryTransactionColumns({
     },
     {
       header: "Quantity",
-      accessor: (tx) => (
-        <span className={tx.quantity > 0 ? "text-green-600 font-semibold" : tx.quantity < 0 ? "text-red-600 font-semibold" : ""}>
-          {tx.quantity > 0 ? "+" : ""}
-          {tx.quantity}
-        </span>
-      ),
+      accessor: (tx) => {
+        const isPositive = tx.quantity > 0;
+        const isNegative = tx.quantity < 0;
+        const colorClass = isPositive 
+          ? "text-green-600 font-semibold" 
+          : isNegative 
+          ? "text-red-600 font-semibold" 
+          : "";
+        
+        return (
+          <span className={colorClass}>
+            {isPositive ? "+" : ""}
+            {tx.quantity}
+          </span>
+        );
+      },
       sortable: true,
       sortField: "quantity",
     },

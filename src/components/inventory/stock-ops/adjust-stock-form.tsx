@@ -6,8 +6,8 @@ import { handleApiError, getErrorMessage } from "@/lib/error-handling";
 import { AdjustmentType } from "@/types/api.types";
 
 interface AdjustStockFormProps {
-  products: Array<{ id: string; name: string; sku: string }>;
-  warehouses: Array<{ id: string; name: string }>;
+  readonly products: Array<{ readonly id: string; readonly name: string; readonly sku: string }>;
+  readonly warehouses: Array<{ readonly id: string; readonly name: string }>;
 }
 
 export function AdjustStockForm({ products, warehouses }: AdjustStockFormProps) {
@@ -31,9 +31,6 @@ export function AdjustStockForm({ products, warehouses }: AdjustStockFormProps) 
     };
 
     try {
-      // NOTE: This directly calls the inventory service. 
-      // Architectural rule check: "Only the Orders service should directly modify Inventory stock".
-      // Ad-hoc adjustments might be an exception or should be routed through an Adjustment Order.
       await stockOperationsService.adjustStock(data);
       setSuccess(true);
       (e.target as HTMLFormElement).reset();
@@ -50,7 +47,7 @@ export function AdjustStockForm({ products, warehouses }: AdjustStockFormProps) 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Product
+            <span>Product</span>
             <select
               name="productId"
               required
@@ -67,7 +64,7 @@ export function AdjustStockForm({ products, warehouses }: AdjustStockFormProps) 
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Warehouse
+            <span>Warehouse</span>
             <select
               name="warehouseId"
               required
@@ -84,7 +81,7 @@ export function AdjustStockForm({ products, warehouses }: AdjustStockFormProps) 
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Quantity
+            <span>Quantity</span>
             <input
               name="quantity"
               type="number"
@@ -96,7 +93,7 @@ export function AdjustStockForm({ products, warehouses }: AdjustStockFormProps) 
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Adjustment Type
+            <span>Adjustment Type</span>
             <select
               name="adjustmentType"
               required
@@ -113,7 +110,7 @@ export function AdjustStockForm({ products, warehouses }: AdjustStockFormProps) 
         </div>
         <div className="space-y-2 col-span-2">
           <label className="text-sm font-medium flex flex-col gap-1">
-            Reason
+            <span>Reason</span>
             <textarea
               name="reason"
               required
