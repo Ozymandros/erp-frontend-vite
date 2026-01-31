@@ -66,7 +66,7 @@ export const PermissionFilterHeader = ({
         value={filters.role}
         onValueChange={value => handleChange("role", value)}
       >
-        <Select.Trigger className="w-[200px]" />
+        <Select.Trigger className="w-[200px]" aria-label="Filter by role" />
         <Select.Content>
           <Select.Item value="all">Tots els rols</Select.Item>
           {roles?.map(role => (

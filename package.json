@@ -11,7 +11,9 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:coverage": "vitest run --coverage",
+    "test:coverage:playwright": "playwright test --coverage"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.11",

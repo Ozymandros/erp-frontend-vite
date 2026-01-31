@@ -137,6 +137,7 @@ function ReserveStockForm({ products, warehouses, orders }: OperationFormProps) 
             Product
             <select
               name="productId"
+              aria-label="Product"
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
@@ -154,6 +155,7 @@ function ReserveStockForm({ products, warehouses, orders }: OperationFormProps) 
             Warehouse
             <select
               name="warehouseId"
+              aria-label="Warehouse"
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
@@ -183,6 +185,7 @@ function ReserveStockForm({ products, warehouses, orders }: OperationFormProps) 
             Order
             <select
               name="orderId"
+              aria-label="Order"
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
@@ -260,6 +263,7 @@ function TransferStockForm({ products, warehouses }: OperationFormProps) {
             Product
             <select
               name="productId"
+              aria-label="Product"
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
@@ -289,6 +293,7 @@ function TransferStockForm({ products, warehouses }: OperationFormProps) {
             From Warehouse
             <select
               name="fromWarehouseId"
+              aria-label="From warehouse"
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
@@ -306,6 +311,7 @@ function TransferStockForm({ products, warehouses }: OperationFormProps) {
             To Warehouse
             <select
               name="toWarehouseId"
+              aria-label="To warehouse"
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
@@ -386,6 +392,7 @@ function AdjustStockForm({ products, warehouses }: OperationFormProps) {
             Product
             <select
               name="productId"
+              aria-label="Product"
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
@@ -403,6 +410,7 @@ function AdjustStockForm({ products, warehouses }: OperationFormProps) {
             Warehouse
             <select
               name="warehouseId"
+              aria-label="Warehouse"
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
@@ -432,6 +440,7 @@ function AdjustStockForm({ products, warehouses }: OperationFormProps) {
             Adjustment Type
             <select
               name="adjustmentType"
+              aria-label="Adjustment type"
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >

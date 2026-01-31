@@ -295,6 +295,7 @@ export function InventoryTransactionsListPage() {
                 <label className="text-sm font-medium flex flex-col gap-1">
                   Filter by Product
                   <select
+                    aria-label="Filter by product"
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     value={filterProduct}
                     onChange={e => {
@@ -317,6 +318,7 @@ export function InventoryTransactionsListPage() {
                 <label className="text-sm font-medium flex flex-col gap-1">
                   Filter by Warehouse
                   <select
+                    aria-label="Filter by warehouse"
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     value={filterWarehouse}
                     onChange={e => {
@@ -339,6 +341,7 @@ export function InventoryTransactionsListPage() {
                 <label className="text-sm font-medium flex flex-col gap-1">
                   Filter by Type
                   <select
+                    aria-label="Filter by type"
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     value={filterType}
                     onChange={e => {

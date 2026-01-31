@@ -83,4 +83,107 @@ describe("CreateUserDialog", () => {
       expect(screen.getByText(/username already exists/i)).toBeInTheDocument()
     })
   })
+
+  it("should show validation errors for empty required fields", async () => {
+    render(<CreateUserDialog open={true} onOpenChange={mockOnOpenChange} onSuccess={mockOnSuccess} />)
+
+    const form = document.querySelector("form")
+    if (form) fireEvent.submit(form)
+    else fireEvent.click(screen.getByRole("button", { name: /create user/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/please fix the validation errors/i)).toBeInTheDocument()
+    })
+  })
+
+  it("should show validation error for invalid email", async () => {
+    render(<CreateUserDialog open={true} onOpenChange={mockOnOpenChange} onSuccess={mockOnSuccess} />)
+
+    fireEvent.change(screen.getByLabelText(/username/i), { target: { value: "validusername" } })
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: "invalid-email" } })
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: "password123" } })
+    const form = document.querySelector("form")
+    if (form) fireEvent.submit(form)
+    else fireEvent.click(screen.getByRole("button", { name: /create user/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/invalid email address/i)).toBeInTheDocument()
+    })
+  })
+
+  it("should show validation error for short password", async () => {
+    render(<CreateUserDialog open={true} onOpenChange={mockOnOpenChange} onSuccess={mockOnSuccess} />)
+
+    fireEvent.change(screen.getByLabelText(/username/i), { target: { value: "validusername" } })
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: "test@example.com" } })
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: "short" } })
+    const form = document.querySelector("form")
+    if (form) fireEvent.submit(form)
+    else fireEvent.click(screen.getByRole("button", { name: /create user/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/password must be at least 8 characters/i)).toBeInTheDocument()
+    })
+  })
+
+  it("should include firstName and lastName when provided", async () => {
+    const mockCreateUser = vi.mocked(usersService.createUser)
+    mockCreateUser.mockResolvedValue({
+      id: "user-1",
+      username: "newuser",
+      email: "new@example.com",
+      isActive: true,
+      roles: [],
+      createdAt: "2024-01-01T00:00:00Z",
+      updatedAt: "2024-01-01T00:00:00Z",
+    } as any)
+
+    render(<CreateUserDialog open={true} onOpenChange={mockOnOpenChange} onSuccess={mockOnSuccess} />)
+
+    fireEvent.change(screen.getByLabelText(/first name/i), { target: { value: "John" } })
+    fireEvent.change(screen.getByLabelText(/last name/i), { target: { value: "Doe" } })
+    fireEvent.change(screen.getByLabelText(/username/i), { target: { value: "newuser123" } })
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: "new@example.com" } })
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: "password123" } })
+    fireEvent.click(screen.getByRole("button", { name: /create user/i }))
+
+    await waitFor(() => {
+      expect(mockCreateUser).toHaveBeenCalledWith({
+        username: "newuser123",
+        email: "new@example.com",
+        password: "password123",
+        firstName: "John",
+        lastName: "Doe",
+      })
+    })
+  })
+
+  it("should call onOpenChange when Cancel is clicked", async () => {
+    render(<CreateUserDialog open={true} onOpenChange={mockOnOpenChange} onSuccess={mockOnSuccess} />)
+
+    fireEvent.click(screen.getByRole("button", { name: /cancel/i }))
+
+    expect(mockOnOpenChange).toHaveBeenCalledWith(false)
+  })
+
+  it("should clear field error when user types in field", async () => {
+    render(<CreateUserDialog open={true} onOpenChange={mockOnOpenChange} onSuccess={mockOnSuccess} />)
+
+    fireEvent.change(screen.getByLabelText(/username/i), { target: { value: "ab" } })
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: "test@example.com" } })
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: "password123" } })
+    const form = document.querySelector("form")
+    if (form) fireEvent.submit(form)
+    else fireEvent.click(screen.getByRole("button", { name: /create user/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/username must be at least 8 characters/i)).toBeInTheDocument()
+    })
+
+    fireEvent.change(screen.getByLabelText(/username/i), { target: { value: "validusername" } })
+
+    await waitFor(() => {
+      expect(screen.queryByText(/username must be at least 8 characters/i)).not.toBeInTheDocument()
+    })
+  })
 })

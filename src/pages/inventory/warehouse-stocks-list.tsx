@@ -225,6 +225,7 @@ export function WarehouseStocksListPage() {
               <label className="text-sm font-medium flex flex-col gap-1">
                 Filter by Product
                 <select
+                  aria-label="Filter by product"
                   className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   value={selectedProductId}
                   onChange={e => {
@@ -249,6 +250,7 @@ export function WarehouseStocksListPage() {
               <label className="text-sm font-medium flex flex-col gap-1">
                 Filter by Warehouse
                 <select
+                  aria-label="Filter by warehouse"
                   className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   value={selectedWarehouseId}
                   onChange={e => {

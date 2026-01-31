@@ -8,8 +8,8 @@
     "ghcr.io/devcontainers/features/git:1": {},
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
-  "postCreateCommand": "pnpm install && pnpm exec playwright install --with-deps",
-  "postStartCommand": "echo 'Dev container ready! Run `pnpm dev` to start the Vite server.'",
+  "postCreateCommand": "pnpm install --frozen-lockfile && pnpm exec playwright install",
+  "postStartCommand": "git config --global --add safe.directory '*' 2>/dev/null || true; echo 'Dev container ready. Run pnpm dev to start the Vite server on port 3000.'",
   "customizations": {
     "vscode": {
       "settings": {
@@ -36,11 +36,15 @@
       ]
     }
   },
-  "forwardPorts": [3000],
+  "forwardPorts": [3000, 4173],
   "portsAttributes": {
     "3000": {
       "label": "Vite Dev Server",
       "onAutoForward": "notify"
+    },
+    "4173": {
+      "label": "Vite Preview",
+      "onAutoForward": "silent"
     }
   },
   "remoteUser": "node"
