@@ -1,14 +1,16 @@
 import { createContext } from "react"
-import type { User, LoginRequest, RegisterRequest } from "@/types/api.types"
+import type { User, LoginRequest, RegisterRequest, Permission } from "@/types/api.types"
 
 export interface AuthContextType {
   user: User | null
+  permissions: Permission[]
   isAuthenticated: boolean
   isLoading: boolean
   login: (credentials: LoginRequest) => Promise<void>
   register: (data: RegisterRequest) => Promise<void>
   logout: () => Promise<void>
-  checkPermission: (module: string, action: string) => Promise<boolean>
+  checkApiPermission: (module: string, action: string) => Promise<boolean>
+  hasPermission: (module: string, action: string) => boolean
   refreshUserData: () => Promise<void>
 }
 

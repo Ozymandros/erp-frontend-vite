@@ -51,3 +51,10 @@ export function formatDateTime(date?: string | Date): string {
     minute: "2-digit",
   })
 }
+
+/** Returns current datetime as YYYY-MM-DDTHH:mm for datetime-local inputs. */
+export function getDefaultDateTimeLocal(): string {
+  const now = new Date()
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset())
+  return now.toISOString().slice(0, 16)
+}

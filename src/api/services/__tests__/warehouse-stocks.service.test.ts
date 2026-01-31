@@ -131,4 +131,36 @@ describe("WarehouseStocksService", () => {
       expect(result).toEqual(mockStocks);
     });
   });
+
+  describe("exportToXlsx", () => {
+    it("should export warehouse stocks to XLSX", async () => {
+      const mockBlob = new Blob(["xlsx"], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      mockApiClient.get.mockResolvedValue(mockBlob);
+
+      const result = await warehouseStocksService.exportToXlsx();
+
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        "/inventory/api/inventory/warehouse-stocks/export-xlsx",
+        { responseType: "blob" }
+      );
+      expect(result).toBe(mockBlob);
+    });
+  });
+
+  describe("exportToPdf", () => {
+    it("should export warehouse stocks to PDF", async () => {
+      const mockBlob = new Blob(["pdf"], { type: "application/pdf" });
+      mockApiClient.get.mockResolvedValue(mockBlob);
+
+      const result = await warehouseStocksService.exportToPdf();
+
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        "/inventory/api/inventory/warehouse-stocks/export-pdf",
+        { responseType: "blob" }
+      );
+      expect(result).toBe(mockBlob);
+    });
+  });
 });

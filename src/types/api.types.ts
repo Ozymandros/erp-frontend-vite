@@ -428,7 +428,6 @@ export interface OrderDto extends IAuditableDto<string> {
 }
 
 export interface CreateUpdateOrderDto {
-  orderNumber: string;
   customerId: string;
   orderLines: CreateUpdateOrderLineDto[];
   orderDate: string;
@@ -481,7 +480,6 @@ export interface SalesOrderDto extends IAuditableDto<string> {
 }
 
 export interface CreateUpdateSalesOrderDto {
-  orderNumber: string;
   customerId: string;
   orderDate: string;
   status?: number;
@@ -505,7 +503,6 @@ export interface CreateUpdateSalesOrderLineDto {
 }
 
 export interface CreateQuoteDto {
-  orderNumber: string;
   customerId: string;
   orderDate: string;
   validityDays?: number;
@@ -566,7 +563,6 @@ export interface PurchaseOrderDto extends IAuditableDto<string> {
 }
 
 export interface CreateUpdatePurchaseOrderDto {
-  orderNumber: string;
   supplierId: string;
   orderDate: string;
   expectedDeliveryDate?: string;

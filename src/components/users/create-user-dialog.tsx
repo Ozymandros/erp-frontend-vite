@@ -4,7 +4,7 @@ import type React from "react";
 
 import { useState } from "react";
 import { usersService } from "@/api/services/users.service";
-import { CreateUserSchema, type CreateUserFormData } from "@/lib/validation";
+import { CreateUserSchema, type CreateUserFormData, parseZodErrors } from "@/lib/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -58,16 +58,9 @@ export function CreateUserDialog({
     setError(null);
     setFieldErrors({});
 
-    // Client-side validation
     const validation = CreateUserSchema.safeParse(formData);
     if (!validation.success) {
-      const errors: Record<string, string> = {};
-      validation.error.issues.forEach(err => {
-        if (err.path[0]) {
-          errors[err.path[0].toString()] = err.message;
-        }
-      });
-      setFieldErrors(errors);
+      setFieldErrors(parseZodErrors(validation.error));
       setError("Please fix the validation errors");
       return;
     }

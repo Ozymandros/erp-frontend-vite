@@ -5,6 +5,7 @@ This guide explains how to run and maintain the E2E tests for the ERP Frontend a
 ## Overview
 
 The E2E test suite provides comprehensive coverage of user workflows by:
+
 - **Mocking all backend API calls** for isolated frontend testing
 - **Testing meaningful interactions** that users perform in the application
 - **Ensuring compliance** with documented backend API functionality
@@ -36,7 +37,7 @@ pnpm playwright show-report
 
 ### Test Files
 
-```
+```text
 src/test/e2e/
 ├── auth.spec.ts          # Authentication & authorization (16 tests)
 ├── inventory.spec.ts     # Products & warehouses (20 tests)
@@ -47,7 +48,7 @@ src/test/e2e/
 
 ### Mock Infrastructure
 
-```
+```text
 src/test/mocks/
 ├── api-mocks.ts          # Reusable API mocking functions
 └── fixtures.ts           # Sample test data matching backend DTOs
@@ -277,7 +278,7 @@ pnpm playwright test --debug -g "should login successfully"
 test('debugging example', async ({ page }) => {
   // Add breakpoint in code
   await page.pause();
-  
+
   // Test execution will pause here
   await page.goto('/products');
 });
@@ -307,7 +308,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined, // Sequential in CI
   
   use: {
-    baseURL: 'http://localhost:5173', // Vite dev server
+    baseURL: 'http://localhost:3000', // Vite dev server
     trace: 'on-first-retry',          // Trace on failure
     screenshot: 'only-on-failure',    // Capture screenshots
     video: 'retain-on-failure',       // Record video on failure
@@ -315,7 +316,7 @@ export default defineConfig({
   
   webServer: {
     command: 'pnpm dev',              // Start dev server
-    url: 'http://localhost:5173',
+    url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
   },
 });
@@ -346,7 +347,7 @@ export default defineConfig({
 ## Coverage Summary
 
 | Module | Test Files | Test Cases | Coverage |
-|--------|-----------|------------|----------|
+| --- | --- | --- | --- |
 | Authentication | 1 | 16 | Login, logout, registration, protected routes |
 | Inventory | 1 | 20 | Products & warehouses CRUD, search, filter |
 | Sales | 1 | 15 | Customers & sales orders, stock checking |
@@ -366,6 +367,7 @@ export default defineConfig({
 ### Updating Tests
 
 When UI changes:
+
 1. Update selectors if needed
 2. Update assertions to match new behavior
 3. Run all affected tests
@@ -374,6 +376,7 @@ When UI changes:
 ### Common Issues
 
 **Test timeout:**
+
 ```typescript
 // Increase timeout for slow operations
 test('slow operation', async ({ page }) => {
@@ -383,6 +386,7 @@ test('slow operation', async ({ page }) => {
 ```
 
 **Flaky test:**
+
 ```typescript
 // Wait for network idle
 await page.waitForLoadState('networkidle');
@@ -392,9 +396,11 @@ await page.waitForSelector('text=Data loaded', { timeout: 10000 });
 
 // Use soft assertions
 await expect.soft(page.locator('text=Optional')).toBeVisible();
+
 ```
 
 **Element not found:**
+
 ```typescript
 // Debug: Print page content
 console.log(await page.content());
@@ -417,6 +423,7 @@ await page.click('button:has-text("Save"), button:has-text("Submit")');
 ## Support
 
 For questions or issues:
+
 1. Check this documentation
 2. Review existing test files for examples
 3. Consult Playwright documentation

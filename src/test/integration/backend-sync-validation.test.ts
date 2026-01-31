@@ -154,7 +154,7 @@ describe('Backend Synchronization Validation', () => {
       expect(RegisterSchema.safeParse(shortUsername).success).toBe(false)
     })
 
-    it('should validate CreateUserDto with 8 char minimum', () => {
+    it('should validate CreateUserDto with minimum length requirements', () => {
       // Valid user
       const valid = {
         email: 'test@example.com',
@@ -163,19 +163,19 @@ describe('Backend Synchronization Validation', () => {
       }
       expect(CreateUserSchema.safeParse(valid).success).toBe(true)
 
-      // Username too short (< 8 chars)
+      // Username too short (< 3 chars)
       const shortUsername = {
         email: 'test@example.com',
-        username: 'test',
+        username: 'ab', // Less than 3 characters
         password: 'password123',
       }
       expect(CreateUserSchema.safeParse(shortUsername).success).toBe(false)
 
-      // Password too short (< 8 chars)
+      // Password too short (< 6 chars)
       const shortPassword = {
         email: 'test@example.com',
         username: 'testuser123',
-        password: 'pass123',
+        password: 'pass1', // Less than 6 characters
       }
       expect(CreateUserSchema.safeParse(shortPassword).success).toBe(false)
     })

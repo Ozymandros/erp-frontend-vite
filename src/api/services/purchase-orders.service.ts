@@ -14,14 +14,12 @@ class PurchaseOrdersService {
   private apiClient = getApiClient();
 
   async getPurchaseOrders(): Promise<PurchaseOrderDto[]> {
-    return this.apiClient.get<PurchaseOrderDto[]>(
-      "/purchasing/api/purchasing/orders"
-    );
+    return this.apiClient.get<PurchaseOrderDto[]>(PURCHASE_ORDERS_ENDPOINTS.BASE);
   }
 
   async getPurchaseOrderById(id: string): Promise<PurchaseOrderDto> {
     return this.apiClient.get<PurchaseOrderDto>(
-      `/purchasing/api/purchasing/orders/${id}`
+      PURCHASE_ORDERS_ENDPOINTS.BY_ID(id)
     );
   }
 
@@ -29,7 +27,7 @@ class PurchaseOrdersService {
     querySpec: QuerySpec
   ): Promise<PaginatedResponse<PurchaseOrderDto>> {
     return this.apiClient.get<PaginatedResponse<PurchaseOrderDto>>(
-      "/purchasing/api/purchasing/orders/search",
+      PURCHASE_ORDERS_ENDPOINTS.SEARCH,
       {
         params: querySpec,
       }
@@ -40,7 +38,7 @@ class PurchaseOrdersService {
     supplierId: string
   ): Promise<PurchaseOrderDto[]> {
     return this.apiClient.get<PurchaseOrderDto[]>(
-      `/purchasing/api/purchasing/orders/supplier/${supplierId}`
+      PURCHASE_ORDERS_ENDPOINTS.BY_SUPPLIER(supplierId)
     );
   }
 
@@ -48,7 +46,7 @@ class PurchaseOrdersService {
     status: PurchaseOrderStatus
   ): Promise<PurchaseOrderDto[]> {
     return this.apiClient.get<PurchaseOrderDto[]>(
-      `/purchasing/api/purchasing/orders/status/${status}`
+      PURCHASE_ORDERS_ENDPOINTS.BY_STATUS(status)
     );
   }
 
@@ -56,7 +54,7 @@ class PurchaseOrdersService {
     data: CreateUpdatePurchaseOrderDto
   ): Promise<PurchaseOrderDto> {
     return this.apiClient.post<PurchaseOrderDto>(
-      "/purchasing/api/purchasing/orders",
+      PURCHASE_ORDERS_ENDPOINTS.BASE,
       data
     );
   }
@@ -66,7 +64,7 @@ class PurchaseOrdersService {
     data: CreateUpdatePurchaseOrderDto
   ): Promise<PurchaseOrderDto> {
     return this.apiClient.put<PurchaseOrderDto>(
-      `/purchasing/api/purchasing/orders/${id}`,
+      PURCHASE_ORDERS_ENDPOINTS.BY_ID(id),
       data
     );
   }
@@ -76,14 +74,12 @@ class PurchaseOrdersService {
     status: PurchaseOrderStatus
   ): Promise<PurchaseOrderDto> {
     return this.apiClient.patch<PurchaseOrderDto>(
-      `/purchasing/api/purchasing/orders/${id}/status/${status}`
+      PURCHASE_ORDERS_ENDPOINTS.UPDATE_STATUS(id, status)
     );
   }
 
   async deletePurchaseOrder(id: string): Promise<void> {
-    return this.apiClient.delete<void>(
-      `/purchasing/api/purchasing/orders/${id}`
-    );
+    return this.apiClient.delete<void>(PURCHASE_ORDERS_ENDPOINTS.BY_ID(id));
   }
 
   async approvePurchaseOrder(
@@ -91,7 +87,7 @@ class PurchaseOrdersService {
     data: ApprovePurchaseOrderDto
   ): Promise<PurchaseOrderDto> {
     return this.apiClient.post<PurchaseOrderDto>(
-      `/purchasing/api/purchasing/orders/${id}/approve`,
+      PURCHASE_ORDERS_ENDPOINTS.APPROVE(id),
       data
     );
   }

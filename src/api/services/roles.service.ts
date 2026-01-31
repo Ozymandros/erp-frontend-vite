@@ -61,18 +61,23 @@ class RolesService {
     roleId: string,
     permissionId: string
   ): Promise<void> {
-    return this.apiClient.post<void>(ROLES_ENDPOINTS.ADD_PERMISSION(roleId), {
-      permissionId,
-    });
+    // According to spec: POST /auth/api/roles/{roleId}/permissions?permissionId={permissionId}
+    return this.apiClient.post<void>(
+      `${ROLES_ENDPOINTS.ADD_PERMISSION(roleId)}?permissionId=${permissionId}`,
+      undefined
+    );
   }
 
   async removePermissionFromRole(
     roleId: string,
     permissionId: string
   ): Promise<void> {
-    return this.apiClient.delete<void>(
-      ROLES_ENDPOINTS.REMOVE_PERMISSION(roleId, permissionId)
-    );
+    // DELETE /auth/api/roles/{roleId}/permissions/{permissionId}
+    const endpoint = ROLES_ENDPOINTS.REMOVE_PERMISSION(roleId, permissionId);
+    if (import.meta.env.DEV) {
+      console.debug("[RolesService] Removing permission:", { roleId, permissionId, endpoint });
+    }
+    return this.apiClient.delete<void>(endpoint);
   }
 
   async getRolePermissions(roleId: string): Promise<Permission[]> {
