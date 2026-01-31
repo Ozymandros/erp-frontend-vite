@@ -1,375 +1,145 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import { productsService } from "@/api/services/products.service";
-import type { ProductDto, PaginatedResponse, QuerySpec } from "@/types/api.types";
+import type { ProductDto, QuerySpec } from "@/types/api.types";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Plus, Search, Pencil, Trash2, Eye, ArrowUpDown, AlertTriangle, FileDown } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { CreateProductDialog } from "@/components/inventory/create-product-dialog";
 import { EditProductDialog } from "@/components/inventory/edit-product-dialog";
 import { DeleteProductDialog } from "@/components/inventory/delete-product-dialog";
-import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling";
-import { formatCurrency } from "@/lib/utils";
+import { useDataTable } from "@/hooks/use-data-table";
+import { useListActions } from "@/hooks/use-list-actions";
+import { useModulePermissions } from "@/hooks/use-permissions";
+import { useExport } from "@/hooks/use-export";
+import { ListPageLayout } from "@/components/layout/list-page-layout";
+import { getProductColumns } from "./products.columns";
 
 export function ProductsListPage() {
-  const [products, setProducts] = useState<PaginatedResponse<ProductDto> | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [querySpec, setQuerySpec] = useState<QuerySpec>({
-    page: 1,
-    pageSize: 10,
-    searchTerm: "",
-    searchFields: "sku,name",
-    sortBy: "createdAt",
-    sortDesc: true,
-  });
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<ProductDto | null>(null);
-  const [deletingProduct, setDeletingProduct] = useState<ProductDto | null>(null);
   const [showLowStock, setShowLowStock] = useState(false);
-
-  const fetchProducts = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await productsService.searchProducts(querySpec);
-      setProducts(data);
-    } catch (error: unknown) {
-      const apiError = handleApiError(error);
-      // Handle 403 Forbidden (permission denied) with user-friendly message
-      if (isForbiddenError(apiError)) {
-        setError(getForbiddenMessage("products"));
-      } else {
-        setError(getErrorMessage(apiError, "Failed to fetch products"));
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [querySpec]);
-
-  const fetchLowStockProducts = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await productsService.getLowStockProducts();
-      setProducts({
-        items: data,
+  
+  const fetcher = async (qs: QuerySpec) => {
+    if (showLowStock) {
+      const items = await productsService.getLowStockProducts();
+      return {
+        items,
         page: 1,
-        pageSize: data.length,
-        total: data.length,
+        pageSize: items.length,
+        total: items.length,
         totalPages: 1,
         hasNextPage: false,
         hasPreviousPage: false,
-      });
-    } catch (error: unknown) {
-      const apiError = handleApiError(error);
-      // Handle 403 Forbidden (permission denied) with user-friendly message
-      if (isForbiddenError(apiError)) {
-        setError(getForbiddenMessage("low stock products"));
-      } else {
-        setError(getErrorMessage(apiError, "Failed to fetch low stock products"));
-      }
-    } finally {
-      setIsLoading(false);
+      };
     }
-  }, []);
+    return productsService.searchProducts(qs);
+  }
 
-  useEffect(() => {
-    if (showLowStock) {
-      fetchLowStockProducts();
-    } else {
-      fetchProducts();
-    }
-  }, [querySpec, showLowStock, fetchProducts, fetchLowStockProducts]);
+  const {
+    data: products,
+    isLoading,
+    error: dataError,
+    querySpec,
+    handleSearch,
+    handleSort,
+    handlePageChange,
+    refresh,
+  } = useDataTable<ProductDto>({
+    fetcher,
+    initialQuery: {
+      searchFields: "sku,name",
+    },
+    resourceName: "products",
+  });
 
-  const handleSearch = (value: string) => {
-    setQuerySpec((prev) => ({ ...prev, searchTerm: value, page: 1 }));
-  };
+  // Permissions
+  const { canCreate, canUpdate, canDelete, canExport } = useModulePermissions("products");
 
-  const handleSort = (field: string) => {
-    setQuerySpec((prev) => ({
-      ...prev,
-      sortBy: field,
-      sortDesc: prev.sortBy === field ? !prev.sortDesc : false,
-    }));
-  };
+  // Actions
+  const {
+    isCreateOpen,
+    setIsCreateOpen,
+    editingItem,
+    setEditingItem,
+    deletingItem,
+    setDeletingItem,
+    handleCreated,
+    handleUpdated,
+    handleDeleted,
+  } = useListActions<ProductDto>({ refresh });
 
-  const handlePageChange = (newPage: number) => {
-    setQuerySpec((prev) => ({ ...prev, page: newPage }));
-  };
+  // Export
+  const { handleExport, exportError } = useExport({
+    resourceName: "Products",
+    onExport: (format) =>
+      format === "xlsx"
+        ? productsService.exportToXlsx()
+        : productsService.exportToPdf(),
+  });
 
-  const handleProductCreated = () => {
-    setIsCreateDialogOpen(false);
-    setShowLowStock(false);
-    fetchProducts();
-  };
+  const error = dataError || exportError;
 
-  const handleProductUpdated = () => {
-    setEditingProduct(null);
-    if (showLowStock) {
-      fetchLowStockProducts();
-    } else {
-      fetchProducts();
-    }
-  };
-
-  const handleProductDeleted = () => {
-    setDeletingProduct(null);
-    if (showLowStock) {
-      fetchLowStockProducts();
-    } else {
-      fetchProducts();
-    }
-  };
-
-  const handleExport = async (format: "xlsx" | "pdf") => {
-    try {
-      const blob =
-        format === "xlsx"
-          ? await productsService.exportToXlsx()
-          : await productsService.exportToPdf();
-
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `Products.${format}`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      const apiError = handleApiError(error);
-      setError(getErrorMessage(apiError, `Failed to export products to ${format}`));
-    }
-  };
-
-  const totalPages = products
-    ? Math.ceil(products.total / (querySpec.pageSize ?? 20))
-    : 0;
+  const columns = getProductColumns({
+    onEdit: setEditingItem,
+    onDelete: setDeletingItem,
+    canEdit: canUpdate,
+    canDelete: canDelete,
+  });
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Products</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage your inventory products
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => handleExport("xlsx")}>
-            <FileDown className="mr-2 h-4 w-4" />
-            Export XLSX
-          </Button>
-          <Button variant="outline" onClick={() => handleExport("pdf")}>
-            <FileDown className="mr-2 h-4 w-4" />
-            Export PDF
-          </Button>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Product
-          </Button>
-        </div>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>All Products</CardTitle>
-              <CardDescription>
-                {products ? `${products.total} total products` : "Loading..."}
-              </CardDescription>
-            </div>
-            <Button
-              variant={showLowStock ? "default" : "outline"}
-              size="sm"
-              onClick={() => setShowLowStock(!showLowStock)}
-            >
-              <AlertTriangle className="h-4 w-4 mr-2" />
-              {showLowStock ? "Show All" : "Low Stock"}
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {!showLowStock && (
-            <div className="flex items-center gap-4 mb-6">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search by SKU or name..."
-                  className="pl-10"
-                  value={querySpec.searchTerm}
-                  onChange={(e) => handleSearch(e.target.value)}
-                />
-              </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="text-center text-red-500 py-8">
-              <p>{error}</p>
-            </div>
-          )}
-
-          {isLoading && (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">Loading products...</p>
-            </div>
-          )}
-
-          {!isLoading && products && products.items.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">No products found</p>
-            </div>
-          )}
-
-          {!isLoading && products && products.items.length > 0 && (
-            <>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                <TableRow>
-                  <TableHead>
-                    <button
-                      className="flex items-center hover:text-foreground"
-                      onClick={() => handleSort("sku")}
-                    >
-                      SKU
-                      <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </button>
-                  </TableHead>
-                  <TableHead>
-                    <button
-                      className="flex items-center hover:text-foreground"
-                      onClick={() => handleSort("name")}
-                    >
-                      Name
-                      <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </button>
-                  </TableHead>
-                  <TableHead>
-                    <button
-                      className="flex items-center hover:text-foreground"
-                      onClick={() => handleSort("unitPrice")}
-                    >
-                      Price
-                      <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </button>
-                  </TableHead>
-                  <TableHead>Stock</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {products.items?.map((product) => (
-                      <TableRow key={product.id}>
-                        <TableCell className="font-medium">{product.sku}</TableCell>
-                        <TableCell>{product.name}</TableCell>
-                        <TableCell>{formatCurrency(product.unitPrice)}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            {product.quantityInStock}
-                            {product.quantityInStock <= product.reorderLevel && (
-                              <AlertTriangle className="h-4 w-4 text-amber-500" />
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <Link to={`/inventory/products/${product.id}`}>
-                              <Button variant="ghost" size="sm">
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                            </Link>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setEditingProduct(product)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setDeletingProduct(product)}
-                            >
-                              <Trash2 className="h-4 w-4 text-red-600" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-
-              {!showLowStock && totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4">
-                  <p className="text-sm text-muted-foreground">
-                    Page {querySpec.page} of {totalPages}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handlePageChange((querySpec.page ?? 1) - 1)}
-                      disabled={!products.hasPreviousPage}
-                    >
-                      Previous
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handlePageChange((querySpec.page ?? 1) + 1)}
-                      disabled={!products.hasNextPage}
-                    >
-                      Next
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
-
+    <ListPageLayout
+      title="Products"
+      description="Manage your inventory products"
+      resourceName="Product"
+      data={products}
+      isLoading={isLoading}
+      error={error}
+      querySpec={querySpec}
+      onSearch={handleSearch}
+      onSort={handleSort}
+      onPageChange={handlePageChange}
+      onExport={canExport ? handleExport : undefined}
+      onCreateOpen={canCreate ? () => setIsCreateOpen(true) : undefined}
+      columns={columns}
+      searchPlaceholder="Search by SKU or name..."
+      cardTitle="All Products"
+      cardDescription={products ? `${products.total} total products` : "Loading..."}
+      extraHeaderActions={
+        <Button
+          variant={showLowStock ? "default" : "outline"}
+          size="sm"
+          onClick={() => {
+            setShowLowStock(!showLowStock);
+            handlePageChange(1);
+          }}
+        >
+          <AlertTriangle className="h-4 w-4 mr-2" />
+          {showLowStock ? "Show All" : "Low Stock"}
+        </Button>
+      }
+    >
       <CreateProductDialog
-        open={isCreateDialogOpen}
-        onOpenChange={setIsCreateDialogOpen}
-        onSuccess={handleProductCreated}
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+        onSuccess={handleCreated}
       />
 
-      <EditProductDialog
-        product={editingProduct}
-        open={!!editingProduct}
-        onOpenChange={(open) => !open && setEditingProduct(null)}
-        onSuccess={handleProductUpdated}
-      />
+      {editingItem && (
+        <EditProductDialog
+          product={editingItem}
+          open={!!editingItem}
+          onOpenChange={(open) => !open && setEditingItem(null)}
+          onSuccess={handleUpdated}
+        />
+      )}
 
-      <DeleteProductDialog
-        product={deletingProduct}
-        open={!!deletingProduct}
-        onOpenChange={(open) => !open && setDeletingProduct(null)}
-        onSuccess={handleProductDeleted}
-      />
-    </div>
+      {deletingItem && (
+        <DeleteProductDialog
+          product={deletingItem}
+          open={!!deletingItem}
+          onOpenChange={(open) => !open && setDeletingItem(null)}
+          onSuccess={handleDeleted}
+        />
+      )}
+    </ListPageLayout>
   );
 }

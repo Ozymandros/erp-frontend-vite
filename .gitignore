@@ -31,5 +31,8 @@ test-results/*
 .env.local
 .env.production
 
+# SonarQube/SonarCloud
+.scannerwork
+
 # Coverage
 coverage

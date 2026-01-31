@@ -1,43 +1,19 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { inventoryTransactionsService } from "@/api/services/inventory-transactions.service";
 import { productsService } from "@/api/services/products.service";
 import { warehousesService } from "@/api/services/warehouses.service";
 import type {
   InventoryTransactionDto,
-  PaginatedResponse,
-  QuerySpec,
   TransactionType,
+  QuerySpec,
 } from "@/types/api.types";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Search, ArrowUpDown, Package, Warehouse, Eye, FileDown } from "lucide-react";
-import { formatDateTime } from "@/lib/utils";
-import {
-  handleApiError,
-  isForbiddenError,
-  getForbiddenMessage,
-  getErrorMessage,
-} from "@/lib/error-handling";
-
+import { useDataTable } from "@/hooks/use-data-table";
+import { useModulePermissions } from "@/hooks/use-permissions";
+import { useExport } from "@/hooks/use-export";
+import { ListPageLayout } from "@/components/layout/list-page-layout";
+import { getInventoryTransactionColumns } from "./inventory-transactions.columns";
 import { TransactionType as TransactionTypeEnum } from "@/types/api.types";
 
 const TRANSACTION_TYPES: { value: TransactionType; label: string }[] = [
@@ -51,39 +27,74 @@ const TRANSACTION_TYPES: { value: TransactionType; label: string }[] = [
 ];
 
 export function InventoryTransactionsListPage() {
-  const [transactions, setTransactions] =
-    useState<PaginatedResponse<InventoryTransactionDto> | null>(null);
-  const [products, setProducts] = useState<Array<{ id: string; name: string }>>(
-    []
-  );
-  const [warehouses, setWarehouses] = useState<
-    Array<{ id: string; name: string }>
-  >([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [querySpec, setQuerySpec] = useState<QuerySpec>({
-    page: 1,
-    pageSize: 20,
-    searchTerm: "",
-    searchFields: "transactionType",
-    sortBy: "transactionDate",
-    sortDesc: true,
-  });
+  const [products, setProducts] = useState<Array<{ id: string; name: string }>>([]);
+  const [warehouses, setWarehouses] = useState<Array<{ id: string; name: string }>>([]);
   const [filterProduct, setFilterProduct] = useState<string>("");
   const [filterWarehouse, setFilterWarehouse] = useState<string>("");
   const [filterType, setFilterType] = useState<TransactionType | "">("");
+
+  const wrapItems = (items: InventoryTransactionDto[]) => ({
+    items,
+    page: 1,
+    pageSize: items.length,
+    total: items.length,
+    totalPages: 1,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  });
+
+  const fetcher = async (qs: QuerySpec) => {
+    if (filterProduct) {
+      const txns = await inventoryTransactionsService.getTransactionsByProduct(filterProduct);
+      return wrapItems(txns);
+    } else if (filterWarehouse) {
+      const txns = await inventoryTransactionsService.getTransactionsByWarehouse(filterWarehouse);
+      return wrapItems(txns);
+    } else if (filterType) {
+      const txns = await inventoryTransactionsService.getTransactionsByType(filterType as TransactionType);
+      return wrapItems(txns);
+    }
+    return inventoryTransactionsService.searchTransactions(qs);
+  };
+
+  const {
+    data: transactions,
+    isLoading,
+    error: dataError,
+    querySpec,
+    handleSearch,
+    handleSort,
+    handlePageChange,
+    refresh,
+  } = useDataTable<InventoryTransactionDto>({
+    fetcher,
+    initialQuery: {
+      pageSize: 20,
+      searchFields: "transactionType",
+      sortBy: "transactionDate",
+      sortDesc: true,
+    },
+    resourceName: "inventory transactions",
+  });
+
+  // Permissions
+  const { canExport } = useModulePermissions("inventory");
+
+  // Export
+  const { handleExport, exportError } = useExport({
+    resourceName: "InventoryTransactions",
+    onExport: (format) =>
+      format === "xlsx"
+        ? inventoryTransactionsService.exportToXlsx()
+        : inventoryTransactionsService.exportToPdf(),
+  });
 
   const fetchProducts = async () => {
     try {
       const data = await productsService.getProducts();
       setProducts(data);
-    } catch (error: unknown) {
-      // Handle 403 Forbidden (permission denied) gracefully - don't show error for dropdowns
-      const apiError = handleApiError(error);
-      if (!isForbiddenError(apiError)) {
-        console.error("Failed to fetch products", apiError);
-      }
-      // If 403, just leave products list empty - the user doesn't have permission to view it
+    } catch (error) {
+      console.error("Failed to fetch products", error);
     }
   };
 
@@ -91,160 +102,59 @@ export function InventoryTransactionsListPage() {
     try {
       const data = await warehousesService.getWarehouses();
       setWarehouses(data);
-    } catch (error: unknown) {
-      // Handle 403 Forbidden (permission denied) gracefully - don't show error for dropdowns
-      const apiError = handleApiError(error);
-      if (!isForbiddenError(apiError)) {
-        console.error("Failed to fetch warehouses", apiError);
-      }
-      // If 403, just leave warehouses list empty - the user doesn't have permission to view it
+    } catch (error) {
+      console.error("Failed to fetch warehouses", error);
     }
   };
-
-  const fetchTransactions = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      let data: PaginatedResponse<InventoryTransactionDto>;
-
-      if (filterProduct) {
-        const txns =
-          await inventoryTransactionsService.getTransactionsByProduct(
-            filterProduct
-          );
-        data = {
-          items: txns,
-          page: 1,
-          pageSize: txns.length,
-          total: txns.length,
-          totalPages: 1,
-          hasNextPage: false,
-          hasPreviousPage: false,
-        };
-      } else if (filterWarehouse) {
-        const txns =
-          await inventoryTransactionsService.getTransactionsByWarehouse(
-            filterWarehouse
-          );
-        data = {
-          items: txns,
-          page: 1,
-          pageSize: txns.length,
-          total: txns.length,
-          totalPages: 1,
-          hasNextPage: false,
-          hasPreviousPage: false,
-        };
-      } else if (filterType) {
-        const txns = await inventoryTransactionsService.getTransactionsByType(
-          filterType as TransactionType
-        );
-        data = {
-          items: txns,
-          page: 1,
-          pageSize: txns.length,
-          total: txns.length,
-          totalPages: 1,
-          hasNextPage: false,
-          hasPreviousPage: false,
-        };
-      } else {
-        data = await inventoryTransactionsService.searchTransactions(querySpec);
-      }
-
-      setTransactions(data);
-    } catch (error: unknown) {
-      const apiError = handleApiError(error);
-      // Handle 403 Forbidden (permission denied) with user-friendly message
-      if (isForbiddenError(apiError)) {
-        setError(getForbiddenMessage("inventory transactions"));
-      } else {
-        setError(
-          getErrorMessage(apiError, "Failed to fetch inventory transactions")
-        );
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [querySpec, filterProduct, filterWarehouse, filterType]);
-
-  useEffect(() => {
-    fetchTransactions();
-  }, [fetchTransactions]);
 
   useEffect(() => {
     fetchProducts();
     fetchWarehouses();
   }, []);
 
-  const handleSearch = (value: string) => {
-    setQuerySpec(prev => ({ ...prev, searchTerm: value, page: 1 }));
-  };
-
-  const handleSort = (field: string) => {
-    setQuerySpec(prev => ({
-      ...prev,
-      sortBy: field,
-      sortDesc: prev.sortBy === field ? !prev.sortDesc : false,
-    }));
-  };
-
-  const handlePageChange = (newPage: number) => {
-    setQuerySpec(prev => ({ ...prev, page: newPage }));
-  };
+  useEffect(() => {
+    refresh();
+  }, [filterProduct, filterWarehouse, filterType, refresh]);
 
   const getProductName = (productId: string) => {
-    const product = products.find(p => p.id === productId);
+    const product = products.find((p) => p.id === productId);
     return product?.name || productId;
   };
 
   const getWarehouseName = (warehouseId: string) => {
-    const warehouse = warehouses.find(w => w.id === warehouseId);
+    const warehouse = warehouses.find((w) => w.id === warehouseId);
     return warehouse?.name || warehouseId;
-  };
-
-  const handleExport = async (format: "xlsx" | "pdf") => {
-    try {
-      const blob =
-        format === "xlsx"
-          ? await inventoryTransactionsService.exportToXlsx()
-          : await inventoryTransactionsService.exportToPdf();
-
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `InventoryTransactions.${format}`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      const apiError = handleApiError(error);
-      setError(getErrorMessage(apiError, `Failed to export transactions to ${format}`));
-    }
   };
 
   const getTypeBadgeVariant = (type: TransactionType) => {
     switch (type) {
-      case "Purchase":
-      case "Return":
+      case TransactionTypeEnum.Purchase:
+      case TransactionTypeEnum.Return:
         return "default";
-      case "Sale":
-      case "Damage":
-      case "Loss":
+      case TransactionTypeEnum.Sale:
+      case TransactionTypeEnum.Damage:
+      case TransactionTypeEnum.Loss:
         return "destructive";
-      case "Adjustment":
+      case TransactionTypeEnum.Adjustment:
         return "secondary";
-      case "Transfer":
+      case TransactionTypeEnum.Transfer:
         return "outline";
       default:
         return "secondary";
     }
   };
 
-  const totalPages = transactions
-    ? Math.ceil(transactions.total / (querySpec.pageSize ?? 20))
-    : 0;
+  const getTransactionTypeLabel = (type: TransactionType) => {
+    return TRANSACTION_TYPES.find((t) => t.value === type)?.label || type;
+  };
+
+  const error = dataError || exportError;
+  const columns = getInventoryTransactionColumns({
+    getProductName,
+    getWarehouseName,
+    getTypeBadgeVariant,
+    getTransactionTypeLabel,
+  });
 
   return (
     <div className="space-y-6">
@@ -295,7 +205,6 @@ export function InventoryTransactionsListPage() {
                 <label className="text-sm font-medium flex flex-col gap-1">
                   Filter by Product
                   <select
-                    aria-label="Filter by product"
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     value={filterProduct}
                     onChange={e => {
@@ -318,7 +227,6 @@ export function InventoryTransactionsListPage() {
                 <label className="text-sm font-medium flex flex-col gap-1">
                   Filter by Warehouse
                   <select
-                    aria-label="Filter by warehouse"
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     value={filterWarehouse}
                     onChange={e => {
@@ -341,7 +249,6 @@ export function InventoryTransactionsListPage() {
                 <label className="text-sm font-medium flex flex-col gap-1">
                   Filter by Type
                   <select
-                    aria-label="Filter by type"
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     value={filterType}
                     onChange={e => {

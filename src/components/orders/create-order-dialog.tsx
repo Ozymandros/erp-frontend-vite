@@ -29,7 +29,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus, Trash2, CalendarIcon } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getDefaultDateTimeLocal } from "@/lib/utils";
 import type { CustomerDto, ProductDto } from "@/types/api.types";
 
 interface CreateOrderDialogProps {
@@ -43,21 +43,9 @@ export function CreateOrderDialog({
   onOpenChange,
   onSuccess,
 }: CreateOrderDialogProps) {
-  const getDefaultDate = () => {
-    const now = new Date();
-    // Adjust for local timezone for datetime-local
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    return now.toISOString().slice(0, 16);
-  };
-
-  const generateOrderNumber = () => {
-    return `ORD-${Date.now().toString().slice(-6)}`;
-  };
-
   const [formData, setFormData] = useState<CreateOrderFormData>({
-    orderNumber: generateOrderNumber(),
     customerId: "",
-    orderDate: getDefaultDate(),
+    orderDate: getDefaultDateTimeLocal(),
     orderLines: [],
   });
   const [customers, setCustomers] = useState<CustomerDto[]>([]);
@@ -78,9 +66,8 @@ export function CreateOrderDialog({
       loadData();
       // Reset form on open
       setFormData({
-        orderNumber: generateOrderNumber(),
         customerId: "",
-        orderDate: getDefaultDate(),
+        orderDate: getDefaultDateTimeLocal(),
         orderLines: [],
       });
       setNewLine({ productId: "", quantity: 1, unitPrice: 0 });
@@ -194,27 +181,6 @@ export function CreateOrderDialog({
             )}
 
             <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="orderNumber">Order Number</Label>
-                <Input
-                  id="orderNumber"
-                  value={formData.orderNumber}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      orderNumber: e.target.value,
-                    }))
-                  }
-                  placeholder="e.g., ORD-001"
-                  disabled={isLoading}
-                  required
-                />
-                {fieldErrors.orderNumber && (
-                  <p className="text-sm text-red-500">
-                    {fieldErrors.orderNumber}
-                  </p>
-                )}
-              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">

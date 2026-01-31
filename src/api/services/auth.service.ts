@@ -9,7 +9,6 @@ import type {
   RegisterRequest,
   AuthResponse,
   RefreshTokenRequest,
-  PermissionCheckRequest,
   PermissionCheckResponse,
   User,
 } from "@/types/api.types";
@@ -97,10 +96,11 @@ class AuthService {
     module: string,
     action: string
   ): Promise<PermissionCheckResponse> {
-    const request: PermissionCheckRequest = { module, action };
-    return this.apiClient.post<PermissionCheckResponse>(
+    return this.apiClient.get<PermissionCheckResponse>(
       PERMISSIONS_ENDPOINTS.CHECK,
-      request
+      {
+        params: { module, action },
+      }
     );
   }
 }

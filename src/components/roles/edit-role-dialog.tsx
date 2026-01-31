@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import { rolesService } from "@/api/services/roles.service"
 import type { Role, UpdateRoleRequest } from "@/types/api.types"
 import { Button } from "@/components/ui/button"
@@ -18,6 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Shield } from "lucide-react"
 
 interface EditRoleDialogProps {
   readonly role: Role;
@@ -27,6 +29,7 @@ interface EditRoleDialogProps {
 }
 
 export function EditRoleDialog({ role, open, onOpenChange, onSuccess }: EditRoleDialogProps) {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState<UpdateRoleRequest>({
     name: role.name,
     description: role.description,
@@ -60,13 +63,20 @@ export function EditRoleDialog({ role, open, onOpenChange, onSuccess }: EditRole
     }
   }
 
+  const handleManagePermissions = () => {
+    onOpenChange(false)
+    navigate(`/roles/${role.id}`)
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Edit Role</DialogTitle>
-            <DialogDescription>Update role information</DialogDescription>
+            <DialogDescription>
+              Update role information. Use "Manage Permissions" to assign permissions to this role.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
@@ -96,6 +106,21 @@ export function EditRoleDialog({ role, open, onOpenChange, onSuccess }: EditRole
                 placeholder="Describe the purpose of this role..."
                 rows={3}
               />
+            </div>
+
+            <div className="pt-2 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleManagePermissions}
+                className="w-full"
+              >
+                <Shield className="mr-2 h-4 w-4" />
+                Manage Permissions
+              </Button>
+              <p className="text-xs text-muted-foreground mt-2 text-center">
+                Assign or remove permissions for this role
+              </p>
             </div>
           </div>
 
