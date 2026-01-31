@@ -122,7 +122,7 @@ describe("CreateUserDialog", () => {
     else fireEvent.click(screen.getByRole("button", { name: /create user/i }))
 
     await waitFor(() => {
-      expect(screen.getByText(/password must be at least 8 characters/i)).toBeInTheDocument()
+      expect(screen.getByText(/password must be at least 6 characters/i)).toBeInTheDocument()
     })
   })
 
@@ -177,13 +177,13 @@ describe("CreateUserDialog", () => {
     else fireEvent.click(screen.getByRole("button", { name: /create user/i }))
 
     await waitFor(() => {
-      expect(screen.getByText(/username must be at least 8 characters/i)).toBeInTheDocument()
+      expect(screen.getByText(/username must be at least 3 characters/i)).toBeInTheDocument()
     })
 
     fireEvent.change(screen.getByLabelText(/username/i), { target: { value: "validusername" } })
 
     await waitFor(() => {
-      expect(screen.queryByText(/username must be at least 8 characters/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/username must be at least 3 characters/i)).not.toBeInTheDocument()
     })
   })
 })

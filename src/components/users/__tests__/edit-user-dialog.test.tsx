@@ -19,8 +19,14 @@ const mockUser = {
   lastName: "User",
   isActive: true,
   roles: [],
+  emailConfirmed: true,
+  isExternalLogin: false,
+  isAdmin: false,
+  permissions: [],
   createdAt: "2024-01-01T00:00:00Z",
   updatedAt: "2024-01-01T00:00:00Z",
+  createdBy: "admin",
+  updatedBy: "admin",
 };
 
 describe("EditUserDialog", () => {

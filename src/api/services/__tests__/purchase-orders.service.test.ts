@@ -125,12 +125,11 @@ describe("PurchaseOrdersService", () => {
   describe("createPurchaseOrder", () => {
     it("should create a new purchase order", async () => {
       const newOrder: CreateUpdatePurchaseOrderDto = {
-        orderNumber: "PO-NEW-001",
         supplierId: "supplier-1",
         orderDate: "2024-01-15",
         orderLines: [{ productId: "p1", quantity: 10, unitPrice: 99.99 }],
       };
-      const createdOrder: PurchaseOrderDto = { ...baseMockOrder, ...newOrder };
+      const createdOrder = { ...baseMockOrder, ...newOrder } as PurchaseOrderDto;
       mockApiClient.post.mockResolvedValue(createdOrder);
 
       const result = await purchaseOrdersService.createPurchaseOrder(newOrder);
@@ -146,12 +145,11 @@ describe("PurchaseOrdersService", () => {
   describe("updatePurchaseOrder", () => {
     it("should update a purchase order", async () => {
       const updateData: CreateUpdatePurchaseOrderDto = {
-        orderNumber: "PO-001",
         supplierId: "supplier-1",
         orderDate: "2024-01-20",
         orderLines: [],
       };
-      const updatedOrder: PurchaseOrderDto = { ...baseMockOrder, ...updateData };
+      const updatedOrder = { ...baseMockOrder, ...updateData } as PurchaseOrderDto;
       mockApiClient.put.mockResolvedValue(updatedOrder);
 
       const result = await purchaseOrdersService.updatePurchaseOrder("po-1", updateData);

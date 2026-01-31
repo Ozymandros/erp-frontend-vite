@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { MemoryRouter, Routes, Route, Navigate } from "react-router-dom";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "../protected-route";
 
 vi.mock("@/contexts/auth.context", () => ({
@@ -95,7 +95,9 @@ describe("ProtectedRoute", () => {
       login: vi.fn(),
       register: vi.fn(),
       logout: vi.fn(),
-      checkPermission: vi.fn().mockResolvedValue(false),
+      checkApiPermission: vi.fn().mockResolvedValue(false),
+      hasPermission: vi.fn().mockReturnValue(false),
+      permissions: [],
       refreshUserData: vi.fn(),
     } as never);
 
@@ -128,7 +130,9 @@ describe("ProtectedRoute", () => {
       login: vi.fn(),
       register: vi.fn(),
       logout: vi.fn(),
-      checkPermission: vi.fn().mockResolvedValue(true),
+      checkApiPermission: vi.fn().mockResolvedValue(true),
+      hasPermission: vi.fn().mockReturnValue(true),
+      permissions: [],
       refreshUserData: vi.fn(),
     } as never);
 

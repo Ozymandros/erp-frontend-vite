@@ -1,11 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type {
   SalesOrderDto,
+  SalesOrderLineDto,
   CreateUpdateSalesOrderDto,
   CreateQuoteDto,
   ConfirmQuoteDto,
   ConfirmQuoteResponseDto,
   StockAvailabilityCheckDto,
+  QuerySpec,
+  PaginatedResponse,
 } from "@/types/api.types";
 import { SalesOrderStatus } from "@/types/api.types";
 
@@ -287,6 +290,7 @@ describe("SalesOrdersService", () => {
         orderNumber: "SO-001",
         status: SalesOrderStatus.Draft,
         totalAmount: 0,
+        orderLines: [] as SalesOrderLineDto[],
         createdAt: "2024-01-01",
         updatedAt: "2024-01-01",
         createdBy: "user1",

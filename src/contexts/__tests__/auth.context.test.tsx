@@ -25,7 +25,7 @@ vi.mock("@/api/clients", () => ({
 import { authService } from "@/api/services/auth.service";
 
 function TestConsumer() {
-  const { user, isAuthenticated, isLoading, login, logout, register, checkPermission } = useAuth();
+  const { user, isAuthenticated, isLoading, login, logout, register, checkApiPermission } = useAuth();
   const [permResult, setPermResult] = useState<string>("");
   const [loginError, setLoginError] = useState<string>("");
   return (
@@ -60,7 +60,7 @@ function TestConsumer() {
       <button onClick={() => logout()}>Logout</button>
       <button
         onClick={async () => {
-          const allowed = await checkPermission("Users", "Read");
+          const allowed = await checkApiPermission("Users", "Read");
           setPermResult(allowed ? "allowed" : "denied");
         }}
       >
@@ -117,8 +117,14 @@ describe("AuthContext", () => {
       email: "test@test.com",
       isActive: true,
       roles: [],
+      emailConfirmed: true,
+      isExternalLogin: false,
+      isAdmin: false,
+      permissions: [],
       createdAt: "2024-01-01T00:00:00Z",
       updatedAt: "2024-01-01T00:00:00Z",
+      createdBy: "admin",
+      updatedBy: "admin",
     };
 
     vi.mocked(authService.getCurrentUser).mockRejectedValue(new Error("No token"));
@@ -126,6 +132,7 @@ describe("AuthContext", () => {
       accessToken: "token",
       refreshToken: "refresh",
       expiresIn: 3600,
+      tokenType: "Bearer",
       user: mockUser,
     });
 
@@ -156,8 +163,14 @@ describe("AuthContext", () => {
       email: "reg@test.com",
       isActive: true,
       roles: [],
+      emailConfirmed: true,
+      isExternalLogin: false,
+      isAdmin: false,
+      permissions: [],
       createdAt: "2024-01-01T00:00:00Z",
       updatedAt: "2024-01-01T00:00:00Z",
+      createdBy: "admin",
+      updatedBy: "admin",
     };
 
     vi.mocked(authService.getCurrentUser).mockRejectedValue(new Error("No token"));
@@ -165,6 +178,7 @@ describe("AuthContext", () => {
       accessToken: "token",
       refreshToken: "refresh",
       expiresIn: 3600,
+      tokenType: "Bearer",
       user: mockUser,
     });
 
@@ -269,8 +283,14 @@ describe("AuthContext", () => {
       email: "test@test.com",
       isActive: true,
       roles: [],
+      emailConfirmed: true,
+      isExternalLogin: false,
+      isAdmin: false,
+      permissions: [],
       createdAt: "2024-01-01T00:00:00Z",
       updatedAt: "2024-01-01T00:00:00Z",
+      createdBy: "admin",
+      updatedBy: "admin",
     };
 
     sessionStorage.setItem("access_token", "old-token");
@@ -281,6 +301,7 @@ describe("AuthContext", () => {
       accessToken: "new-token",
       refreshToken: "new-refresh",
       expiresIn: 3600,
+      tokenType: "Bearer",
       user: mockUser,
     });
     vi.mocked(authService.getCurrentUser).mockResolvedValue(mockUser);
@@ -308,8 +329,14 @@ describe("AuthContext", () => {
       email: "test@test.com",
       isActive: true,
       roles: [],
+      emailConfirmed: true,
+      isExternalLogin: false,
+      isAdmin: false,
+      permissions: [],
       createdAt: "2024-01-01T00:00:00Z",
       updatedAt: "2024-01-01T00:00:00Z",
+      createdBy: "admin",
+      updatedBy: "admin",
     };
 
     sessionStorage.setItem("access_token", "token");

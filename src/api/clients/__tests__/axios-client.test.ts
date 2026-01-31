@@ -37,7 +37,7 @@ function wrapWithInterceptors(
     }
     try {
       const args = isGetOrDelete ? [url, dataOrConfig] : [url, dataOrConfig, config]
-      const res = await adapter(...args)
+      const res = await (adapter as (...a: unknown[]) => Promise<unknown>)(...args)
       return responseFulfilled ? responseFulfilled(res) : res
     } catch (err: any) {
       if (responseRejected) await responseRejected(err)

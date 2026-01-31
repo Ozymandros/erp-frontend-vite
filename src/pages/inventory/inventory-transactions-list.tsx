@@ -77,10 +77,8 @@ export function InventoryTransactionsListPage() {
     resourceName: "inventory transactions",
   });
 
-  // Permissions
   const { canExport } = useModulePermissions("inventory");
 
-  // Export
   const { handleExport, exportError } = useExport({
     resourceName: "InventoryTransactions",
     onExport: (format) =>
@@ -126,7 +124,7 @@ export function InventoryTransactionsListPage() {
     return warehouse?.name || warehouseId;
   };
 
-  const getTypeBadgeVariant = (type: TransactionType) => {
+  const getTypeBadgeVariant = (type: TransactionType): "default" | "destructive" | "secondary" | "outline" => {
     switch (type) {
       case TransactionTypeEnum.Purchase:
       case TransactionTypeEnum.Return:
@@ -156,256 +154,81 @@ export function InventoryTransactionsListPage() {
     getTransactionTypeLabel,
   });
 
+  let cardDescription = "All inventory transactions";
+  if (filterProduct) {
+    cardDescription = `Transactions for ${getProductName(filterProduct)}`;
+  } else if (filterWarehouse) {
+    cardDescription = `Transactions in ${getWarehouseName(filterWarehouse)}`;
+  } else if (filterType) {
+    cardDescription = `Transactions of type ${getTransactionTypeLabel(filterType)}`;
+  }
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">
-          Inventory Transactions
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          View all inventory movement transactions
-        </p>
-      </div>
-      <div className="flex gap-2">
-        <Button variant="outline" onClick={() => handleExport("xlsx")}>
-          <FileDown className="mr-2 h-4 w-4" />
-          Export XLSX
-        </Button>
-        <Button variant="outline" onClick={() => handleExport("pdf")}>
-          <FileDown className="mr-2 h-4 w-4" />
-          Export PDF
-        </Button>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Transaction Log</CardTitle>
-          <CardDescription>
-            {transactions
-              ? `${transactions.total} total transactions`
-              : "Loading..."}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4 mb-6">
-            <div className="flex items-center gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search transactions..."
-                  className="pl-10"
-                  value={querySpec.searchTerm}
-                  onChange={e => handleSearch(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium flex flex-col gap-1">
-                  Filter by Product
-                  <select
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    value={filterProduct}
-                    onChange={e => {
-                      setFilterProduct(e.target.value);
-                      setFilterWarehouse("");
-                      setFilterType("");
-                    }}
-                  >
-                    <option value="">All Products</option>
-                    {products?.map(product => (
-                      <option key={product.id} value={product.id}>
-                        {product.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium flex flex-col gap-1">
-                  Filter by Warehouse
-                  <select
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    value={filterWarehouse}
-                    onChange={e => {
-                      setFilterWarehouse(e.target.value);
-                      setFilterProduct("");
-                      setFilterType("");
-                    }}
-                  >
-                    <option value="">All Warehouses</option>
-                    {warehouses?.map(warehouse => (
-                      <option key={warehouse.id} value={warehouse.id}>
-                        {warehouse.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium flex flex-col gap-1">
-                  Filter by Type
-                  <select
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    value={filterType}
-                    onChange={e => {
-                      setFilterType(e.target.value as TransactionType | "");
-                      setFilterProduct("");
-                      setFilterWarehouse("");
-                    }}
-                  >
-                    <option value="">All Types</option>
-                    {TRANSACTION_TYPES?.map(type => (
-                      <option key={type.value} value={type.value}>
-                        {type.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          {error && (
-            <div className="text-center text-red-500 py-8">
-              <p>{error}</p>
-            </div>
-          )}
-
-          {isLoading && (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">Loading transactions...</p>
-            </div>
-          )}
-
-          {!isLoading && transactions && transactions.items.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">No transactions found</p>
-            </div>
-          )}
-
-          {!isLoading && transactions && transactions.items.length > 0 && (
-            <>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead>
-                        <button
-                          className="flex items-center hover:text-foreground"
-                          onClick={() => handleSort("transactionType")}
-                        >
-                          Type
-                          <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </button>
-                      </TableHead>
-                      <TableHead>
-                        <Package className="h-4 w-4 inline mr-2" />
-                        Product
-                      </TableHead>
-                      <TableHead>
-                        <Warehouse className="h-4 w-4 inline mr-2" />
-                        Warehouse
-                      </TableHead>
-                      <TableHead>
-                        <button
-                          className="flex items-center hover:text-foreground"
-                          onClick={() => handleSort("quantity")}
-                        >
-                          Quantity
-                          <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </button>
-                      </TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {transactions.items?.map(transaction => (
-                      <TableRow key={transaction.id}>
-                        <TableCell>
-                          {formatDateTime(transaction.transactionDate)}
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={getTypeBadgeVariant(
-                              transaction.transactionType
-                            )}
-                          >
-                            {TRANSACTION_TYPES.find(
-                              t => t.value === transaction.transactionType
-                            )?.label || transaction.transactionType}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {getProductName(transaction.productId)}
-                        </TableCell>
-                        <TableCell>
-                          {getWarehouseName(transaction.warehouseId)}
-                        </TableCell>
-                        <TableCell
-                          className={
-                            transaction.quantity > 0
-                              ? "text-green-600 font-semibold"
-                              : transaction.quantity < 0
-                              ? "text-red-600 font-semibold"
-                              : ""
-                          }
-                        >
-                          {transaction.quantity > 0 ? "+" : ""}
-                          {transaction.quantity}
-                        </TableCell>
-                        <TableCell>
-                          <Link
-                            to={`/inventory/transactions/${transaction.id}`}
-                          >
-                            <Button variant="ghost" size="sm">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4">
-                  <p className="text-sm text-muted-foreground">
-                    Page {querySpec.page} of {totalPages}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        handlePageChange((querySpec.page ?? 1) - 1)
-                      }
-                      disabled={!transactions.hasPreviousPage}
-                    >
-                      Previous
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        handlePageChange((querySpec.page ?? 1) + 1)
-                      }
-                      disabled={!transactions.hasNextPage}
-                    >
-                      Next
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+    <ListPageLayout
+      title="Inventory Transactions"
+      description="View all inventory movement transactions"
+      resourceName="Transaction"
+      data={transactions}
+      isLoading={isLoading}
+      error={error}
+      querySpec={querySpec}
+      onSearch={handleSearch}
+      onSort={handleSort}
+      onPageChange={handlePageChange}
+      onExport={canExport ? handleExport : undefined}
+      columns={columns}
+      cardTitle="Transaction Log"
+      cardDescription={cardDescription}
+      searchPlaceholder="Search transactions..."
+      extraHeaderActions={
+        <div className="flex flex-wrap gap-4">
+          <select
+            aria-label="Filter by product"
+            className="rounded-md border border-input bg-background px-3 py-1 text-sm"
+            value={filterProduct}
+            onChange={(e) => {
+              setFilterProduct(e.target.value);
+              setFilterWarehouse("");
+              setFilterType("");
+            }}
+          >
+            <option value="">Filter by Product...</option>
+            {products?.map((p) => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
+          <select
+            aria-label="Filter by warehouse"
+            className="rounded-md border border-input bg-background px-3 py-1 text-sm"
+            value={filterWarehouse}
+            onChange={(e) => {
+              setFilterWarehouse(e.target.value);
+              setFilterProduct("");
+              setFilterType("");
+            }}
+          >
+            <option value="">Filter by Warehouse...</option>
+            {warehouses?.map((w) => (
+              <option key={w.id} value={w.id}>{w.name}</option>
+            ))}
+          </select>
+          <select
+            aria-label="Filter by type"
+            className="rounded-md border border-input bg-background px-3 py-1 text-sm"
+            value={filterType}
+            onChange={(e) => {
+              setFilterType(e.target.value as TransactionType | "");
+              setFilterProduct("");
+              setFilterWarehouse("");
+            }}
+          >
+            <option value="">Filter by Type...</option>
+            {TRANSACTION_TYPES?.map((t) => (
+              <option key={t.value} value={t.value}>{t.label}</option>
+            ))}
+          </select>
+        </div>
+      }
+    />
   );
 }
