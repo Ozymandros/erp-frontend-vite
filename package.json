@@ -11,7 +11,7 @@
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "type-check": "tsc --noEmit",
     "preview": "vite preview",
-    "test": "vitest",
+    "test": "pnpm lint && vitest",
     "test:ui": "vitest --ui",
     "test:e2e": "playwright test"
   },
