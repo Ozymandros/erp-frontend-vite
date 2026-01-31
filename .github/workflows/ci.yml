@@ -158,6 +158,10 @@ jobs:
       - name: Run tests with coverage
         run: pnpm vitest run --coverage
         continue-on-error: true
+      - name: Clean previous Sonar cache
+        run: rm -rf .scannerwork
+      - name: Remove cached Sonar Scanner (fixes "Automatic Analysis is enabled" false positive)
+        run: rm -rf /opt/hostedtoolcache/sonar-scanner-cli 2>/dev/null || true
       - name: SonarQube Community Scan
         uses: sonarsource/sonarqube-scan-action@master
         env:
