@@ -13,7 +13,7 @@
     "preview": "vite preview",
     "test": "pnpm lint && vitest",
     "test:ui": "vitest --ui",
-    "test:e2e": "playwright test"
+    "test:e2e": "npx playwright test --reporter=junit --reporter=html --output=test-results"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.11",
