@@ -1,4 +1,3 @@
-import React from "react";
 import { Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
@@ -23,7 +22,9 @@ interface ReserveStockData {
 export function ReserveStockForm({ products, warehouses, orders }: ReserveStockFormProps) {
   const { isLoading, error, success, handleSubmit } = useStockOperationForm<ReserveStockData>(
     {
-      onSubmit: (data) => stockOperationsService.reserveStock(data),
+      onSubmit: async (data) => {
+        await stockOperationsService.reserveStock(data);
+      },
       successMessage: "Stock reserved successfully!",
       defaultErrorMessage: "Failed to reserve stock",
     },

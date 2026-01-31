@@ -4,6 +4,16 @@ This document identifies duplicate code patterns across the ERP frontend codebas
 
 ---
 
+## Completed Refactors
+
+| Item | What Was Done |
+|------|---------------|
+| #5 Zod validation parsing | Added `parseZodErrors()` in `lib/validation/zod-utils.ts`, refactored: create-user-dialog, create-supplier-dialog, create-purchase-order-dialog |
+| getDefaultDate (order dialogs) | Added `getDefaultDateTimeLocal()` in `lib/utils.ts`, refactored all 3 order dialogs |
+| Unused React imports | Removed from adjust-stock-form, reserve-stock-form, transfer-stock-form |
+
+---
+
 ## 1. Stock Operation Forms – Product/Warehouse Select UI
 
 **Location:** `adjust-stock-form.tsx`, `reserve-stock-form.tsx`, `transfer-stock-form.tsx`
@@ -112,7 +122,15 @@ if (!validation.success) {
 }
 ```
 
-**Recommendation:** Add `parseZodErrors(validation.error): Record<string, string>` in `lib/validation` or `lib/utils` and reuse everywhere.
+**Recommendation:** Use `parseZodErrors(validation.error)` from `@/lib/validation` (done in 3 files; 10 more to refactor).
+
+---
+
+## 5b. getDefaultDate – Order Dialogs (DONE)
+
+**Location:** Was in create-purchase-order-dialog, create-sales-order-dialog, create-order-dialog.
+
+**Fix:** Extracted to `getDefaultDateTimeLocal()` in `lib/utils.ts`.
 
 ---
 

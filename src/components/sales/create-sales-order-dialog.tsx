@@ -29,7 +29,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus, Trash2, CalendarIcon } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getDefaultDateTimeLocal } from "@/lib/utils";
 import type { CustomerDto, ProductDto } from "@/types/api.types";
 
 interface CreateSalesOrderDialogProps {
@@ -43,15 +43,9 @@ export function CreateSalesOrderDialog({
   onOpenChange,
   onSuccess,
 }: CreateSalesOrderDialogProps) {
-  const getDefaultDate = () => {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    return now.toISOString().slice(0, 16);
-  };
-
   const [formData, setFormData] = useState<CreateSalesOrderFormData>({
     customerId: "",
-    orderDate: getDefaultDate(),
+    orderDate: getDefaultDateTimeLocal(),
     orderLines: [],
   });
   const [customers, setCustomers] = useState<CustomerDto[]>([]);
@@ -73,7 +67,7 @@ export function CreateSalesOrderDialog({
       // Reset form on open
       setFormData({
         customerId: "",
-        orderDate: getDefaultDate(),
+        orderDate: getDefaultDateTimeLocal(),
         orderLines: [],
       });
       setNewLine({ productId: "", quantity: 1, unitPrice: 0 });

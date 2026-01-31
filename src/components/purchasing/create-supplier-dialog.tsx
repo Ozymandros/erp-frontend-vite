@@ -7,6 +7,7 @@ import {
   CreateSupplierSchema,
   type CreateSupplierFormData,
 } from "@/lib/validation/purchasing/supplier.schemas";
+import { parseZodErrors } from "@/lib/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -68,11 +69,7 @@ export function CreateSupplierDialog({
 
     const validation = CreateSupplierSchema.safeParse(formData);
     if (!validation.success) {
-      const errors: Record<string, string> = {};
-      validation.error.issues.forEach((err) => {
-        if (err.path[0]) errors[err.path[0].toString()] = err.message;
-      });
-      setFieldErrors(errors);
+      setFieldErrors(parseZodErrors(validation.error));
       setError("Please fix the validation errors");
       return;
     }

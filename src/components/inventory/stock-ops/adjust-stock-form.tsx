@@ -1,4 +1,3 @@
-import React from "react";
 import { Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
