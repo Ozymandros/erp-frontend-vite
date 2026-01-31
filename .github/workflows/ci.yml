@@ -1,8 +1,14 @@
 name: CI Pipeline
 
+# CI només en PRs (evita duplicats push+PR). Push a main per verificar després de merge.
 on:
   pull_request:
-    branches: [main, develop]
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - main
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
