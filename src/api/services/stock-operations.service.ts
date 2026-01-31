@@ -1,4 +1,5 @@
 import { getApiClient } from "../clients";
+import { STOCK_OPERATIONS_ENDPOINTS } from "../constants/endpoints";
 import type {
   ReserveStockDto,
   ReservationDto,
@@ -11,30 +12,25 @@ class StockOperationsService {
 
   async reserveStock(data: ReserveStockDto): Promise<ReservationDto> {
     return this.apiClient.post<ReservationDto>(
-      "/inventory/api/inventory/stock-operations/reserve",
+      STOCK_OPERATIONS_ENDPOINTS.RESERVE,
       data
     );
   }
 
   async releaseReservation(reservationId: string): Promise<void> {
     return this.apiClient.delete<void>(
-      `/inventory/api/inventory/stock-operations/reservations/${reservationId}`
+      STOCK_OPERATIONS_ENDPOINTS.RELEASE_RESERVATION(reservationId)
     );
   }
 
   async transferStock(data: StockTransferDto): Promise<void> {
-    return this.apiClient.post<void>(
-      "/inventory/api/inventory/stock-operations/transfer",
-      data
-    );
+    return this.apiClient.post<void>(STOCK_OPERATIONS_ENDPOINTS.TRANSFER, data);
   }
 
   async adjustStock(data: StockAdjustmentDto): Promise<void> {
-    return this.apiClient.post<void>(
-      "/inventory/api/inventory/stock-operations/adjust",
-      data
-    );
+    return this.apiClient.post<void>(STOCK_OPERATIONS_ENDPOINTS.ADJUST, data);
   }
 }
 
 export const stockOperationsService = new StockOperationsService();
+

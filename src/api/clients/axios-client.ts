@@ -45,6 +45,8 @@ export class AxiosApiClient implements ApiClient {
         "Content-Type": "application/json",
         ...config.headers,
       },
+      // Ensure 204 responses are treated as success
+      validateStatus: (status) => status >= 200 && status < 300,
     });
 
     this.setupInterceptors();
@@ -78,12 +80,22 @@ export class AxiosApiClient implements ApiClient {
         }
         return config;
       },
-      error => Promise.reject(error)
+      error => Promise.reject(error),
     );
 
     // Response interceptor
     this.client.interceptors.response.use(
       response => {
+        // Handle 204 No Content responses (common for DELETE operations)
+        // Axios may return empty string "" for 204 responses
+        if (response.status === 204) {
+          // Return response with undefined data to avoid JSON parsing issues
+          return { ...response, data: undefined };
+        }
+        // Also handle empty string responses (some servers return "" for successful DELETE)
+        if (response.data === "" || response.data === null || response.data === undefined) {
+          return { ...response, data: undefined };
+        }
         if (this.onResponse) {
           return this.onResponse(response);
         }
@@ -95,7 +107,7 @@ export class AxiosApiClient implements ApiClient {
           this.onError(apiError);
         }
         return Promise.reject(apiError);
-      }
+      },
     );
   }
 
@@ -142,7 +154,7 @@ export class AxiosApiClient implements ApiClient {
         message,
         status,
         errorData?.code || errorData?.type,
-        details
+        details,
       );
 
       // show typed toast (queued if provider not ready)
@@ -152,7 +164,7 @@ export class AxiosApiClient implements ApiClient {
           console.debug(
             "[AxiosApiClient] emitting toast error",
             status,
-            apiErr.message
+            apiErr.message,
           );
           showToastError(status ? `Error ${status}` : "Error", apiErr.message);
         } catch (e) {
@@ -165,12 +177,12 @@ export class AxiosApiClient implements ApiClient {
       const netErr = new ApiClientError(
         "No response received from server",
         undefined,
-        "NETWORK_ERROR"
+        "NETWORK_ERROR",
       );
       try {
         console.debug(
           "[AxiosApiClient] emitting network toast",
-          netErr.message
+          netErr.message,
         );
         showToastError("Network Error", netErr.message);
       } catch (e) {}
@@ -179,12 +191,12 @@ export class AxiosApiClient implements ApiClient {
       const reqErr = new ApiClientError(
         error.message || "Request setup failed",
         undefined,
-        "REQUEST_ERROR"
+        "REQUEST_ERROR",
       );
       try {
         console.debug(
           "[AxiosApiClient] emitting request toast",
-          reqErr.message
+          reqErr.message,
         );
         showToastError("Request Error", reqErr.message);
       } catch (e) {}
@@ -204,7 +216,7 @@ export class AxiosApiClient implements ApiClient {
   async post<T = any>(
     url: string,
     data?: any,
-    config?: RequestConfig
+    config?: RequestConfig,
   ): Promise<T> {
     // #region agent log
     silentAnalyticsLog({
@@ -245,7 +257,7 @@ export class AxiosApiClient implements ApiClient {
   async put<T = any>(
     url: string,
     data?: any,
-    config?: RequestConfig
+    config?: RequestConfig,
   ): Promise<T> {
     const response = await this.client.put<T>(url, data, config);
     return response.data;
@@ -254,15 +266,31 @@ export class AxiosApiClient implements ApiClient {
   async patch<T = any>(
     url: string,
     data?: any,
-    config?: RequestConfig
+    config?: RequestConfig,
   ): Promise<T> {
     const response = await this.client.patch<T>(url, data, config);
     return response.data;
   }
 
   async delete<T = any>(url: string, config?: RequestConfig): Promise<T> {
-    const response = await this.client.delete<T>(url, config);
-    return response.data;
+    if (import.meta.env.DEV) {
+      const fullUrl = this.client.defaults.baseURL + url;
+      console.debug("[AxiosApiClient] DELETE", url, "→ Full URL:", fullUrl);
+    }
+    try {
+      const response = await this.client.delete<T>(url, config);
+      // Handle 204 No Content and empty responses
+      // Axios returns empty string "" for 204 responses
+      if (response.status === 204 || !response.data || response.data === "") {
+        return undefined as T;
+      }
+      return response.data;
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error("[AxiosApiClient] DELETE error for", url, error);
+      }
+      throw error;
+    }
   }
 
   setAuthToken(token: string | null): void {

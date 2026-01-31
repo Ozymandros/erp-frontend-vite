@@ -3,13 +3,15 @@
 import { useState, useEffect, useCallback } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { usersService } from "@/api/services/users.service"
-import type { User } from "@/types/api.types"
+import type { User, Role } from "@/types/api.types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react"
 import { EditUserDialog } from "@/components/users/edit-user-dialog"
 import { DeleteUserDialog } from "@/components/users/delete-user-dialog"
+import { RoleSelector } from "@/components/users/role-selector"
+import { usePermission } from "@/hooks/use-permissions"
 import { formatDateTime } from "@/lib/utils"
 
 export function UserDetailPage() {
@@ -20,6 +22,10 @@ export function UserDetailPage() {
   const [error, setError] = useState<string | null>(null)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+
+  // Permissions
+  const canUpdate = usePermission("Users", "Update")
+  const canDelete = usePermission("Users", "Delete")
 
   const fetchUser = useCallback(async () => {
     if (!id) return
@@ -39,6 +45,18 @@ export function UserDetailPage() {
     fetchUser()
   }, [fetchUser])
 
+  // Scroll to roles section if hash is #roles
+  useEffect(() => {
+    if (window.location.hash === "#roles") {
+      setTimeout(() => {
+        const element = document.getElementById("manage-roles")
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "start" })
+        }
+      }, 100)
+    }
+  }, [user])
+
   const handleUserUpdated = () => {
     setIsEditDialogOpen(false)
     fetchUser()
@@ -47,6 +65,16 @@ export function UserDetailPage() {
   const handleUserDeleted = () => {
     navigate("/users")
   }
+
+  const handleRolesChange = useCallback((roles: Role[]) => {
+    // Update user state with new roles
+    setUser(prevUser => {
+      if (!prevUser) return null
+      return { ...prevUser, roles }
+    })
+    // Optionally refresh full user data to get latest permissions
+    fetchUser()
+  }, [fetchUser])
 
   if (isLoading) {
     return (
@@ -80,14 +108,18 @@ export function UserDetailPage() {
           </Link>
         </Button>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setIsEditDialogOpen(true)}>
-            <Pencil className="mr-2 h-4 w-4" />
-            Edit
-          </Button>
-          <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)}>
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete
-          </Button>
+          {canUpdate && (
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(true)}>
+              <Pencil className="mr-2 h-4 w-4" />
+              Edit
+            </Button>
+          )}
+          {canDelete && (
+            <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)}>
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete
+            </Button>
+          )}
         </div>
       </div>
 
@@ -104,27 +136,27 @@ export function UserDetailPage() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Username</label>
+              <span className="text-sm font-medium text-muted-foreground block">Username</span>
               <p className="text-base text-foreground mt-1">{user.username}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Email</label>
+              <span className="text-sm font-medium text-muted-foreground block">Email</span>
               <p className="text-base text-foreground mt-1">{user.email}</p>
             </div>
             {user.firstName && (
               <div>
-                <label className="text-sm font-medium text-muted-foreground">First Name</label>
+                <span className="text-sm font-medium text-muted-foreground block">First Name</span>
                 <p className="text-base text-foreground mt-1">{user.firstName}</p>
               </div>
             )}
             {user.lastName && (
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Last Name</label>
+                <span className="text-sm font-medium text-muted-foreground block">Last Name</span>
                 <p className="text-base text-foreground mt-1">{user.lastName}</p>
               </div>
             )}
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Status</label>
+              <span className="text-sm font-medium text-muted-foreground block">Status</span>
               <div className="mt-1">
                 <Badge variant={user.isActive ? "default" : "destructive"}>
                   {user.isActive ? "Active" : "Inactive"}
@@ -132,13 +164,34 @@ export function UserDetailPage() {
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">User ID</label>
+              <span className="text-sm font-medium text-muted-foreground block">User ID</span>
               <p className="text-base text-foreground mt-1 font-mono text-sm">{user.id}</p>
             </div>
           </div>
         </CardContent>
       </Card>
 
+      {/* Role Management */}
+      <Card id="manage-roles">
+        <CardHeader>
+          <CardTitle>Manage Roles</CardTitle>
+          <CardDescription>
+            {canUpdate 
+              ? "Assign or unassign roles to this user" 
+              : "View and manage roles (read-only - requires Users.Update permission)"}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RoleSelector
+            userId={user.id}
+            initialRoles={user.roles || []}
+            onRolesChange={handleRolesChange}
+            readonly={!canUpdate}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Assigned Roles & Permissions View */}
       <Card>
         <CardHeader>
           <CardTitle>Roles & Permissions</CardTitle>
@@ -183,11 +236,11 @@ export function UserDetailPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div>
-            <label className="text-sm font-medium text-muted-foreground">Created At</label>
+            <span className="text-sm font-medium text-muted-foreground block">Created At</span>
             <p className="text-base text-foreground mt-1">{formatDateTime(user.createdAt)}</p>
           </div>
           <div>
-            <label className="text-sm font-medium text-muted-foreground">Last Updated</label>
+            <span className="text-sm font-medium text-muted-foreground block">Last Updated</span>
             <p className="text-base text-foreground mt-1">{formatDateTime(user.updatedAt)}</p>
           </div>
         </CardContent>

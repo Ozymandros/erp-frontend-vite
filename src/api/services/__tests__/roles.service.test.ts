@@ -217,9 +217,10 @@ describe("RolesService", () => {
 
       await rolesService.addPermissionToRole("1", "perm1");
 
-      expect(mockApiClient.post).toHaveBeenCalledWith("/auth/api/roles/1/permissions", {
-        permissionId: "perm1",
-      });
+      expect(mockApiClient.post).toHaveBeenCalledWith(
+        "/auth/api/roles/1/permissions?permissionId=perm1",
+        undefined
+      );
     });
   });
 

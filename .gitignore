@@ -30,3 +30,6 @@ test-results/*
 .env
 .env.local
 .env.production
+
+# SonarQube/SonarCloud
+.scannerwork

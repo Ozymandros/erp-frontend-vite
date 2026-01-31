@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { cn, formatDateTime, formatDate } from "@/lib/utils";
+import { cn, formatDateTime, formatDate, getDefaultDateTimeLocal } from "@/lib/utils";
 
 describe("Utility Functions", () => {
   describe("cn", () => {
@@ -67,6 +67,13 @@ describe("Utility Functions", () => {
       const formatted = formatDateTime(date);
       expect(formatted).toBeTruthy();
       expect(formatted).toContain("2024");
+    });
+  });
+
+  describe("getDefaultDateTimeLocal", () => {
+    it("returns datetime-local format YYYY-MM-DDTHH:mm", () => {
+      const result = getDefaultDateTimeLocal();
+      expect(result).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/);
     });
   });
 });

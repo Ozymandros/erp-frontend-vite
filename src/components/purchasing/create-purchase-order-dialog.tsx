@@ -8,6 +8,7 @@ import {
   CreatePurchaseOrderSchema,
   type CreatePurchaseOrderFormData,
 } from "@/lib/validation/purchasing/purchase-order.schemas";
+import { parseZodErrors } from "@/lib/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,7 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus, Trash2, CalendarIcon } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getDefaultDateTimeLocal } from "@/lib/utils";
 import type { SupplierDto, ProductDto } from "@/types/api.types";
 
 interface CreatePurchaseOrderDialogProps {
@@ -43,15 +44,9 @@ export function CreatePurchaseOrderDialog({
   onOpenChange,
   onSuccess,
 }: CreatePurchaseOrderDialogProps) {
-  const getDefaultDate = () => {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    return now.toISOString().slice(0, 16);
-  };
-
   const [formData, setFormData] = useState<CreatePurchaseOrderFormData>({
     supplierId: "",
-    orderDate: getDefaultDate(),
+    orderDate: getDefaultDateTimeLocal(),
     expectedDeliveryDate: undefined,
     orderLines: [],
   });
@@ -74,7 +69,7 @@ export function CreatePurchaseOrderDialog({
       // Reset form on open
       setFormData({
         supplierId: "",
-        orderDate: getDefaultDate(),
+        orderDate: getDefaultDateTimeLocal(),
         expectedDeliveryDate: undefined,
         orderLines: [],
       });
@@ -145,11 +140,7 @@ export function CreatePurchaseOrderDialog({
 
     const validation = CreatePurchaseOrderSchema.safeParse(formData);
     if (!validation.success) {
-      const errors: Record<string, string> = {};
-      validation.error.issues.forEach((err) => {
-        if (err.path[0]) errors[err.path[0].toString()] = err.message;
-      });
-      setFieldErrors(errors);
+      setFieldErrors(parseZodErrors(validation.error));
       setError("Please fix the validation errors");
       return;
     }
@@ -158,7 +149,6 @@ export function CreatePurchaseOrderDialog({
     try {
       const payload = {
         ...validation.data,
-        orderNumber: `PO-${Date.now()}`, // Auto-generate
         // Maps to backend DTO
         // Check if expectedDeliveryDate needs simple transformation if undefined
         expectedDeliveryDate: validation.data.expectedDeliveryDate || undefined
