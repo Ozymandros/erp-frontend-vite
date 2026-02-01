@@ -149,6 +149,19 @@ export async function setupApiMocks(page: Page) {
           return;
         }
         
+        if (url.includes('/warehouses/') && method === 'GET') {
+          const id = url.split('/').pop();
+          await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+              success: true,
+              data: { id, name: 'Main Warehouse', location: 'New York', capacity: 1000 }
+            })
+          });
+          return;
+        }
+
         if (url.includes('/warehouses') && method === 'GET') {
           await route.fulfill({
             status: 200,
@@ -181,6 +194,18 @@ export async function setupApiMocks(page: Page) {
           await route.fulfill({
             status: 204,
             contentType: 'application/json'
+          });
+          return;
+        }
+
+        if (url.includes('/stock/transfer') && method === 'POST') {
+          await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+              success: true,
+              message: 'Stock transferred successfully'
+            })
           });
           return;
         }
@@ -338,6 +363,19 @@ export async function setupApiMocks(page: Page) {
       
       // User management endpoints
       if (url.includes('/users/api/') || url.includes('/roles/api/') || url.includes('/permissions/api/')) {
+        if (url.includes('/users/') && method === 'GET' && !url.includes('/roles') && !url.includes('/permissions')) {
+          const id = url.split('/').pop();
+          await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+              success: true,
+              data: { id, email: 'admin@example.com', username: 'admin', isActive: true, firstName: 'Admin', lastName: 'User', roles: ['Admin'] }
+            })
+          });
+          return;
+        }
+
         if (url.includes('/users') && method === 'GET' && !url.includes('/roles') && !url.includes('/permissions')) {
           await route.fulfill({
             status: 200,
@@ -348,6 +386,19 @@ export async function setupApiMocks(page: Page) {
                 { id: '1', email: 'admin@example.com', username: 'admin', isActive: true, roles: ['Admin'] },
                 { id: '2', email: 'user@example.com', username: 'user', isActive: true, roles: ['User'] }
               ]
+            })
+          });
+          return;
+        }
+
+        if (url.includes('/users') && (method === 'POST' || method === 'PUT')) {
+          const body = request.postDataJSON();
+          await route.fulfill({
+            status: method === 'POST' ? 201 : 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+              success: true,
+              data: { id: body.id || '3', ...body }
             })
           });
           return;

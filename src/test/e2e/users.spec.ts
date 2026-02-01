@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { setupApiMocks, setupAuthenticatedSession } from './api-interceptor';
 
 /**
@@ -61,75 +61,86 @@ test.describe('User Management', () => {
     });
 
     test('should create new user', async ({ page }) => {
-      await page.goto('/admin/users', { waitUntil: 'domcontentloaded' });
+      await page.goto('/admin/users', { waitUntil: 'networkidle' });
       
-      const createBtn = page.locator('button:has-text("Create"), button:has-text("Add"), button:has-text("New")');
-      const createExists = await createBtn.count() > 0;
+      await page.locator('button:has-text("Create"), button:has-text("Add"), button:has-text("New")').first().click();
+      await page.waitForURL('**/admin/users/new');
+
+      // Fill form
+      await page.locator('input[name="username"]').fill('newuser');
+      await page.locator('input[name="email"]').fill('newuser@example.com');
+      await page.locator('input[name="firstName"]').fill('New');
+      await page.locator('input[name="lastName"]').fill('User');
+      await page.locator('input[name="password"]').fill('password123');
       
-      if (createExists) {
-        await createBtn.first().click();
-        await page.waitForTimeout(500);
+      // Select a role if possible (assuming multi-select or single select)
+      const roleSelect = page.locator('.ant-select, select').first();
+      if (await roleSelect.count() > 0) {
+        await roleSelect.click();
+        await page.locator('.ant-select-item-option-content:has-text("User"), option:has-text("User")').first().click();
       }
+
+      await page.locator('button[type="submit"]').click();
+      
+      // Should redirect back to list
+      await page.waitForURL('**/admin/users');
     });
 
     test('should search users', async ({ page }) => {
-      await page.goto('/admin/users', { waitUntil: 'domcontentloaded' });
+      await page.goto('/admin/users', { waitUntil: 'networkidle' });
       
       const searchInput = page.locator('input[type="search"], input[placeholder*="search" i]');
-      const searchExists = await searchInput.count() > 0;
+      await searchInput.first().fill('admin');
+      await page.keyboard.press('Enter');
       
-      if (searchExists) {
-        await searchInput.first().fill('test');
-        await page.waitForTimeout(500);
-      }
+      // Verify that the table contains results (at least the headers should be there, and ideally data)
+      await expect(page.locator('table')).toBeVisible();
+      await expect(page.locator('td:has-text("admin")').first()).toBeVisible();
     });
 
     test('should filter users', async ({ page }) => {
-      await page.goto('/admin/users', { waitUntil: 'domcontentloaded' });
+      await page.goto('/admin/users', { waitUntil: 'networkidle' });
       
       const filterBtn = page.locator('button:has-text("Filter"), button[aria-label*="filter" i]');
-      const filterExists = await filterBtn.count() > 0;
-      
-      if (filterExists) {
+      if (await filterBtn.count() > 0) {
         await filterBtn.first().click();
-        await page.waitForTimeout(500);
+        // Assuming a drawer or modal opens
+        await expect(page.locator('.ant-drawer, .ant-modal, [role="dialog"]')).toBeVisible();
       }
     });
 
     test('should edit user', async ({ page }) => {
-      await page.goto('/admin/users', { waitUntil: 'domcontentloaded' });
+      await page.goto('/admin/users', { waitUntil: 'networkidle' });
       
-      const editBtn = page.locator('button:has-text("Edit"), button[aria-label*="edit" i]').first();
-      const editExists = await editBtn.count() > 0;
+      // Click edit on the first user
+      await page.locator('button:has-text("Edit"), button[aria-label*="edit" i]').first().click();
+      await page.waitForURL('**/admin/users/*');
+
+      // Verify form is populated
+      const emailValue = await page.locator('input[name="email"]').inputValue();
+      expect(emailValue).toBe('admin@example.com');
+
+      // Update name
+      await page.locator('input[name="firstName"]').fill('UpdatedAdmin');
+      await page.locator('button[type="submit"]').click();
       
-      if (editExists) {
-        await editBtn.click();
-        await page.waitForTimeout(500);
-      }
+      // Should redirect back to list
+      await page.waitForURL('**/admin/users');
     });
 
-    test('should delete user', async ({ page }) => {
-      await page.goto('/admin/users', { waitUntil: 'domcontentloaded' });
+    test('should delete user with confirmation', async ({ page }) => {
+      await page.goto('/admin/users', { waitUntil: 'networkidle' });
       
-      const deleteBtn = page.locator('button:has-text("Delete"), button[aria-label*="delete" i]').first();
-      const deleteExists = await deleteBtn.count() > 0;
+      await page.locator('button:has-text("Delete"), button[aria-label*="delete" i]').first().click();
       
-      if (deleteExists) {
-        await deleteBtn.click();
-        await page.waitForTimeout(500);
+      // Handle confirmation dialog (standard browser or AntD modal)
+      const confirmBtn = page.locator('button:has-text("OK"), button:has-text("confirm" i), button:has-text("Yes")');
+      if (await confirmBtn.count() > 0) {
+        await confirmBtn.first().click();
       }
-    });
-
-    test('should toggle user active status', async ({ page }) => {
-      await page.goto('/admin/users', { waitUntil: 'domcontentloaded' });
       
-      const toggle = page.locator('input[type="checkbox"], [role="switch"]').first();
-      const toggleExists = await toggle.count() > 0;
-      
-      if (toggleExists) {
-        await toggle.click();
-        await page.waitForTimeout(500);
-      }
+      // Check that the list is still there (mock data might not change list size, but we verify the interaction)
+      await expect(page.locator('table')).toBeVisible();
     });
   });
 
