@@ -72,7 +72,7 @@ export function ListPageLayout<T>({
           <h1 className="text-3xl font-bold text-foreground">{title}</h1>
           <p className="text-muted-foreground mt-1">{description}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {onExport && (
             <>
               <Button variant="outline" onClick={() => onExport("xlsx")}>
@@ -86,7 +86,11 @@ export function ListPageLayout<T>({
             </>
           )}
           
-          {extraHeaderActions}
+          {extraHeaderActions && (
+            <div className="flex items-center gap-2">
+              {extraHeaderActions}
+            </div>
+          )}
           
           {onCreateOpen && (
             <Button onClick={onCreateOpen}>

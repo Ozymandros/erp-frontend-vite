@@ -8,9 +8,15 @@ import { defineConfig, devices } from "@playwright/test";
  * - Mocks all backend API calls for isolated frontend testing
  * - Tests meaningful user interactions and workflows
  * - Ensures compliance with documented functionality
+ *
+ * Before first run: ensure Rollup native binary is installed so the dev server starts.
+ * Run: pnpm install (or pnpm install --no-frozen-lockfile in CI if lockfile was updated).
  */
 export default defineConfig({
   testDir: "./src/test/e2e",
+
+  /* Use writable output dir to avoid EACCES when cleaning leftover artifacts */
+  outputDir: ".playwright-output",
 
   /* Only match files ending in .spec.ts in the e2e directory */
   testMatch: "**/src/test/e2e/**/*.spec.ts",
@@ -41,7 +47,7 @@ export default defineConfig({
   /* Reporter to use */
   reporter: process.env.CI
     ? [
-        ["junit", { outputFile: "test-results/junit.xml" }],
+        ["junit", { outputFile: ".playwright-output/junit.xml" }],
         ["html", { outputFolder: "playwright-report" }],
         ["json", { outputFile: "playwright-report/results.json" }],
         ["list"],
@@ -69,8 +75,8 @@ export default defineConfig({
     /* Screenshot on failure */
     screenshot: "only-on-failure",
 
-    /* Video on failure */
-    video: "retain-on-failure",
+    /* Video off to avoid EACCES on artifact cleanup in some environments */
+    video: "off",
 
     /* Emulate timezone */
     timezoneId: "America/New_York",
@@ -126,7 +132,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "pnpm dev",
+    command: "pnpm exec vite",
     url: "http://localhost:3000",
     reuseExistingServer: true,
     stdout: "pipe",

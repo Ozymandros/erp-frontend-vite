@@ -3,7 +3,9 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  :root,
+  .light,
+  .light-theme {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -26,7 +28,8 @@
     --radius: 0.5rem;
   }
 
-  .dark {
+  .dark,
+  .dark-theme {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
@@ -55,5 +58,41 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Override Radix UI Themes defaults to ensure dark mode works with our Tailwind components */
+@layer utilities {
+  .dark input[type="text"],
+  .dark input[type="search"],
+  .dark input[type="email"],
+  .dark input[type="number"],
+  .dark textarea,
+  .dark select {
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+  
+  .dark button[class*="bg-background"] {
+    background-color: hsl(var(--background)) !important;
+  }
+}
+
+/* Ensure dropdown menu items have solid backgrounds in both light and dark themes */
+@layer utilities {
+  [role="menuitem"],
+  [data-radix-dropdown-menu-item] {
+    background-color: hsl(var(--popover)) !important;
+    color: hsl(var(--popover-foreground)) !important;
+  }
+  
+  [role="menuitem"]:hover,
+  [data-radix-dropdown-menu-item]:hover,
+  [role="menuitem"]:focus,
+  [data-radix-dropdown-menu-item]:focus,
+  [role="menuitem"][data-highlighted],
+  [data-radix-dropdown-menu-item][data-highlighted] {
+    background-color: hsl(var(--accent)) !important;
+    color: hsl(var(--accent-foreground)) !important;
   }
 }

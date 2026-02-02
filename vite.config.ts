@@ -11,6 +11,7 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    strictPort: true, // Fail if 3000 is in use (required for Playwright webServer)
     proxy: {
       "/api": {
         target: process.env.VITE_API_BASE_URL || "http://localhost:8080",

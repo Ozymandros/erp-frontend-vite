@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { User, LogOut } from "lucide-react"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 export function Header() {
   const { user, logout } = useAuth()
@@ -42,6 +43,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-4">
+          <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-10 w-10 rounded-full">

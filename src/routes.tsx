@@ -14,12 +14,11 @@ function renderRoutes(definitions: RouteDefinition[], keyPrefix = ""): ReactElem
       );
     }
     const leafProps = {
-      key,
       element: def.element,
       ...(def.path !== undefined && { path: def.path }),
       ...(def.index !== undefined && { index: def.index }),
     };
-    return <Route {...leafProps} />;
+    return <Route key={key} {...leafProps} />;
   });
 }
 

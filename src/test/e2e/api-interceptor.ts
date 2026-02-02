@@ -29,9 +29,12 @@ export async function setupApiMocks(page: Page) {
                     id: '1',
                     email: 'admin@example.com',
                     name: 'Admin User',
+                    username: 'admin',
                     role: 'Admin',
-                    permissions: ['*'],
-                    isActive: true
+                    permissions: [],
+                    isActive: true,
+                    isAdmin: true,
+                    roles: [{ id: '1', name: 'Admin', description: 'Administrator' }]
                   }
                 }
               })
@@ -58,20 +61,25 @@ export async function setupApiMocks(page: Page) {
           return;
         }
         
-        if (url.includes('current-user') && method === 'GET') {
+        // Match the actual endpoint: /auth/api/users/me
+        if (url.includes('/users/me') && method === 'GET') {
           await route.fulfill({
             status: 200,
             contentType: 'application/json',
             body: JSON.stringify({
-              success: true,
-              data: {
-                id: '1',
-                email: 'admin@example.com',
-                name: 'Admin User',
-                role: 'Admin',
-                permissions: ['*'],
-                isActive: true
-              }
+              id: '1',
+              email: 'admin@example.com',
+              username: 'admin',
+              firstName: 'Admin',
+              lastName: 'User',
+              emailConfirmed: true,
+              isExternalLogin: false,
+              isActive: true,
+              isAdmin: true,
+              roles: [{ id: '1', name: 'Admin', description: 'Administrator' }],
+              permissions: [],
+              createdAt: '2024-01-01T00:00:00Z',
+              updatedAt: '2024-01-01T00:00:00Z'
             })
           });
           return;
@@ -447,17 +455,13 @@ export async function setupApiMocks(page: Page) {
 }
 
 export async function setupAuthenticatedSession(page: Page, token = 'mock-jwt-token') {
-  // Set auth token in localStorage
+  // Set auth tokens in sessionStorage (auth context uses sessionStorage, not localStorage!)
   await page.evaluate((t) => {
-    localStorage.setItem('authToken', t);
-    localStorage.setItem('user', JSON.stringify({
-      id: '1',
-      email: 'admin@example.com',
-      name: 'Admin User',
-      role: 'Admin',
-      permissions: ['*'],
-      isActive: true
-    }));
+    sessionStorage.setItem('access_token', t);
+    sessionStorage.setItem('refresh_token', 'mock-refresh-token');
+    // Set expiry to 1 hour from now
+    const expiryTime = Date.now() + (60 * 60 * 1000);
+    sessionStorage.setItem('token_expiry', expiryTime.toString());
   }, token);
   
   // Set auth header in page context

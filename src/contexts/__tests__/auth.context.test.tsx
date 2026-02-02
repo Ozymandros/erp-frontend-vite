@@ -23,6 +23,7 @@ vi.mock("@/api/clients", () => ({
 }));
 
 import { authService } from "@/api/services/auth.service";
+import type { User, AuthResponse } from "@/types/api.types";
 
 function TestConsumer() {
   const { user, isAuthenticated, isLoading, login, logout, register, checkApiPermission, hasPermission, refreshUserData } = useAuth();
@@ -384,18 +385,29 @@ describe("AuthContext", () => {
   });
 
   it("should handle hasPermission correctly for admin and regular users", async () => {
-    const adminUser = {
+    const adminUser:User = {
       id: "1",
       username: "admin",
+      email: "admin@example.com",
+      emailConfirmed: true,
+      isExternalLogin: false,
+      isActive: true,
+      roles: [],
       isAdmin: true,
       permissions: [],
+      createdAt: "2024-01-01T00:00:00Z",
+      createdBy: "admin",
+      updatedAt: "2024-01-01T00:00:00Z",
+      updatedBy: "admin",
+      firstName: "Admin",
+      lastName: "User",
     };
     
     sessionStorage.setItem("access_token", "token");
     sessionStorage.setItem("refresh_token", "refresh");
     sessionStorage.setItem("token_expiry", String(Date.now() + 3600000));
 
-    vi.mocked(authService.getCurrentUser).mockResolvedValue(adminUser as any);
+    vi.mocked(authService.getCurrentUser).mockResolvedValue(adminUser);
 
     const { rerender } = render(
       <MemoryRouter>
@@ -417,7 +429,7 @@ describe("AuthContext", () => {
       isAdmin: false,
       permissions: [{ module: "Users", action: "Read" }],
     };
-    vi.mocked(authService.getCurrentUser).mockResolvedValue(regUser as any);
+    vi.mocked(authService.getCurrentUser).mockResolvedValue(regUser as User);
 
     // Use a key to force remount of AuthProvider so it runs initAuth again
     rerender(
@@ -440,7 +452,7 @@ describe("AuthContext", () => {
       isAdmin: false,
       permissions: [{ module: "USERS", action: "READ" }],
     };
-    vi.mocked(authService.getCurrentUser).mockResolvedValue(regUserCase as any);
+    vi.mocked(authService.getCurrentUser).mockResolvedValue(regUserCase as User);
     
     rerender(
       <MemoryRouter>
@@ -486,7 +498,7 @@ describe("AuthContext", () => {
     sessionStorage.setItem("refresh_token", "refresh");
     sessionStorage.setItem("token_expiry", String(Date.now() + 3600000));
     
-    vi.mocked(authService.getCurrentUser).mockResolvedValue(mockUser as any);
+    vi.mocked(authService.getCurrentUser).mockResolvedValue(mockUser as User);
 
     render(
       <MemoryRouter>
@@ -499,7 +511,7 @@ describe("AuthContext", () => {
     await waitFor(() => expect(screen.getByTestId("username")).toHaveTextContent("user"));
     
     const updatedUser = { id: "1", username: "updated" };
-    vi.mocked(authService.getCurrentUser).mockResolvedValue(updatedUser as any);
+    vi.mocked(authService.getCurrentUser).mockResolvedValue(updatedUser as User);
     
     await userEvent.click(screen.getByRole("button", { name: /Refresh User Data/i }));
     
@@ -542,13 +554,13 @@ describe("AuthContext", () => {
     const expiryTime = Date.now() + 4 * 60 * 1000;
     sessionStorage.setItem("token_expiry", String(expiryTime));
 
-    vi.mocked(authService.getCurrentUser).mockResolvedValue(mockUser as any);
+    vi.mocked(authService.getCurrentUser).mockResolvedValue(mockUser as User);
     vi.mocked(authService.refreshToken).mockResolvedValue({
       accessToken: "new",
       refreshToken: "new",
       expiresIn: 3600,
       user: mockUser,
-    } as any);
+    } as AuthResponse);
 
     render(
       <MemoryRouter>

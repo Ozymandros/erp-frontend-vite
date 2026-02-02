@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ToastContextProvider, useToast } from "../toast.context";
+import type { ApiClient } from "@/api/clients/types";
 
 vi.mock("@/api/clients", () => ({
   getApiClient: vi.fn(() => null),
@@ -122,9 +123,9 @@ describe("ToastContext", () => {
   });
 
   it("should intercept API client errors", async () => {
-    const mockClient = { onError: null as any };
+    const mockClient: Pick<ApiClient, "onError"> = { onError: null };
     const { getApiClient } = await import("@/api/clients");
-    vi.mocked(getApiClient).mockReturnValue(mockClient as any);
+    vi.mocked(getApiClient).mockReturnValue(mockClient as ApiClient);
 
     render(
       <ToastContextProvider>
@@ -146,9 +147,9 @@ describe("ToastContext", () => {
   });
 
   it("should handle API errors without status", async () => {
-    const mockClient = { onError: null as any };
+    const mockClient: Pick<ApiClient, "onError"> = { onError: null };
     const { getApiClient } = await import("@/api/clients");
-    vi.mocked(getApiClient).mockReturnValue(mockClient as any);
+    vi.mocked(getApiClient).mockReturnValue(mockClient as ApiClient);
 
     render(
       <ToastContextProvider>

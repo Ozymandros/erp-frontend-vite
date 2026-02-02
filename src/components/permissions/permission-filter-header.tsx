@@ -1,7 +1,13 @@
 // components/FilterHeader.tsx
 import { useState, useEffect } from "react";
 import { Input } from "../ui/input";
-import * as Select from "@radix-ui/react-select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { rolesService } from "@/api/services/roles.service";
 import { Role } from "@/types/api.types";
 
@@ -56,29 +62,26 @@ export const PermissionFilterHeader = ({
   }, []);
 
   return (
-    <div className="flex gap-4 p-4 border-b items-center bg-white sticky top-0 z-10">
+    <div className="flex gap-2 items-center">
       <Input
         placeholder="Cerca per nom o acció..."
         value={filters.search}
         onChange={e => handleChange("search", e.target.value)}
+        className="w-[250px]"
       />
-      <Select.Root
-        value={filters.role}
-        onValueChange={value => handleChange("role", value)}
-      >
-        <Select.Trigger className="w-[200px]" aria-label="Filter by role" />
-        <Select.Content>
-          <Select.Item value="all">Tots els rols</Select.Item>
+      <Select value={filters.role} onValueChange={value => handleChange("role", value)}>
+        <SelectTrigger className="w-[200px]" aria-label="Filter by role">
+          <SelectValue placeholder="Tots els rols" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">Tots els rols</SelectItem>
           {roles?.map(role => (
-            <Select.Item key={role.id} value={role.id}>
+            <SelectItem key={role.id} value={role.id}>
               {role.name}
-            </Select.Item>
+            </SelectItem>
           ))}
-          {/* <Select.Item value="admin">Admin</Select.Item>
-          <Select.Item value="editor">Editor</Select.Item>
-          <Select.Item value="viewer">Viewer</Select.Item> */}
-        </Select.Content>
-      </Select.Root>
+        </SelectContent>
+      </Select>
     </div>
   );
 };

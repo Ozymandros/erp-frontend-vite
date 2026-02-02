@@ -36,12 +36,13 @@ test.describe('User Management', () => {
       }
     }
 
-    // Clear localStorage after page loads
+    // Clear sessionStorage after page loads (auth uses sessionStorage)
     await page.evaluate(() => {
       try {
-        localStorage.clear();
+        sessionStorage.clear();
+        localStorage.clear(); // Clear both to be safe
       } catch (e) {
-        console.log("localStorage already clear");
+        console.log("Storage already clear");
       }
     });
 
@@ -61,29 +62,38 @@ test.describe('User Management', () => {
     });
 
     test('should create new user', async ({ page }) => {
-      await page.goto('/admin/users', { waitUntil: 'networkidle' });
+      // beforeEach already navigated to /admin/users with authentication
       
-      await page.locator('button:has-text("Create"), button:has-text("Add"), button:has-text("New")').first().click();
-      await page.waitForURL('**/admin/users/new');
+      // Ensure page is fully loaded
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(1000); // Give React time to render components
+      
+      // Wait for the users table to load (ensures permissions are loaded)
+      await expect(page.locator('table')).toBeVisible({ timeout: 10000 });
+      
+      // Try multiple ways to find the button
+      const createBtn = page.locator('button').filter({ hasText: /add.*user/i }).or(
+        page.locator('button:has-text("Add User")')
+      ).first();
+      
+      await expect(createBtn).toBeVisible({ timeout: 15000 });
+      await createBtn.click();
+      
+      // Wait for Dialog  
+      const dialog = page.locator('[role="dialog"]');
+      await expect(dialog).toBeVisible({ timeout: 5000 });
 
-      // Fill form
-      await page.locator('input[name="username"]').fill('newuser');
-      await page.locator('input[name="email"]').fill('newuser@example.com');
-      await page.locator('input[name="firstName"]').fill('New');
-      await page.locator('input[name="lastName"]').fill('User');
-      await page.locator('input[name="password"]').fill('password123');
-      
-      // Select a role if possible (assuming multi-select or single select)
-      const roleSelect = page.locator('.ant-select, select').first();
-      if (await roleSelect.count() > 0) {
-        await roleSelect.click();
-        await page.locator('.ant-select-item-option-content:has-text("User"), option:has-text("User")').first().click();
-      }
+      // Fill form inside dialog using id-based locators
+      await dialog.locator('input#username').fill('newuser');
+      await dialog.locator('input#email').fill('newuser@example.com');
+      await dialog.locator('input#firstName').fill('New');
+      await dialog.locator('input#lastName').fill('User');
+      await dialog.locator('input#password').fill('password123');
 
-      await page.locator('button[type="submit"]').click();
+      await dialog.locator('button[type="submit"]').click();
       
-      // Should redirect back to list
-      await page.waitForURL('**/admin/users');
+      // Should close dialog
+      await expect(dialog).not.toBeVisible({ timeout: 5000 });
     });
 
     test('should search users', async ({ page }) => {
@@ -110,22 +120,30 @@ test.describe('User Management', () => {
     });
 
     test('should edit user', async ({ page }) => {
-      await page.goto('/admin/users', { waitUntil: 'networkidle' });
+      // beforeEach already navigated to /admin/users with authentication
       
-      // Click edit on the first user
-      await page.locator('button:has-text("Edit"), button[aria-label*="edit" i]').first().click();
-      await page.waitForURL('**/admin/users/*');
+      // Wait for the users table to load (ensures permissions are loaded)
+      await expect(page.locator('table')).toBeVisible({ timeout: 10000 });
+      
+      // Click edit on the first user - look for button with "Edit User" title
+      const editBtn = page.getByRole('button', { name: 'Edit User' }).first();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
+      await editBtn.click();
+      
+      // Wait for Dialog
+      const dialog = page.locator('[role="dialog"]');
+      await expect(dialog).toBeVisible({ timeout: 5000 });
 
-      // Verify form is populated
-      const emailValue = await page.locator('input[name="email"]').inputValue();
+      // Verify form is populated using id-based locators
+      const emailValue = await dialog.locator('input#edit-email').inputValue();
       expect(emailValue).toBe('admin@example.com');
 
       // Update name
-      await page.locator('input[name="firstName"]').fill('UpdatedAdmin');
-      await page.locator('button[type="submit"]').click();
+      await dialog.locator('input#edit-firstName').fill('UpdatedAdmin');
+      await dialog.locator('button[type="submit"]').click();
       
-      // Should redirect back to list
-      await page.waitForURL('**/admin/users');
+      // Should close dialog
+      await expect(dialog).not.toBeVisible({ timeout: 5000 });
     });
 
     test('should delete user with confirmation', async ({ page }) => {
