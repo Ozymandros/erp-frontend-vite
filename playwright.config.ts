@@ -21,16 +21,16 @@ export default defineConfig({
   /* Only match files ending in .spec.ts in the e2e directory */
   testMatch: "**/src/test/e2e/**/*.spec.ts",
 
-  /* Increase overall test timeout to reduce flakiness on slower Firefox startups */
-  timeout: 90_000,
+  /* Test timeout - reduced from 90s with lighter setup (load vs networkidle) */
+  timeout: 60_000,
 
   /* Default expectation timeout */
   expect: {
     timeout: 10_000,
   },
 
-  /* Run tests in files in parallel */
-  fullyParallel: false,
+  /* Run tests in parallel when using multiple workers */
+  fullyParallel: true,
 
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
@@ -38,8 +38,8 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 1,
 
-  /* Opt out of parallel tests on CI. */
-  workers: 1,
+  /* 1 worker in CI for stability; 2 locally for faster runs */
+  workers: process.env.CI ? 1 : 2,
 
   /* Max failures before stopping */
   maxFailures: process.env.CI ? 10 : undefined,
@@ -134,9 +134,11 @@ export default defineConfig({
   webServer: {
     command: "pnpm exec vite",
     url: "http://localhost:3000",
-    reuseExistingServer: true,
+    reuseExistingServer: !process.env.CI, // Only reuse in local dev, not CI
     stdout: "pipe",
     stderr: "pipe",
     timeout: 300 * 1000,
+    // Give server more time to start
+    startupTimeout: 60 * 1000,
   },
 });
