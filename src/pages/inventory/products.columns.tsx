@@ -30,11 +30,12 @@ export function getProductColumns({ onEdit, onDelete, canEdit = true, canDelete 
       accessor: (p) => formatCurrency(p.unitPrice),
       sortable: true,
       sortField: "unitPrice",
+      className: "tabular-nums",
     },
     {
       header: "Stock",
       accessor: (product) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 tabular-nums">
           {product.quantityInStock}
           {product.quantityInStock <= product.reorderLevel && (
             <AlertTriangle className="h-4 w-4 text-amber-500" />

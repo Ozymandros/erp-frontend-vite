@@ -46,7 +46,7 @@ export function Header() {
           <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full" ariaLabel="User menu">
                 <Avatar>
                   <AvatarFallback className="bg-primary text-primary-foreground">
                     {getInitials(user?.firstName, user?.lastName, user?.username)}

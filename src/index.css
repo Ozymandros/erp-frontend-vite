@@ -56,6 +56,15 @@
   * {
     @apply border-border;
   }
+  
+  html {
+    color-scheme: light;
+  }
+  
+  html.dark {
+    color-scheme: dark;
+  }
+  
   body {
     @apply bg-background text-foreground;
   }
@@ -94,5 +103,40 @@
   [data-radix-dropdown-menu-item][data-highlighted] {
     background-color: hsl(var(--accent)) !important;
     color: hsl(var(--accent-foreground)) !important;
+  }
+}
+
+/* Accessibility: Honor prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Typography utilities */
+@layer utilities {
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+  
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  
+  /* Touch and mobile utilities */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  
+  .tap-highlight-none {
+    -webkit-tap-highlight-color: transparent;
   }
 }

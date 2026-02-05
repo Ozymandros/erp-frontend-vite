@@ -58,7 +58,7 @@ export function getUserColumns({ onEdit, onDelete, canEdit = true, canDelete = t
     {
       header: "Created",
       accessor: (user) => (
-        <span className="text-sm text-muted-foreground">{formatDateTime(user.createdAt)}</span>
+        <span className="text-sm text-muted-foreground tabular-nums">{formatDateTime(user.createdAt)}</span>
       ),
       sortable: true,
       sortField: "createdAt",

@@ -109,7 +109,7 @@ export function CreateRoleDialog({ open, onOpenChange, onSuccess }: CreateRoleDi
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Creating..." : "Create Role"}
+              {isLoading ? "Creating…" : "Create Role"}
             </Button>
           </DialogFooter>
         </form>

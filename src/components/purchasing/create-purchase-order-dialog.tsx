@@ -428,7 +428,7 @@ export function CreatePurchaseOrderDialog({
               type="submit"
               disabled={isLoading || formData.orderLines.length === 0}
             >
-              {isLoading ? "Creating..." : "Create Purchase Order"}
+              {isLoading ? "Creating…" : "Create Purchase Order"}
             </Button>
           </DialogFooter>
         </form>

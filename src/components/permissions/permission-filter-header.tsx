@@ -64,7 +64,7 @@ export const PermissionFilterHeader = ({
   return (
     <div className="flex gap-2 items-center">
       <Input
-        placeholder="Cerca per nom o acció..."
+        placeholder="Cerca per nom o acció…"
         value={filters.search}
         onChange={e => handleChange("search", e.target.value)}
         className="w-[250px]"

@@ -343,7 +343,7 @@ export function CreateSalesOrderDialog({
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading || formData.orderLines.length === 0}>
-              {isLoading ? "Creating..." : "Create Sales Order"}
+              {isLoading ? "Creating…" : "Create Sales Order"}
             </Button>
           </DialogFooter>
         </form>

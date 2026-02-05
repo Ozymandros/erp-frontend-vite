@@ -97,7 +97,7 @@ export function DeleteWarehouseDialog({
             onClick={handleDelete}
             disabled={isLoading}
           >
-            {isLoading ? "Deleting..." : "Delete Warehouse"}
+            {isLoading ? "Deleting…" : "Delete Warehouse"}
           </Button>
         </DialogFooter>
       </DialogContent>

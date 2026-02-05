@@ -48,15 +48,16 @@ export function getOrderColumns({ getCustomerName }: OrderColumnsProps): Column<
     },
     {
       header: "Date",
-      accessor: (order) => formatDateTime(order.orderDate),
+      accessor: (order) => <span className="tabular-nums">{formatDateTime(order.orderDate)}</span>,
     },
     {
       header: "Items",
-      accessor: (order) => `${order.orderLines?.length || 0} items`,
+      accessor: (order) => <span className="tabular-nums">{`${order.orderLines?.length || 0} items`}</span>,
     },
     {
       header: "Total Amount",
-      accessor: (order) => formatCurrency(order.totalAmount),
+      accessor: (order) => <span className="tabular-nums">{formatCurrency(order.totalAmount)}</span>,
+      className: "text-right",
     },
     {
       header: "Actions",

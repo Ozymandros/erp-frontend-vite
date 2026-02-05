@@ -116,6 +116,7 @@ export function Sidebar() {
         size="icon"
         className="fixed top-4 left-4 z-50 md:hidden"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
+        ariaLabel={isMobileOpen ? "Close mobile menu" : "Open mobile menu"}
       >
         {isMobileOpen ? (
           <X className="h-5 w-5" />
@@ -137,7 +138,7 @@ export function Sidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed md:static inset-y-0 left-0 z-40 w-64 bg-card border-r border-border transition-transform duration-300 ease-in-out",
+          "fixed md:static inset-y-0 left-0 z-40 w-64 bg-card border-r border-border transition-transform duration-300 ease-in-out overscroll-contain",
           isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >

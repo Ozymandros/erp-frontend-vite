@@ -77,7 +77,7 @@ export function DeletePermissionDialog({ permission, open, onOpenChange, onSucce
             Cancel
           </Button>
           <Button type="button" variant="destructive" onClick={handleDelete} disabled={isLoading}>
-            {isLoading ? "Deleting..." : "Delete Permission"}
+            {isLoading ? "Deleting…" : "Delete Permission"}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -238,7 +238,7 @@ export function EditSupplierDialog({
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save Changes"}
+              {isLoading ? "Saving…" : "Save Changes"}
             </Button>
           </DialogFooter>
         </form>

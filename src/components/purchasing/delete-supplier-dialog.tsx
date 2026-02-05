@@ -89,7 +89,7 @@ export function DeleteSupplierDialog({
             onClick={handleDelete}
             disabled={isLoading}
           >
-            {isLoading ? "Deleting..." : "Delete Supplier"}
+            {isLoading ? "Deleting…" : "Delete Supplier"}
           </Button>
         </DialogFooter>
       </DialogContent>

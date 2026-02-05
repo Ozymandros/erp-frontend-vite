@@ -129,7 +129,7 @@ export function EditRoleDialog({ role, open, onOpenChange, onSuccess }: EditRole
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save Changes"}
+              {isLoading ? "Saving…" : "Save Changes"}
             </Button>
           </DialogFooter>
         </form>

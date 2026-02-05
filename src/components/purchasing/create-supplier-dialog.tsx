@@ -232,7 +232,7 @@ export function CreateSupplierDialog({
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Creating..." : "Create Supplier"}
+              {isLoading ? "Creating…" : "Create Supplier"}
             </Button>
           </DialogFooter>
         </form>
