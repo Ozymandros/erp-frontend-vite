@@ -46,7 +46,7 @@ describe("ProtectedRoute", () => {
 
     render(<TestApp />);
 
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    expect(screen.getByText("Loading…")).toBeInTheDocument();
     expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
   });
 

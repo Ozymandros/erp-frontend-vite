@@ -92,7 +92,7 @@ export function EditUserDialog({
               <div className="space-y-2">
                 <Label htmlFor="edit-firstName">First Name</Label>
                 <Input
-                  id="firstName"
+                  id="edit-firstName"
                   autoComplete="given-name"
                   value={formData.firstName}
                   onChange={e => handleChange("firstName", e.target.value)}
@@ -102,7 +102,7 @@ export function EditUserDialog({
               <div className="space-y-2">
                 <Label htmlFor="edit-lastName">Last Name</Label>
                 <Input
-                  id="lastName"
+                  id="edit-lastName"
                   autoComplete="family-name"
                   value={formData.lastName}
                   onChange={e => handleChange("lastName", e.target.value)}
@@ -114,7 +114,7 @@ export function EditUserDialog({
             <div className="space-y-2">
               <Label htmlFor="edit-email">Email</Label>
               <Input
-                id="username"
+                id="edit-email"
                 autoComplete="username"
                 spellCheck={false}
                 value={formData.email}

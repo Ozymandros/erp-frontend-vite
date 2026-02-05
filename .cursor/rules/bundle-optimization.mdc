@@ -1,0 +1,96 @@
+---
+description: "Optimize bundle size by avoiding barrel imports, using dynamic imports, and deferring non-critical libraries"
+globs: ["**/*.ts", "**/*.tsx"]
+alwaysApply: false
+---
+
+# Bundle Size Optimization
+
+**Impact: CRITICAL** - Reducing initial bundle size improves Time to Interactive and Largest Contentful Paint.
+
+## When Importing from Libraries
+
+### Rule 1: Avoid Barrel File Imports
+
+**When you see:** Imports from barrel files (e.g., `lucide-react`, `@mui/material`)
+
+**Action:** Import directly from source files to avoid loading thousands of unused modules.
+
+**Incorrect:**
+
+```tsx
+import { Check, X, Menu } from "lucide-react";
+// Loads 1,583 modules, takes ~2.8s extra in dev
+```
+
+**Correct:**
+
+```tsx
+import Check from "lucide-react/dist/esm/icons/check";
+import X from "lucide-react/dist/esm/icons/x";
+import Menu from "lucide-react/dist/esm/icons/menu";
+// Loads only 3 modules (~2KB vs ~1MB)
+```
+
+**Libraries affected:** `lucide-react`, `@mui/material`, `@mui/icons-material`, `@tabler/icons-react`, `react-icons`, `@headlessui/react`, `@radix-ui/react-*`, `lodash`, `ramda`, `date-fns`, `rxjs`, `react-use`.
+
+### Rule 2: Use Dynamic Imports for Heavy Components
+
+**When you see:** Large components not needed on initial render (e.g., Monaco Editor, Chart libraries)
+
+**Action:** Use `React.lazy()` or dynamic imports to lazy-load.
+
+**Incorrect:**
+
+```tsx
+import { MonacoEditor } from "./monaco-editor";
+// Monaco bundles with main chunk ~300KB
+```
+
+**Correct:**
+
+```tsx
+import { lazy, Suspense } from "react";
+
+const MonacoEditor = lazy(() =>
+  import("./monaco-editor").then(m => ({ default: m.MonacoEditor }))
+);
+
+function CodePanel({ code }: { code: string }) {
+  return (
+    <Suspense fallback={<div>Loading editor...</div>}>
+      <MonacoEditor value={code} />
+    </Suspense>
+  );
+}
+```
+
+### Rule 3: Defer Non-Critical Third-Party Libraries
+
+**When you see:** Analytics, logging, or error tracking imported at top level
+
+**Action:** Load them after hydration using dynamic imports.
+
+**Incorrect:**
+
+```tsx
+import { Analytics } from "@vercel/analytics/react";
+```
+
+**Correct:**
+
+```tsx
+import { lazy } from "react";
+
+const Analytics = lazy(() =>
+  import("@vercel/analytics/react").then(m => ({ default: m.Analytics }))
+);
+
+// Use in component with Suspense
+```
+
+## Never Do These
+
+- ❌ Never import from barrel files when direct imports are available
+- ❌ Never bundle heavy components (Monaco, Chart.js) in initial chunk
+- ❌ Never load analytics/logging before hydration completes

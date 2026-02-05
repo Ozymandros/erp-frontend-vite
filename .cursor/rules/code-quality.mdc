@@ -1,0 +1,131 @@
+---
+description: "Code quality standards: TypeScript strict mode, ESLint zero warnings, testing requirements"
+globs: ["**/*.ts", "**/*.tsx"]
+alwaysApply: true
+---
+
+# Code Quality Standards
+
+**Impact: CRITICAL** - All code must meet these standards before committing.
+
+## When Writing Code
+
+### Rule 1: TypeScript Strict Mode
+
+**When you see:** `any` types or missing type annotations
+
+**Action:** Use proper TypeScript types. Never use `any` - use `unknown` if type is truly unknown.
+
+**Incorrect:**
+
+```typescript
+function processData(data: any) {
+  return data.value;
+}
+```
+
+**Correct:**
+
+```typescript
+interface Data {
+  value: string;
+}
+
+function processData(data: Data) {
+  return data.value;
+}
+
+// Or if truly unknown:
+function processData(data: unknown) {
+  if (typeof data === "object" && data !== null && "value" in data) {
+    return (data as { value: string }).value;
+  }
+  throw new Error("Invalid data");
+}
+```
+
+### Rule 2: ESLint Zero Warnings
+
+**When you see:** ESLint warnings or errors
+
+**Action:** Fix all warnings. The project enforces `--max-warnings 0`.
+
+**Common fixes:**
+
+- Add missing dependencies to `useEffect` dependency arrays
+- Use `exhaustive-deps` rule for React Hooks
+- Fix TypeScript ESLint errors
+- Remove unused imports/variables
+
+### Rule 3: Immutable State Updates
+
+**When you see:** Direct mutations of arrays or objects
+
+**Action:** Use immutable patterns.
+
+**Incorrect:**
+
+```typescript
+users.sort((a, b) => a.name.localeCompare(b.name)); // Mutates original
+```
+
+**Correct:**
+
+```typescript
+const sorted = users.toSorted((a, b) => a.name.localeCompare(b.name)); // New array
+```
+
+**Other immutable methods:**
+
+- `.toSorted()` instead of `.sort()`
+- `.toReversed()` instead of `.reverse()`
+- `.toSpliced()` instead of `.splice()`
+- `.with(index, value)` for element replacement
+- Spread operator: `[...arr]`, `{...obj}`
+
+### Rule 4: Testing Requirements
+
+**When you see:** New features or complex logic
+
+**Action:** Add appropriate tests.
+
+- **New features:** Require unit tests (Vitest + Testing Library)
+- **Complex user flows:** Require E2E tests (Playwright)
+- **API services:** Mock API calls in tests
+
+**Example:**
+
+```typescript
+// Unit test
+import { render, screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
+import { MyComponent } from "./MyComponent";
+
+describe("MyComponent", () => {
+  it("renders correctly", () => {
+    render(<MyComponent />);
+    expect(screen.getByText("Hello")).toBeInTheDocument();
+  });
+});
+```
+
+## Validation Checklist
+
+Before committing, verify:
+
+1. ✅ `pnpm type-check` passes (no TypeScript errors)
+2. ✅ `pnpm lint` passes with zero warnings
+3. ✅ `pnpm build` succeeds
+4. ✅ `pnpm test` passes (if applicable)
+5. ✅ No `any` types (use proper types or `unknown`)
+6. ✅ No direct mutations (use immutable patterns)
+7. ✅ Tests added for new features
+
+## Never Do These
+
+- ❌ **Never use `any` type** - Use proper types or `unknown`
+- ❌ **Never skip type checking** - Always run `pnpm type-check`
+- ❌ **Never skip linting** - ESLint must pass with zero warnings
+- ❌ **Never mutate props or state** - Use immutable patterns
+- ❌ **Never commit without tests** - New features require tests
+- ❌ **Never ignore ESLint warnings** - Fix all warnings before committing
