@@ -138,7 +138,5 @@ export default defineConfig({
     stdout: "pipe",
     stderr: "pipe",
     timeout: 300 * 1000,
-    // Give server more time to start
-    startupTimeout: 60 * 1000,
   },
 });

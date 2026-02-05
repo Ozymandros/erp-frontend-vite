@@ -49,7 +49,17 @@ const createMockPermission = (overrides: Partial<unknown> = {}) => ({
   ...overrides,
 });
 
-const createPaginatedResponse = <T>(items: T[], page = 1, pageSize = 10): any => ({
+interface PaginatedResponse<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+}
+
+const createPaginatedResponse = <T>(items: T[], page = 1, pageSize = 10): PaginatedResponse<T> => ({
   items,
   page,
   pageSize,
@@ -225,7 +235,7 @@ export async function setupApiMocks(page: Page) {
           
           // Update user: PUT /auth/api/users/{id}
           if (method === 'PUT' && url.match(/\/users\/[^/]+$/)) {
-            const body = request.postDataJSON();
+            // const _body = request.postDataJSON();
             await route.fulfill({
               status: 200,
               contentType: 'application/json',
@@ -1114,9 +1124,9 @@ export async function gotoAuthenticated(
   if (options?.waitForTable) {
     const tableTimeout = options?.tableTimeout ?? 20000;
     const table = page.locator('table');
-    const emptyState = page.locator('text=/No .* found\./i');
+    const emptyState = page.locator('text=/No .* found./i');
     const errorState = page.locator('.text-destructive');
-    await Promise.any([
+    await Promise.race([
       table.waitFor({ state: 'visible', timeout: tableTimeout }),
       emptyState.waitFor({ state: 'visible', timeout: tableTimeout }),
       errorState.waitFor({ state: 'visible', timeout: tableTimeout }),

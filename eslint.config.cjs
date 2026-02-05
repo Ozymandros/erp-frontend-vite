@@ -8,7 +8,7 @@ const globals = require("globals");
 
 module.exports = [
   {
-    ignores: ["dist", "node_modules", ".eslintrc.cjs"],
+    ignores: ["dist", "node_modules", ".eslintrc.cjs", "coverage"],
   },
   {
     files: ["**/*.{ts,tsx}"],
