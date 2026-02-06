@@ -120,7 +120,12 @@ describe("InventoryTransactionsListPage", () => {
       </MemoryRouter>
     );
 
-    const productSelect = await screen.findByLabelText("Filter by product");
+    // Wait for product options to load
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: /Laptop/ })).toBeInTheDocument();
+    });
+
+    const productSelect = screen.getByLabelText("Filter by product");
     await userEvent.selectOptions(productSelect, "prod-1");
 
     await waitFor(() => {
@@ -138,7 +143,12 @@ describe("InventoryTransactionsListPage", () => {
       </MemoryRouter>
     );
 
-    const warehouseSelect = await screen.findByLabelText("Filter by warehouse");
+    // Wait for warehouse options to load
+    await waitFor(() => {
+      expect(screen.getByRole('option', { name: /Main Warehouse/ })).toBeInTheDocument();
+    });
+
+    const warehouseSelect = screen.getByLabelText("Filter by warehouse");
     await userEvent.selectOptions(warehouseSelect, "wh-1");
 
     await waitFor(() => {

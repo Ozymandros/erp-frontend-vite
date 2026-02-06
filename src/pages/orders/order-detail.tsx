@@ -116,11 +116,12 @@ export function OrderDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Link to="/orders">
-          <Button variant="outline" size="icon">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
+        <Button variant="ghost" asChild>
+          <Link to="/orders">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Orders
+          </Link>
+        </Button>
         <h1 className="text-2xl font-bold tracking-tight">
           Order {order.orderNumber}
         </h1>

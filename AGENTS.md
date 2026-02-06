@@ -203,6 +203,18 @@ Before submitting code:
 - **GitHub Copilot:** `.github/copilot-instructions.md` - Repository-wide instructions
 - **React Best Practices:** `.agents/skills/vercel-react-best-practices/AGENTS.md` - Performance guide
 
+## Skills (Cursor Agent)
+
+When Cursor Agent Skills are enabled, these skills may apply:
+
+| Skill                       | Use When                                                       |
+| --------------------------- | -------------------------------------------------------------- |
+| vercel-react-best-practices | React components, data fetching, bundle/re-render optimization |
+| vite                        | vite.config.ts, Vite plugins, build configuration             |
+| web-design-guidelines       | UI components, design system                                   |
+
+Note: vercel-react-best-practices includes Next.js patterns (RSC, Server Actions). This project is Vite - apply only client-side patterns (bundle, re-render, JS perf). Ignore server-side rules.
+
 ---
 
 **Trust these instructions.** Only search the codebase if instructions are incomplete for your specific task.

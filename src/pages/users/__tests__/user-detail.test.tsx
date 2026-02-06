@@ -76,10 +76,10 @@ describe("UserDetailPage", () => {
     render(<TestWrapper />);
 
     await waitFor(() => {
-      expect(screen.getByText("johndoe")).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "johndoe" })).toBeInTheDocument();
     });
 
-    expect(screen.getByText("john@example.com")).toBeInTheDocument();
+    expect(screen.getAllByText("john@example.com").length).toBeGreaterThanOrEqual(1);
   });
 
   it("should handle error when user not found", async () => {

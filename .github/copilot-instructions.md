@@ -191,6 +191,18 @@ Before submitting code, verify:
 6. ✅ No console errors in browser
 7. ✅ Environment variables documented in `.env.example`
 
+## Agent Skills (Cursor)
+
+When Cursor Agent Skills are enabled, these skills may apply:
+
+| Skill                       | Use When                                                       |
+| --------------------------- | -------------------------------------------------------------- |
+| vercel-react-best-practices | React components, data fetching, bundle/re-render optimization |
+| vite                        | vite.config.ts, Vite plugins, build configuration              |
+| web-design-guidelines       | UI components, design system                                   |
+
+Note: vercel-react-best-practices includes Next.js patterns (RSC, Server Actions). This project is Vite - apply only client-side patterns (bundle, re-render, JS perf). Ignore server-side rules.
+
 ## Trust These Instructions
 
 These instructions are validated and tested. Only search the codebase if:

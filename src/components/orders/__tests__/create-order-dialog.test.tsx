@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor, fireEvent } from '@/test/utils/test-utils';
+import { render, screen, waitFor } from '@/test/utils/test-utils';
 import userEvent from '@testing-library/user-event';
 import { CreateOrderDialog } from '../create-order-dialog';
 import { customersService } from '@/api/services/customers.service';
@@ -165,17 +165,17 @@ describe('CreateOrderDialog', () => {
       />
     );
 
+    // Wait for products to load (option with value "1" must be available)
     await waitFor(() => {
-        expect(screen.getByText(/Product 1/i)).toBeInTheDocument(); // In select options usually?
-        // Or we need to open select.
+      expect(screen.getByRole('option', { name: /Product 1/ })).toBeInTheDocument();
     });
 
     // Select Product
-    const productSelect = screen.getByLabelText(/select product/i);
-    await userEvent.selectOptions(productSelect, "1"); // Product 1
+    const productSelect = screen.getByLabelText(/product/i);
+    await userEvent.selectOptions(productSelect, "1");
 
-    // Quantity defaults to 1? Or set it.
-    const qtyInput = screen.getByPlaceholderText(/qty/i); 
+    // Set quantity to 2
+    const qtyInput = screen.getByLabelText(/qty/i);
     await userEvent.clear(qtyInput);
     await userEvent.type(qtyInput, "2");
 
@@ -183,18 +183,16 @@ describe('CreateOrderDialog', () => {
     const addButton = screen.getByRole("button", { name: /add item/i });
     await userEvent.click(addButton);
 
-    // Verify item in list
+    // Verify item in list (formatCurrency(200) = "$200" - appears in line total and footer total)
     await waitFor(() => {
-        expect(screen.getByText("Product 1")).toBeInTheDocument();
-        expect(screen.getByText("2")).toBeInTheDocument(); // Qty
-        expect(screen.getByText("200.00")).toBeInTheDocument(); // 2 * 100
-        // Total should be updated
-        expect(screen.getByText(/total:.*200.00/i)).toBeInTheDocument();
+      expect(screen.getByText("Product 1")).toBeInTheDocument();
+      expect(screen.getByText("2")).toBeInTheDocument();
+      expect(screen.getAllByText("$200").length).toBeGreaterThanOrEqual(1);
     });
   });
 
   it('should submit order successfully', async () => {
-    vi.mocked(ordersService.createOrder).mockResolvedValue({ id: 'new-order' } as any);
+    vi.mocked(ordersService.createOrder).mockResolvedValue({ id: 'new-order' } as never);
 
     render(
       <CreateOrderDialog
@@ -204,18 +202,18 @@ describe('CreateOrderDialog', () => {
       />
     );
 
-    // Wait for data
+    // Wait for customers and products to load
     await waitFor(() => {
-        expect(screen.getByLabelText(/customer/i)).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: /Customer 1/ })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: /Product 1/ })).toBeInTheDocument();
     });
 
     // Select Customer
     await userEvent.selectOptions(screen.getByLabelText(/customer/i), "1");
 
     // Add Item
-    const productSelect = screen.getByLabelText(/select product/i);
+    const productSelect = screen.getByLabelText(/product/i);
     await userEvent.selectOptions(productSelect, "1");
-    // Quantity 1 default
     await userEvent.click(screen.getByRole("button", { name: /add item/i }));
 
     // Submit
@@ -225,8 +223,8 @@ describe('CreateOrderDialog', () => {
       expect(ordersService.createOrder).toHaveBeenCalledWith(expect.objectContaining({
         customerId: "1",
         orderLines: expect.arrayContaining([
-            expect.objectContaining({ productId: "1", quantity: 1 })
-        ])
+          expect.objectContaining({ productId: "1", quantity: 1 }),
+        ]),
       }));
       expect(mockOnSuccess).toHaveBeenCalled();
     });

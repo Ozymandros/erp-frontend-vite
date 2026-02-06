@@ -89,7 +89,7 @@ describe("OrderDetailPage", () => {
     render(<TestWrapper />);
 
     await waitFor(() => {
-      expect(screen.getByText("ORD-2024-001")).toBeInTheDocument();
+      expect(screen.getByText(/ORD-2024-001/)).toBeInTheDocument();
     });
 
     expect(screen.getByText("Processing")).toBeInTheDocument();
@@ -101,10 +101,10 @@ describe("OrderDetailPage", () => {
     render(<TestWrapper />);
 
     await waitFor(() => {
-      expect(screen.getByText("ORD-2024-001")).toBeInTheDocument();
+      expect(screen.getByText(/ORD-2024-001/)).toBeInTheDocument();
     });
 
-    // Should show 2 order lines
+    // Should show 2 order lines (product-1, product-2)
     expect(screen.getAllByText(/product-/i)).toHaveLength(2);
   });
 
@@ -114,7 +114,7 @@ describe("OrderDetailPage", () => {
     render(<TestWrapper />);
 
     await waitFor(() => {
-      expect(screen.getByText(/1,500\.00/i)).toBeInTheDocument();
+      expect(screen.getByText(/\$1500/)).toBeInTheDocument();
     });
   });
 

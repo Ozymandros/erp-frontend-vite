@@ -66,41 +66,41 @@ async function handleRequest(userId: string, skipProcessing: boolean) {
 }
 ```
 
-### Rule 3: Start Promises Early in API Routes
+### Rule 3: Parallelize in API Service Functions
 
-**When you see:** API routes or Server Actions with sequential awaits
+**When you see:** Sequential `await` in API service functions (e.g., `src/api/services/`) or async handlers that fetch multiple independent resources
 
-**Action:** Start independent operations immediately, even if you don't await them yet.
+**Action:** Use `Promise.all()` to parallelize independent fetches. Start dependent fetches only after their prerequisites resolve.
 
 **Incorrect:**
 
 ```typescript
-export async function GET(request: Request) {
-  const session = await auth();
-  const config = await fetchConfig(); // Waits for auth unnecessarily
-  const data = await fetchData(session.user.id);
-  return Response.json({ data, config });
+// In src/api/services/ - sequential awaits
+export async function fetchDashboardData(userId: string) {
+  const user = await userService.getUser(userId);
+  const orders = await orderService.getOrders(userId);
+  const inventory = await inventoryService.getSummary();
+  return { user, orders, inventory };
 }
 ```
 
 **Correct:**
 
 ```typescript
-export async function GET(request: Request) {
-  const sessionPromise = auth();
-  const configPromise = fetchConfig(); // Starts immediately
-
-  const session = await sessionPromise;
-  const [config, data] = await Promise.all([
-    configPromise,
-    fetchData(session.user.id),
+export async function fetchDashboardData(userId: string) {
+  const [user, orders, inventory] = await Promise.all([
+    userService.getUser(userId),
+    orderService.getOrders(userId),
+    inventoryService.getSummary(),
   ]);
-  return Response.json({ data, config });
+  return { user, orders, inventory };
 }
 ```
+
+**When one fetch depends on another:** Start independent fetches first, await the prerequisite, then run dependent fetches in parallel with remaining independent ones.
 
 ## Never Do These
 
 - ❌ Never await operations sequentially when they're independent
 - ❌ Never await before checking if the result is needed
-- ❌ Never block API routes with sequential awaits when operations can run in parallel
+- ❌ Never chain sequential awaits in API service functions when fetches can run in parallel
