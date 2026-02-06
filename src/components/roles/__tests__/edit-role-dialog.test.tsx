@@ -1,14 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { render, screen, fireEvent, waitFor } from '@/test/utils/test-utils';
 import { EditRoleDialog } from '../edit-role-dialog';
+import { rolesService } from '@/api/services/roles.service';
 
-vi.mock('@/api/services/permissions.service', () => ({
-  permissionsService: {
-    getAllPermissions: vi.fn().mockResolvedValue([
-      { id: '1', name: 'permission1', description: 'Permission 1' },
-      { id: '2', name: 'permission2', description: 'Permission 2' },
-    ]),
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+vi.mock('@/api/services/roles.service', () => ({
+  rolesService: {
+    updateRole: vi.fn(),
   },
 }));
 
@@ -28,14 +34,12 @@ describe('EditRoleDialog', () => {
 
   const renderDialog = (open: boolean) =>
     render(
-      <BrowserRouter>
-        <EditRoleDialog
-          open={open}
-          onOpenChange={mockOnOpenChange}
-          onSuccess={mockOnSuccess}
-          role={mockRole}
-        />
-      </BrowserRouter>
+      <EditRoleDialog
+        open={open}
+        onOpenChange={mockOnOpenChange}
+        onSuccess={mockOnSuccess}
+        role={mockRole as any}
+      />
     );
 
   beforeEach(() => {
@@ -59,5 +63,40 @@ describe('EditRoleDialog', () => {
     renderDialog(false);
 
     expect(screen.queryByText(/edit.*role/i)).not.toBeInTheDocument();
+  });
+
+  it('handles successful update', async () => {
+    vi.mocked(rolesService.updateRole).mockResolvedValue({} as any);
+    renderDialog(true);
+
+    fireEvent.change(screen.getByLabelText(/role name/i), { target: { value: 'Updated Name' } });
+    fireEvent.click(screen.getByRole('button', { name: /save changes/i }));
+
+    await waitFor(() => {
+      expect(rolesService.updateRole).toHaveBeenCalledWith('1', expect.objectContaining({
+        name: 'Updated Name',
+      }));
+      expect(mockOnSuccess).toHaveBeenCalled();
+    });
+  });
+
+  it('handles update failure', async () => {
+    vi.mocked(rolesService.updateRole).mockRejectedValue(new Error('Update failed'));
+    renderDialog(true);
+
+    fireEvent.click(screen.getByRole('button', { name: /save changes/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Update failed')).toBeInTheDocument();
+    });
+  });
+
+  it('navigates to manage permissions', () => {
+    renderDialog(true);
+
+    fireEvent.click(screen.getByRole('button', { name: /manage permissions/i }));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/roles/1');
+    expect(mockOnOpenChange).toHaveBeenCalledWith(false);
   });
 });

@@ -270,6 +270,7 @@ export function CreateSalesOrderDialog({
                             className="w-full" 
                             onClick={addLine}
                             disabled={!newLine.productId}
+                            aria-label="Add item"
                         >
                             <Plus className="h-4 w-4" />
                         </Button>
