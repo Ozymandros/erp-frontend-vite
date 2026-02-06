@@ -138,7 +138,8 @@ describe("RoleSelector", () => {
     fireEvent.click(screen.getAllByTitle("Assign role")[0])
 
     await waitFor(() => {
-      expect(screen.getByText(/failed to assign role/i)).toBeInTheDocument()
+      // getErrorMessage returns the error message if it exists
+      expect(screen.getByText(/api error/i)).toBeInTheDocument()
     })
   })
 
@@ -208,7 +209,8 @@ describe("RoleSelector", () => {
     render(<RoleSelector userId={mockUserId} />)
 
     await waitFor(() => {
-      expect(screen.getByText(/failed to load roles/i)).toBeInTheDocument()
+      // getErrorMessage returns the error message if it exists
+      expect(screen.getByText(/global fetch error/i)).toBeInTheDocument()
     })
   })
 

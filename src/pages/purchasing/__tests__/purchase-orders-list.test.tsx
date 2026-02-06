@@ -17,7 +17,7 @@ vi.mock('@/api/services/purchase-orders.service', () => ({
   purchaseOrdersService: {
     searchPurchaseOrders: vi.fn().mockResolvedValue({
       items: [
-        { id: '1', supplierId: '1', orderDate: '2024-01-01', totalAmount: 1000, status: 'PENDING' },
+        { id: '1', supplierId: '1', orderDate: '2024-01-01', totalAmount: 1000, status: 'PENDING', orderNumber: 'PO-001' },
       ],
       total: 1,
       page: 1,
@@ -25,6 +25,14 @@ vi.mock('@/api/services/purchase-orders.service', () => ({
     }),
     exportToXlsx: vi.fn().mockResolvedValue(new Blob()),
     exportToPdf: vi.fn().mockResolvedValue(new Blob()),
+  },
+}));
+
+vi.mock('@/api/services/suppliers.service', () => ({
+  suppliersService: {
+    getSuppliers: vi.fn().mockResolvedValue([
+      { id: '1', name: 'Supplier 1' },
+    ]),
   },
 }));
 

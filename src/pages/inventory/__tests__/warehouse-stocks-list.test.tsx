@@ -6,7 +6,7 @@ import { WarehouseStocksListPage } from "../warehouse-stocks-list";
 import { warehouseStocksService } from "@/api/services/warehouse-stocks.service";
 import { productsService } from "@/api/services/products.service";
 import { warehousesService } from "@/api/services/warehouses.service";
-import type { WarehouseStockDto } from "@/types/api.types";
+import type { WarehouseStockDto, ProductDto, WarehouseDto } from "@/types/api.types";
 
 // Mock services
 vi.mock("@/api/services/warehouse-stocks.service", () => ({
@@ -38,16 +38,17 @@ vi.mock("@/hooks/use-permissions", () => ({
   })),
 }));
 
-const mockProducts: any[] = [{ id: "prod-1", name: "Laptop" }];
-const mockWarehouses: any[] = [{ id: "wh-1", name: "Main Warehouse" }];
+const mockProducts: ProductDto[] = [{ id: "prod-1", sku: "SKU1", name: "Laptop", unitPrice: 1000, quantityInStock: 5, reorderLevel: 10, createdAt: new Date().toISOString(), createdBy: "admin" }];
+const mockWarehouses: WarehouseDto[] = [{ id: "wh-1", name: "Main Warehouse", location: "Loc 1", createdAt: new Date().toISOString(), createdBy: "admin" }];
 
 const mockStocks: WarehouseStockDto[] = [
   {
     productId: "prod-1",
     warehouseId: "wh-1",
     quantity: 5,
+    reservedQuantity: 0,
     reorderLevel: 10,
-    unitCost: 100,
+    lastUpdated: new Date().toISOString(),
   },
 ];
 
@@ -76,7 +77,8 @@ describe("WarehouseStocksListPage", () => {
         // Use getAllByText because Laptop/Main Warehouse appear in dropdowns too
         expect(screen.getAllByText("Laptop").length).toBeGreaterThan(0);
         expect(screen.getAllByText("Main Warehouse").length).toBeGreaterThan(0);
-        expect(screen.getByText("5")).toBeInTheDocument(); // Quantity
+        // Quantity appears twice: once in "Total Qty" and once in "Available"
+        expect(screen.getAllByText("5").length).toBeGreaterThanOrEqual(1);
     });
   });
 

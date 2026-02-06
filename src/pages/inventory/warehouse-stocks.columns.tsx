@@ -12,8 +12,8 @@ export function getWarehouseStockColumns({
   getProductName,
   getWarehouseName,
 }: WarehouseStockColumnsProps): Column<WarehouseStockDto>[] {
-  const availableQuantity = (stock: WarehouseStockDto) => stock.quantity - stock.reservedQuantity;
-  const isLowStock = (stock: WarehouseStockDto) => availableQuantity(stock) <= stock.reorderLevel;
+  const availableQuantity = (stock: WarehouseStockDto) => (stock.quantity || 0) - (stock.reservedQuantity || 0);
+  const isLowStock = (stock: WarehouseStockDto) => availableQuantity(stock) <= (stock.reorderLevel || 0);
 
   return [
     {

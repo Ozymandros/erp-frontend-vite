@@ -28,6 +28,14 @@ vi.mock('@/api/services/permissions.service', () => ({
   },
 }));
 
+vi.mock('@/api/services/roles.service', () => ({
+  rolesService: {
+    getRoles: vi.fn().mockResolvedValue([
+      { id: '1', name: 'Admin', description: 'Admin role' },
+    ]),
+  },
+}));
+
 const MockedPermissionsListPage = () => (
   <BrowserRouter>
     <PermissionsListPage />
