@@ -1125,7 +1125,7 @@ export async function gotoAuthenticated(
     const tableTimeout = options?.tableTimeout ?? 20000;
     const table = page.locator('table');
     const emptyState = page.locator('text=/No .* found./i');
-    const errorState = page.locator('.text-destructive');
+    const errorState = page.locator('.text-destructive').first();
     await Promise.race([
       table.waitFor({ state: 'visible', timeout: tableTimeout }),
       emptyState.waitFor({ state: 'visible', timeout: tableTimeout }),

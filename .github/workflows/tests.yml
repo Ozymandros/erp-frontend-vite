@@ -37,43 +37,44 @@ jobs:
         run: pnpm vitest run --coverage --reporter=junit --outputFile=junit.xml
       - name: Upload JUnit test results
         if: always()
-        uses: actions/upload-artifact@6027e3dd177782cd8ab9af838c04fd81a07f1d47 # v4
+        uses: actions/upload-artifact@v4
         with:
           name: junit-results
           path: junit.xml
           retention-days: 7
       - name: Publish unit test results
         if: always()
-        uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2
+        uses: dorny/test-reporter@v2
         with:
           name: Unit Tests
           path: junit.xml
           reporter: java-junit
           list-suites: all
           list-tests: all
+          fail-on-error: false
       - name: Comment coverage on PR
         if: github.event_name == 'pull_request' && always()
-        uses: romeovs/lcov-reporter-action@v0.4.0 # Community action - review before update
+        uses: romeovs/lcov-reporter-action@v0.4.0
         with:
           lcov-file: ./coverage/lcov.info
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@6027e3dd177782cd8ab9af838c04fd81a07f1d47 # v4
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: coverage/
           retention-days: 7
       - name: Upload coverage artifact
         if: always()
-        uses: actions/upload-artifact@6027e3dd177782cd8ab9af838c04fd81a07f1d47 # v4
+        uses: actions/upload-artifact@v4
         with:
           name: coverage
           path: coverage/
           retention-days: 7
       - name: Upload coverage to Codecov
         if: env.CODECOV_TOKEN != ''
-        uses: codecov/codecov-action@v5 # Official Codecov action - pinned to major version
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info

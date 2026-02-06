@@ -43,13 +43,16 @@ const MockedPurchaseOrdersListPage = () => (
 );
 
 describe('PurchaseOrdersListPage', () => {
-  it('renders purchase orders list', () => {
+  it('renders purchase orders list', async () => {
     render(<MockedPurchaseOrdersListPage />);
-    expect(screen.getByRole('heading', { name: /purchase orders/i, level: 1 })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: /purchase orders/i, level: 1 })
+    ).toBeInTheDocument();
   });
 
-  it('renders without crashing', () => {
+  it('renders without crashing', async () => {
     const { container } = render(<MockedPurchaseOrdersListPage />);
+    await screen.findByRole('heading', { name: /purchase orders/i, level: 1 });
     expect(container).toBeInTheDocument();
   });
 });

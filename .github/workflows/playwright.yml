@@ -39,7 +39,7 @@ jobs:
         run: xvfb-run --auto-servernum pnpm exec playwright test
       - name: Publish Playwright test results
         if: always()
-        uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2
+        uses: dorny/test-reporter@v2
         with:
           name: Playwright E2E Tests
           path: .playwright-output/junit.xml

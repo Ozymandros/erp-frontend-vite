@@ -123,7 +123,7 @@ describe("ToastContext", () => {
   });
 
   it("should intercept API client errors", async () => {
-    const mockClient: Pick<ApiClient, "onError"> = { onError: null };
+    const mockClient: Pick<ApiClient, "onError"> = { onError: undefined };
     const { getApiClient } = await import("@/api/clients");
     vi.mocked(getApiClient).mockReturnValue(mockClient as ApiClient);
 
@@ -136,9 +136,12 @@ describe("ToastContext", () => {
     expect(mockClient.onError).toBeTypeOf("function");
 
     // Trigger mocked error
-    await act(async () => {
-      mockClient.onError({ message: "API Failed", status: 500 });
-    });
+    const onError = mockClient.onError;
+    if (onError) {
+      await act(async () => {
+        onError({ message: "API Failed", status: 500 });
+      });
+    }
 
     await waitFor(() => {
       expect(screen.getByText("Error 500")).toBeInTheDocument();
@@ -147,7 +150,7 @@ describe("ToastContext", () => {
   });
 
   it("should handle API errors without status", async () => {
-    const mockClient: Pick<ApiClient, "onError"> = { onError: null };
+    const mockClient: Pick<ApiClient, "onError"> = { onError: undefined };
     const { getApiClient } = await import("@/api/clients");
     vi.mocked(getApiClient).mockReturnValue(mockClient as ApiClient);
 
@@ -157,9 +160,12 @@ describe("ToastContext", () => {
       </ToastContextProvider>
     );
 
-    await act(async () => {
-      mockClient.onError({ message: "Network Error" });
-    });
+    const onError = mockClient.onError;
+    if (onError) {
+      await act(async () => {
+        onError({ message: "Network Error" });
+      });
+    }
 
     await waitFor(() => {
       expect(screen.getByText("Error")).toBeInTheDocument();

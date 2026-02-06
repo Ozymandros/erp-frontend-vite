@@ -33,7 +33,7 @@ jobs:
       - name: Build production bundle
         run: pnpm build
       - name: Upload build artifact
-        uses: actions/upload-artifact@6027e3dd177782cd8ab9af838c04fd81a07f1d47 # v4
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/

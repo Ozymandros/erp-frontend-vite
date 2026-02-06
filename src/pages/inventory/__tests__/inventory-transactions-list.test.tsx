@@ -6,7 +6,7 @@ import { InventoryTransactionsListPage } from "../inventory-transactions-list";
 import { inventoryTransactionsService } from "@/api/services/inventory-transactions.service";
 import { productsService } from "@/api/services/products.service";
 import { warehousesService } from "@/api/services/warehouses.service";
-import type { InventoryTransactionDto, PaginatedResponse, ProductDto, WarehouseDto } from "@/types/api.types";
+import type { InventoryTransactionDto, PaginatedResponse } from "@/types/api.types";
 import { TransactionType } from "@/types/api.types";
 
 // Mock services

@@ -41,14 +41,14 @@ jobs:
       - name: Remove cached Sonar Scanner (fixes "Automatic Analysis is enabled" false positive)
         run: rm -rf /opt/hostedtoolcache/sonar-scanner-cli 2>/dev/null || true
       - name: SonarQube Community Scan
-        uses: sonarsource/sonarqube-scan-action@v4 # pinned to stable major version
+        uses: sonarsource/sonarqube-scan-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         continue-on-error: true
       - name: SonarQube Quality Gate check
         id: sonarqube-quality-gate-check
-        uses: sonarsource/sonarqube-quality-gate-action@v1 # pinned to stable major version
+        uses: sonarsource/sonarqube-quality-gate-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
