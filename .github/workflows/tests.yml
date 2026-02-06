@@ -1,0 +1,80 @@
+name: Unit Tests and Coverage
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: tests-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  tests:
+    name: Unit Tests & Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: true
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
+        with:
+          version: 10.28.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Run unit tests with coverage
+        run: pnpm vitest run --coverage --reporter=junit --outputFile=junit.xml
+      - name: Upload JUnit test results
+        if: always()
+        uses: actions/upload-artifact@6027e3dd177782cd8ab9af838c04fd81a07f1d47 # v4
+        with:
+          name: junit-results
+          path: junit.xml
+          retention-days: 7
+      - name: Publish unit test results
+        if: always()
+        uses: dorny/test-reporter@6e6a65b7a0bd2c9197df7d0ae36ac5cee784230c # v2
+        with:
+          name: Unit Tests
+          path: junit.xml
+          reporter: java-junit
+          list-suites: all
+          list-tests: all
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: romeovs/lcov-reporter-action@v0.4.0 # Community action - review before update
+        with:
+          lcov-file: ./coverage/lcov.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@6027e3dd177782cd8ab9af838c04fd81a07f1d47 # v4
+        with:
+          name: test-results
+          path: coverage/
+          retention-days: 7
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@6027e3dd177782cd8ab9af838c04fd81a07f1d47 # v4
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 7
+      - name: Upload coverage to Codecov
+        if: env.CODECOV_TOKEN != ''
+        uses: codecov/codecov-action@v5 # Official Codecov action - pinned to major version
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          fail_ci_if_error: true
