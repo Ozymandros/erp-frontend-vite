@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
 FROM mcr.microsoft.com/devcontainers/javascript-node:1-20-bullseye
 
-# Pin pnpm version to match lockfile (pnpm 9)
-ARG PNPM_VERSION=9
+# Pin pnpm version to match CI and lockfile (pnpm 10.28.1)
+ARG PNPM_VERSION=10.28.1
 RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
 
 # Install Playwright system dependencies (for E2E tests)
