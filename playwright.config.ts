@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import * as os from "os";
 
 /**
  * Playwright configuration for E2E testing with API mocking
@@ -8,10 +9,57 @@ import { defineConfig, devices } from "@playwright/test";
  * - Mocks all backend API calls for isolated frontend testing
  * - Tests meaningful user interactions and workflows
  * - Ensures compliance with documented functionality
+ * - Works on both Linux and Windows platforms
  *
  * Before first run: ensure Rollup native binary is installed so the dev server starts.
  * Run: pnpm install (or pnpm install --no-frozen-lockfile in CI if lockfile was updated).
  */
+
+const isWindows = os.platform() === "win32";
+
+// Base projects that work on all platforms
+const baseProjects = [
+  {
+    name: "chromium",
+    use: {
+      ...devices["Desktop Chrome"],
+      launchOptions: {
+        args: ["--disable-dev-shm-usage"],
+      },
+    },
+  },
+  {
+    name: "firefox",
+    use: {
+      ...devices["Desktop Firefox"],
+      launchOptions: {
+        firefoxUserPrefs: {
+          "dom.storage.enabled": true,
+        },
+      },
+    },
+  },
+  /* Test against mobile viewports (Chromium-based) */
+  {
+    name: "Mobile Chrome",
+    use: { ...devices["Pixel 5"] },
+  },
+];
+
+// WebKit-based projects only work on macOS and Linux (not Windows)
+const webkitProjects = isWindows
+  ? []
+  : [
+      {
+        name: "webkit",
+        use: { ...devices["Desktop Safari"] },
+      },
+      {
+        name: "Mobile Safari",
+        use: { ...devices["iPhone 12"] },
+      },
+    ];
+
 export default defineConfig({
   testDir: "./src/test/e2e",
 
@@ -84,51 +132,17 @@ export default defineConfig({
     /* Emulate locale */
     locale: "en-US",
 
+    /* Headless mode - explicit for cross-platform compatibility */
+    headless: true,
+
     /* Longer timeout for context creation */
     contextOptions: {
       strictSelectors: false,
     },
   },
 
-  /* Configure projects for major browsers */
-  projects: [
-    {
-      name: "chromium",
-      use: {
-        ...devices["Desktop Chrome"],
-        launchOptions: {
-          args: ["--disable-dev-shm-usage"],
-        },
-      },
-    },
-
-    {
-      name: "firefox",
-      use: {
-        ...devices["Desktop Firefox"],
-        launchOptions: {
-          firefoxUserPrefs: {
-            "dom.storage.enabled": true,
-          },
-        },
-      },
-    },
-
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
-    },
-
-    /* Test against mobile viewports. */
-    {
-      name: "Mobile Chrome",
-      use: { ...devices["Pixel 5"] },
-    },
-    {
-      name: "Mobile Safari",
-      use: { ...devices["iPhone 12"] },
-    },
-  ],
+  /* Configure projects for major browsers (platform-aware) */
+  projects: [...baseProjects, ...webkitProjects],
 
   /* Run your local dev server before starting the tests */
   webServer: {

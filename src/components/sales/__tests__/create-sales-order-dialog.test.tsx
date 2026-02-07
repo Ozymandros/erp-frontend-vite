@@ -5,6 +5,7 @@ import { customersService } from '@/api/services/customers.service';
 import { productsService } from '@/api/services/products.service';
 import { salesOrdersService } from '@/api/services/sales-orders.service';
 import userEvent from '@testing-library/user-event';
+import type { SalesOrderDto } from '@/types/api.types';
 
 vi.mock('@/api/services/customers.service', () => ({
   customersService: {
@@ -160,7 +161,7 @@ describe('CreateSalesOrderDialog', () => {
   });
 
   it('handles successful submission', async () => {
-    vi.spyOn(salesOrdersService, 'createSalesOrder').mockResolvedValue({ id: 'so-1' } as any);
+    vi.spyOn(salesOrdersService, 'createSalesOrder').mockResolvedValue({ id: 'so-1' } as SalesOrderDto);
     render(
       <CreateSalesOrderDialog
         open={true}

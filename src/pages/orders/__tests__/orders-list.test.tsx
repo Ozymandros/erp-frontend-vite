@@ -34,8 +34,13 @@ vi.mock("@/hooks/use-permissions", () => ({
 }));
 
 // Mock dialogs
+interface MockDialogProps {
+  open: boolean;
+  onSuccess?: () => void;
+}
+
 vi.mock("@/components/orders/create-order-dialog", () => ({
-  CreateOrderDialog: ({ open, onSuccess }: any) => 
+  CreateOrderDialog: ({ open, onSuccess }: MockDialogProps) => 
     open ? <div role="dialog">Create Order Dialog <button onClick={() => onSuccess?.()}>Create</button></div> : null,
 }));
 

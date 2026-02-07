@@ -26,18 +26,23 @@ vi.mock("@/hooks/use-permissions", () => ({
 }));
 
 // Mock dialogs to avoid complex rendering
+interface MockDialogProps {
+  open: boolean;
+  onSuccess?: () => void;
+}
+
 vi.mock("@/components/users/create-user-dialog", () => ({
-  CreateUserDialog: ({ open, onSuccess }: any) => 
+  CreateUserDialog: ({ open, onSuccess }: MockDialogProps) => 
     open ? <div role="dialog">Create User Dialog <button onClick={() => onSuccess?.()}>Create</button></div> : null,
 }));
 
 vi.mock("@/components/users/edit-user-dialog", () => ({
-  EditUserDialog: ({ open, onSuccess }: any) => 
+  EditUserDialog: ({ open, onSuccess }: MockDialogProps) => 
     open ? <div role="dialog">Edit User Dialog <button onClick={() => onSuccess?.()}>Save</button></div> : null,
 }));
 
 vi.mock("@/components/users/delete-user-dialog", () => ({
-  DeleteUserDialog: ({ open, onSuccess }: any) => 
+  DeleteUserDialog: ({ open, onSuccess }: MockDialogProps) => 
     open ? <div role="dialog">Delete User Dialog <button onClick={() => onSuccess?.()}>Delete</button></div> : null,
 }));
 

@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@/test/utils/test-utils';
 import { EditRoleDialog } from '../edit-role-dialog';
 import { rolesService } from '@/api/services/roles.service';
+import type { Role } from '@/types/api.types';
 
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
@@ -38,7 +39,7 @@ describe('EditRoleDialog', () => {
         open={open}
         onOpenChange={mockOnOpenChange}
         onSuccess={mockOnSuccess}
-        role={mockRole as any}
+        role={mockRole as Role}
       />
     );
 
@@ -66,7 +67,7 @@ describe('EditRoleDialog', () => {
   });
 
   it('handles successful update', async () => {
-    vi.mocked(rolesService.updateRole).mockResolvedValue({} as any);
+    vi.mocked(rolesService.updateRole).mockResolvedValue(undefined);
     renderDialog(true);
 
     fireEvent.change(screen.getByLabelText(/role name/i), { target: { value: 'Updated Name' } });

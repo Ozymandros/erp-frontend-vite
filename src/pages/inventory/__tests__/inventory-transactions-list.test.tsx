@@ -6,7 +6,7 @@ import { InventoryTransactionsListPage } from "../inventory-transactions-list";
 import { inventoryTransactionsService } from "@/api/services/inventory-transactions.service";
 import { productsService } from "@/api/services/products.service";
 import { warehousesService } from "@/api/services/warehouses.service";
-import type { InventoryTransactionDto, PaginatedResponse } from "@/types/api.types";
+import type { InventoryTransactionDto, PaginatedResponse, ProductDto, WarehouseDto } from "@/types/api.types";
 import { TransactionType } from "@/types/api.types";
 
 // Mock services
@@ -40,12 +40,12 @@ vi.mock("@/hooks/use-permissions", () => ({
   })),
 }));
 
-const mockProducts: any[] = [
+const mockProducts: Partial<ProductDto>[] = [
   { id: "prod-1", name: "Laptop" },
   { id: "prod-2", name: "Mouse" },
 ];
 
-const mockWarehouses: any[] = [
+const mockWarehouses: Partial<WarehouseDto>[] = [
   { id: "wh-1", name: "Main Warehouse" },
 ];
 
@@ -85,8 +85,8 @@ const mockResponse: PaginatedResponse<InventoryTransactionDto> = {
 describe("InventoryTransactionsListPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(productsService.getProducts).mockResolvedValue(mockProducts);
-    vi.mocked(warehousesService.getWarehouses).mockResolvedValue(mockWarehouses);
+    vi.mocked(productsService.getProducts).mockResolvedValue(mockProducts as ProductDto[]);
+    vi.mocked(warehousesService.getWarehouses).mockResolvedValue(mockWarehouses as WarehouseDto[]);
   });
 
   it("should render transactions list correctly with resolved names", async () => {

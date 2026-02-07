@@ -5,6 +5,7 @@ import { suppliersService } from '@/api/services/suppliers.service';
 import { productsService } from '@/api/services/products.service';
 import { purchaseOrdersService } from '@/api/services/purchase-orders.service';
 import userEvent from '@testing-library/user-event';
+import type { PurchaseOrderDto } from '@/types/api.types';
 
 vi.mock('@/api/services/suppliers.service', () => ({
   suppliersService: {
@@ -178,7 +179,7 @@ describe('CreatePurchaseOrderDialog', () => {
   });
 
   it('handles successful submission', async () => {
-    vi.spyOn(purchaseOrdersService, 'createPurchaseOrder').mockResolvedValue({ id: 'po-1' } as any);
+    vi.spyOn(purchaseOrdersService, 'createPurchaseOrder').mockResolvedValue({ id: 'po-1' } as PurchaseOrderDto);
     render(
       <CreatePurchaseOrderDialog
         open={true}
@@ -268,7 +269,7 @@ describe('CreatePurchaseOrderDialog', () => {
   });
 
   it('handles optional expectedDeliveryDate', async () => {
-    vi.spyOn(purchaseOrdersService, 'createPurchaseOrder').mockResolvedValue({ id: 'po-1' } as any);
+    vi.spyOn(purchaseOrdersService, 'createPurchaseOrder').mockResolvedValue({ id: 'po-1' } as PurchaseOrderDto);
     render(
       <CreatePurchaseOrderDialog
         open={true}
