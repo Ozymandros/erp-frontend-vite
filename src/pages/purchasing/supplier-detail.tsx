@@ -133,11 +133,11 @@ export function SupplierDetailPage() {
             )}
             <div>
               <span className="text-sm font-medium text-muted-foreground block">Status</span>
-              <p className="mt-1">
+              <div className="mt-1">
                 <Badge variant={supplier.isActive ? "default" : "secondary"}>
                   {supplier.isActive ? "Active" : "Inactive"}
                 </Badge>
-              </p>
+              </div>
             </div>
           </CardContent>
         </Card>

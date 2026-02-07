@@ -11,7 +11,7 @@ import type {
 } from "@/types/api.types";
 
 class PurchaseOrdersService {
-  private apiClient = getApiClient();
+  private readonly apiClient = getApiClient();
 
   async getPurchaseOrders(): Promise<PurchaseOrderDto[]> {
     return this.apiClient.get<PurchaseOrderDto[]>(PURCHASE_ORDERS_ENDPOINTS.BASE);

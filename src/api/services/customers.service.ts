@@ -8,7 +8,7 @@ import type {
 } from "@/types/api.types";
 
 class CustomersService {
-  private apiClient = getApiClient();
+  private readonly apiClient = getApiClient();
 
   async getCustomers(): Promise<CustomerDto[]> {
     return this.apiClient.get<CustomerDto[]>(CUSTOMERS_ENDPOINTS.BASE);

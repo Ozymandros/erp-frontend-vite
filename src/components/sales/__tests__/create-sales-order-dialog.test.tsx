@@ -186,7 +186,7 @@ describe('CreateSalesOrderDialog', () => {
   });
 
   it('handles submission error', async () => {
-    vi.spyOn(salesOrdersService, 'createSalesOrder').mockRejectedValue(new Error('Sales Error'));
+    vi.mocked(salesOrdersService.createSalesOrder).mockRejectedValue(new Error('Sales Error'));
     render(
       <CreateSalesOrderDialog
         open={true}
@@ -196,7 +196,8 @@ describe('CreateSalesOrderDialog', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByLabelText(/customer/i)).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: /Customer 1/ })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: /Product 1/ })).toBeInTheDocument();
     });
 
     await userEvent.selectOptions(screen.getByLabelText(/customer/i), "1");
@@ -205,9 +206,12 @@ describe('CreateSalesOrderDialog', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /create sales order/i }));
 
-    await waitFor(() => {
-      expect(screen.getByText('Sales Error')).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText(/Sales Error/i)).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
   });
 
   it('handles validation error visualization', async () => {

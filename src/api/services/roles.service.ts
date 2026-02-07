@@ -12,7 +12,7 @@ import type {
 } from "@/types/api.types";
 
 class RolesService {
-  private apiClient = getApiClient();
+  private readonly apiClient = getApiClient();
 
   async getRoles(): Promise<Role[]> {
     return this.apiClient.get<Role[]>(ROLES_ENDPOINTS.BASE);

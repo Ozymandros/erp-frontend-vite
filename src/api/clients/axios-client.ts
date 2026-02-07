@@ -34,7 +34,7 @@ const silentAnalyticsLog = (data: any) => {
 };
 
 export class AxiosApiClient implements ApiClient {
-  private client: AxiosInstance;
+  private readonly client: AxiosInstance;
   private authToken: string | null = null;
 
   constructor(config: ApiClientConfig) {

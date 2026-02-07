@@ -8,7 +8,7 @@ import type {
 } from "@/types/api.types";
 
 class StockOperationsService {
-  private apiClient = getApiClient();
+  private readonly apiClient = getApiClient();
 
   async reserveStock(data: ReserveStockDto): Promise<ReservationDto> {
     return this.apiClient.post<ReservationDto>(

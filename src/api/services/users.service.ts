@@ -11,7 +11,7 @@ import type {
 } from "@/types/api.types";
 
 class UsersService {
-  private apiClient = getApiClient();
+  private readonly apiClient = getApiClient();
 
   async getUsers(): Promise<User[]> {
     return this.apiClient.get<User[]>(USERS_ENDPOINTS.BASE);

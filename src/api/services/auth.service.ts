@@ -35,7 +35,7 @@ const silentAnalyticsLog = (data: unknown) => {
 };
 
 class AuthService {
-  private apiClient = getApiClient();
+  private readonly apiClient = getApiClient();
 
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     const endpoint = AUTH_ENDPOINTS.LOGIN;

@@ -9,7 +9,7 @@ import type {
 } from "@/types/api.types";
 
 class InventoryTransactionsService {
-  private apiClient = getApiClient();
+  private readonly apiClient = getApiClient();
 
   async getTransactions(): Promise<InventoryTransactionDto[]> {
     return this.apiClient.get<InventoryTransactionDto[]>(
