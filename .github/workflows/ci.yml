@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI (Fast)
 
 on:
   pull_request:
@@ -16,8 +16,9 @@ permissions:
   pull-requests: write
 
 jobs:
-  lint:
-    name: Lint
+  # Lint, type-check, unit tests, build - ràpid i crític
+  eslint:
+    name: ESLint
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -36,8 +37,8 @@ jobs:
       - name: Run Lint
         run: pnpm run lint
 
-  typecheck:
-    name: Type-check
+  tsc:
+    name: Type-check (tsc)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -56,8 +57,8 @@ jobs:
       - name: Run Type-check
         run: pnpm run type-check
 
-  tests:
-    name: Tests
+  unit-test:
+    name: Unit Tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -140,36 +141,3 @@ jobs:
           name: dist
           path: dist/
           retention-days: 1
-
-  playwright:
-    name: Playwright E2E
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    env:
-      CI: true
-    steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-      - name: Install pnpm
-        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
-        with:
-          version: 10.28.2
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: 20
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps
-      - name: Run Playwright tests
-        run: xvfb-run --auto-servernum pnpm exec playwright test
-      - name: Publish Playwright test results
-        if: always()
-        uses: dorny/test-reporter@v2
-        with:
-          name: Playwright E2E Tests
-          path: .playwright-output/junit.xml
-          reporter: java-junit
-          list-suites: all
-          list-tests: all

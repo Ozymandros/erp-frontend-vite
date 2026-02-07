@@ -75,6 +75,9 @@ importers:
       '@playwright/test':
         specifier: ^1.57.0
         version: 1.57.0
+      '@rollup/rollup-linux-x64-gnu':
+        specifier: 4.55.1
+        version: 4.55.1
       '@testing-library/dom':
         specifier: ^10.4.1
         version: 10.4.1
@@ -161,9 +164,6 @@ importers:
         specifier: 4.55.1
         version: 4.55.1
       '@rollup/rollup-darwin-x64':
-        specifier: 4.55.1
-        version: 4.55.1
-      '@rollup/rollup-linux-x64-gnu':
         specifier: 4.55.1
         version: 4.55.1
       '@rollup/rollup-win32-x64-msvc':
@@ -5063,8 +5063,7 @@ snapshots:
   '@rollup/rollup-linux-s390x-gnu@4.55.1':
     optional: true
 
-  '@rollup/rollup-linux-x64-gnu@4.55.1':
-    optional: true
+  '@rollup/rollup-linux-x64-gnu@4.55.1': {}
 
   '@rollup/rollup-linux-x64-musl@4.55.1':
     optional: true
