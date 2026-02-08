@@ -1,16 +1,5 @@
 import { z } from 'zod'
-
-// Helper for optional string fields: converts empty strings to undefined
-const optionalString = (maxLength: number, errorMessage: string) =>
-  z.preprocess(
-    val => {
-      if (!val || (typeof val === "string" && val.trim() === "")) {
-        return undefined;
-      }
-      return typeof val === "string" ? val.trim() : val;
-    },
-    z.union([z.string().max(maxLength, errorMessage), z.undefined()])
-  );
+import { optionalString } from './base.schemas'
 
 // Login validation schema
 export const LoginSchema = z.object({
