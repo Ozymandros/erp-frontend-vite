@@ -7,11 +7,11 @@ import { User } from "@/types/api.types";
 import { formatDateTime } from "@/lib/utils";
 
 interface UserColumnsProps {
-  onEdit: (user: User) => void;
-  onDelete: (user: User) => void;
-  canEdit?: boolean;
-  canDelete?: boolean;
-  canManageRoles?: boolean;
+  readonly onEdit: (user: User) => void;
+  readonly onDelete: (user: User) => void;
+  readonly canEdit?: boolean;
+  readonly canDelete?: boolean;
+  readonly canManageRoles?: boolean;
 }
 
 export function getUserColumns({ onEdit, onDelete, canEdit = true, canDelete = true, canManageRoles = true }: UserColumnsProps): Column<User>[] {

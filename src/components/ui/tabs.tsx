@@ -30,8 +30,8 @@ export function TabsList({
   className,
   children,
 }: {
-  className?: string;
-  children: React.ReactNode;
+  readonly className?: string;
+  readonly children: React.ReactNode;
 }) {
   return (
     <div
@@ -50,9 +50,9 @@ export function TabsTrigger({
   className,
   children,
 }: {
-  value: string;
-  className?: string;
-  children: React.ReactNode;
+  readonly value: string;
+  readonly className?: string;
+  readonly children: React.ReactNode;
 }) {
   const context = React.useContext(TabsContext);
   if (!context) {
@@ -83,9 +83,9 @@ export function TabsContent({
   className,
   children,
 }: {
-  value: string;
-  className?: string;
-  children: React.ReactNode;
+  readonly value: string;
+  readonly className?: string;
+  readonly children: React.ReactNode;
 }) {
   const context = React.useContext(TabsContext);
   if (!context) {

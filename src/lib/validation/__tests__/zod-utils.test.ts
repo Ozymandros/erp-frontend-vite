@@ -4,7 +4,7 @@ import { parseZodErrors } from "../zod-utils";
 
 const TestSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email"),
+  email: z.string().pipe(z.email({ message: "Invalid email" })),
   age: z.number().min(18, "Must be 18+"),
 });
 

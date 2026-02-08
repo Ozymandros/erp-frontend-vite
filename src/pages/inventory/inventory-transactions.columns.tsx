@@ -7,10 +7,10 @@ import { InventoryTransactionDto, TransactionType } from "@/types/api.types";
 import { formatDateTime } from "@/lib/utils";
 
 interface InventoryTransactionColumnsProps {
-  getProductName: (id: string) => string;
-  getWarehouseName: (id: string) => string;
-  getTypeBadgeVariant: (type: TransactionType) => "default" | "destructive" | "secondary" | "outline";
-  getTransactionTypeLabel: (type: TransactionType) => string;
+  readonly getProductName: (id: string) => string;
+  readonly getWarehouseName: (id: string) => string;
+  readonly getTypeBadgeVariant: (type: TransactionType) => "default" | "destructive" | "secondary" | "outline";
+  readonly getTransactionTypeLabel: (type: TransactionType) => string;
 }
 
 export function getInventoryTransactionColumns({

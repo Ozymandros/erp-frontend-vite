@@ -4,8 +4,8 @@ import { WarehouseStockDto } from "@/types/api.types";
 import { AlertTriangle, Package, Warehouse } from "lucide-react";
 
 interface WarehouseStockColumnsProps {
-  getProductName: (id: string) => string;
-  getWarehouseName: (id: string) => string;
+  readonly getProductName: (id: string) => string;
+  readonly getWarehouseName: (id: string) => string;
 }
 
 export function getWarehouseStockColumns({

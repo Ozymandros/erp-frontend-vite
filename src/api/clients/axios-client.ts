@@ -111,97 +111,127 @@ export class AxiosApiClient implements ApiClient {
     );
   }
 
+  /**
+   * Safely shows a toast notification, catching any errors.
+   */
+  private safeShowToast(title: string, message: string): void {
+    try {
+      console.debug("[AxiosApiClient] emitting toast", title, message);
+      showToastError(title, message);
+    } catch {
+      // Ignore toast errors - UI component may not be mounted
+    }
+  }
+
+  /**
+   * Creates an ApiClientError and optionally shows a toast notification.
+   */
+  private createErrorWithToast(
+    message: string,
+    status: number | undefined,
+    code: string | undefined,
+    details?: Record<string, unknown>,
+    showToast = true,
+  ): ApiClientError {
+    const apiErr = new ApiClientError(message, status, code, details);
+    if (showToast) {
+      const title = status ? `Error ${status}` : "Error";
+      this.safeShowToast(title, message);
+    }
+    return apiErr;
+  }
+
+  /**
+   * Extracts validation messages from ProblemDetails.errors object.
+   */
+  private extractValidationMessages(errors: Record<string, unknown>): string {
+    return Object.entries(errors)
+      .map(([field, messages]) => {
+        const fieldMessages = Array.isArray(messages) ? messages : [messages];
+        return `${field}: ${fieldMessages.join(", ")}`;
+      })
+      .join("; ");
+  }
+
+  /**
+   * Parses error data from an API response into a message and details.
+   */
+  private parseErrorData(
+    errorData: any,
+    fallbackMessage: string,
+  ): { message: string; details?: Record<string, unknown> } {
+    let message = errorData?.message || fallbackMessage;
+    let details = errorData?.details;
+
+    // Handle ASP.NET Core ProblemDetails format
+    const hasProblemDetails = errorData?.title || errorData?.errors;
+    if (!hasProblemDetails) {
+      return { message, details };
+    }
+
+    message = errorData?.title || errorData?.detail || message;
+
+    // Extract validation errors from ProblemDetails.errors
+    if (errorData?.errors && typeof errorData.errors === "object") {
+      details = errorData.errors;
+      const validationMessages = this.extractValidationMessages(errorData.errors);
+      if (validationMessages) {
+        message = validationMessages;
+      }
+    }
+
+    return { message, details };
+  }
+
+  /**
+   * Handles API errors and converts them to ApiClientError with appropriate notifications.
+   */
   private handleError(error: AxiosError): ApiClientError {
-    if (error.response) {
-      const { status, data } = error.response;
-      const errorData = data as any;
-
-      // Check for ASP.NET Core ProblemDetails format
-      let message = errorData?.message || error.message || "An error occurred";
-      let details = errorData?.details;
-
-      // Handle ProblemDetails validation errors
-      if (errorData?.title || errorData?.errors) {
-        message = errorData?.title || errorData?.detail || message;
-        // Extract validation errors from ProblemDetails.errors
-        if (errorData?.errors && typeof errorData.errors === "object") {
-          details = errorData.errors;
-          // Build a user-friendly message from validation errors
-          const validationMessages = Object.entries(errorData.errors)
-            ?.map(([field, messages]) => {
-              const fieldMessages = Array.isArray(messages)
-                ? messages
-                : [messages];
-              return `${field}: ${fieldMessages.join(", ")}`;
-            })
-            .join("; ");
-          if (validationMessages) {
-            message = validationMessages;
-          }
-        }
-      }
-
-      // Special handling for 403 Forbidden (authorization/permission errors)
-      if (status === 403) {
-        message =
-          errorData?.detail ||
-          errorData?.title ||
-          "Access denied. You don't have permission to access this resource. Please contact your administrator if you believe this is an error.";
-        // Don't show toast for 403 - let components handle it gracefully
-      }
-
-      const apiErr = new ApiClientError(
-        message,
-        status,
-        errorData?.code || errorData?.type,
-        details,
-      );
-
-      // show typed toast (queued if provider not ready)
-      // Skip toast for 403 errors - they should be handled by components with user-friendly messages
-      if (status !== 403) {
-        try {
-          console.debug(
-            "[AxiosApiClient] emitting toast error",
-            status,
-            apiErr.message,
-          );
-          showToastError(status ? `Error ${status}` : "Error", apiErr.message);
-        } catch (e) {
-          // ignore
-        }
-      }
-
-      return apiErr;
-    } else if (error.request) {
-      const netErr = new ApiClientError(
+    // Case 1: No response received (network error)
+    if (!error.response && error.request) {
+      return this.createErrorWithToast(
         "No response received from server",
         undefined,
         "NETWORK_ERROR",
       );
-      try {
-        console.debug(
-          "[AxiosApiClient] emitting network toast",
-          netErr.message,
-        );
-        showToastError("Network Error", netErr.message);
-      } catch (e) {}
-      return netErr;
-    } else {
-      const reqErr = new ApiClientError(
+    }
+
+    // Case 2: Request setup failed
+    if (!error.response) {
+      return this.createErrorWithToast(
         error.message || "Request setup failed",
         undefined,
         "REQUEST_ERROR",
       );
-      try {
-        console.debug(
-          "[AxiosApiClient] emitting request toast",
-          reqErr.message,
-        );
-        showToastError("Request Error", reqErr.message);
-      } catch (e) {}
-      return reqErr;
     }
+
+    // Case 3: Server responded with an error
+    const { status, data } = error.response;
+    const errorData = data as any;
+
+    const { message, details } = this.parseErrorData(errorData, error.message || "An error occurred");
+
+    // Special handling for 403 Forbidden - use specific message and skip toast
+    if (status === 403) {
+      const forbiddenMessage =
+        errorData?.detail ||
+        errorData?.title ||
+        "Access denied. You don't have permission to access this resource. Please contact your administrator if you believe this is an error.";
+      return this.createErrorWithToast(
+        forbiddenMessage,
+        status,
+        errorData?.code || errorData?.type,
+        details,
+        false, // Don't show toast for 403
+      );
+    }
+
+    return this.createErrorWithToast(
+      message,
+      status,
+      errorData?.code || errorData?.type,
+      details,
+    );
   }
 
   async get<T = any>(url: string, config?: RequestConfig): Promise<T> {

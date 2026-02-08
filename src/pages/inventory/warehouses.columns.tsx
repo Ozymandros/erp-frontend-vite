@@ -5,10 +5,10 @@ import { Column } from "@/components/ui/data-table";
 import { WarehouseDto } from "@/types/api.types";
 
 interface WarehouseColumnsProps {
-  onEdit: (warehouse: WarehouseDto) => void;
-  onDelete: (warehouse: WarehouseDto) => void;
-  canEdit?: boolean;
-  canDelete?: boolean;
+  readonly onEdit: (warehouse: WarehouseDto) => void;
+  readonly onDelete: (warehouse: WarehouseDto) => void;
+  readonly canEdit?: boolean;
+  readonly canDelete?: boolean;
 }
 
 export function getWarehouseColumns({ onEdit, onDelete, canEdit = true, canDelete = true }: WarehouseColumnsProps): Column<WarehouseDto>[] {

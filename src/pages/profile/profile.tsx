@@ -41,22 +41,22 @@ export function ProfilePage() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
+              <span className="text-sm font-medium text-muted-foreground">
                 Username
-              </label>
+              </span>
               <p className="text-base text-foreground mt-1">{user.username}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
+              <span className="text-sm font-medium text-muted-foreground">
                 Email
-              </label>
+              </span>
               <p className="text-base text-foreground mt-1">{user.email}</p>
             </div>
             {user.firstName && (
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
+                <span className="text-sm font-medium text-muted-foreground">
                   First Name
-                </label>
+                </span>
                 <p className="text-base text-foreground mt-1">
                   {user.firstName}
                 </p>
@@ -64,18 +64,18 @@ export function ProfilePage() {
             )}
             {user.lastName && (
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
+                <span className="text-sm font-medium text-muted-foreground">
                   Last Name
-                </label>
+                </span>
                 <p className="text-base text-foreground mt-1">
                   {user.lastName}
                 </p>
               </div>
             )}
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
+              <span className="text-sm font-medium text-muted-foreground">
                 Status
-              </label>
+              </span>
               <div className="mt-1">
                 <Badge variant={user.isActive ? "default" : "destructive"}>
                   {user.isActive ? "Active" : "Inactive"}
@@ -83,9 +83,9 @@ export function ProfilePage() {
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
+              <span className="text-sm font-medium text-muted-foreground">
                 User ID
-              </label>
+              </span>
               <p className="text-base text-foreground mt-1 font-mono text-sm">
                 {user.id}
               </p>
@@ -151,17 +151,17 @@ export function ProfilePage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div>
-            <label className="text-sm font-medium text-muted-foreground">
+            <span className="text-sm font-medium text-muted-foreground">
               Created At
-            </label>
+            </span>
             <p className="text-base text-foreground mt-1">
               {formatDateTime(user.createdAt)}
             </p>
           </div>
           <div>
-            <label className="text-sm font-medium text-muted-foreground">
+            <span className="text-sm font-medium text-muted-foreground">
               Last Updated
-            </label>
+            </span>
             <p className="text-base text-foreground mt-1">
               {formatDateTime(user.updatedAt)}
             </p>

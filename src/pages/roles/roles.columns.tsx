@@ -7,11 +7,11 @@ import { Role } from "@/types/api.types"
 import { formatDateTime } from "@/lib/utils"
 
 interface RoleColumnsProps {
-  onEdit: (role: Role) => void;
-  onDelete: (role: Role) => void;
-  canEdit?: boolean;
-  canDelete?: boolean;
-  canManagePermissions?: boolean;
+  readonly onEdit: (role: Role) => void;
+  readonly onDelete: (role: Role) => void;
+  readonly canEdit?: boolean;
+  readonly canDelete?: boolean;
+  readonly canManagePermissions?: boolean;
 }
 
 export function getRoleColumns({ onEdit, onDelete, canEdit = true, canDelete = true, canManagePermissions = true }: RoleColumnsProps): Column<Role>[] {

@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 
 interface UseListActionsOptions {
-  refresh: () => void;
+  refresh: () => void | Promise<void>;
 }
 
 /**

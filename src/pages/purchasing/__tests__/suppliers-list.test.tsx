@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { SuppliersListPage } from '../suppliers-list';
 
@@ -35,13 +35,17 @@ const MockedSuppliersListPage = () => (
 );
 
 describe('SuppliersListPage', () => {
-  it('renders suppliers list', () => {
+  it('renders suppliers list', async () => {
     render(<MockedSuppliersListPage />);
-    expect(screen.getByRole('heading', { name: /suppliers/i, level: 1 })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /suppliers/i, level: 1 })).toBeInTheDocument();
+    });
   });
 
-  it('renders without crashing', () => {
+  it('renders without crashing', async () => {
     const { container } = render(<MockedSuppliersListPage />);
-    expect(container).toBeInTheDocument();
+    await waitFor(() => {
+      expect(container).toBeInTheDocument();
+    });
   });
 });

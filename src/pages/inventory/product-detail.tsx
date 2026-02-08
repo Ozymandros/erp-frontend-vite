@@ -131,22 +131,22 @@ export function ProductDetailPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
+              <span className="text-sm font-medium text-muted-foreground">
                 SKU
-              </label>
+              </span>
               <p className="text-lg font-semibold">{product.sku}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
+              <span className="text-sm font-medium text-muted-foreground">
                 Name
-              </label>
+              </span>
               <p className="text-lg">{product.name}</p>
             </div>
             {product.description && (
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
+                <span className="text-sm font-medium text-muted-foreground">
                   Description
-                </label>
+                </span>
                 <p className="text-base">{product.description}</p>
               </div>
             )}
@@ -162,17 +162,17 @@ export function ProductDetailPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
+              <span className="text-sm font-medium text-muted-foreground">
                 Unit Price
-              </label>
+              </span>
               <p className="text-lg font-semibold">
                 {formatCurrency(product.unitPrice)}
               </p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
+              <span className="text-sm font-medium text-muted-foreground">
                 Current Stock
-              </label>
+              </span>
               <p
                 className={`text-lg font-semibold ${
                   product.quantityInStock <= product.reorderLevel
@@ -189,9 +189,9 @@ export function ProductDetailPage() {
               )}
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
+              <span className="text-sm font-medium text-muted-foreground">
                 Reorder Level
-              </label>
+              </span>
               <p className="text-base">{product.reorderLevel} units</p>
             </div>
           </CardContent>
@@ -204,9 +204,9 @@ export function ProductDetailPage() {
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
+              <span className="text-sm font-medium text-muted-foreground">
                 Created At
-              </label>
+              </span>
               <p className="text-base">{formatDateTime(product.createdAt)}</p>
               {product.createdBy && (
                 <p className="text-sm text-muted-foreground">
@@ -216,9 +216,9 @@ export function ProductDetailPage() {
             </div>
             {product.updatedAt && (
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
+                <span className="text-sm font-medium text-muted-foreground">
                   Last Updated
-                </label>
+                </span>
                 <p className="text-base">{formatDateTime(product.updatedAt)}</p>
                 {product.updatedBy && (
                   <p className="text-sm text-muted-foreground">

@@ -11,7 +11,7 @@ export const CreateSupplierSchema = z.object({
     .string()
     .min(1, "Email is required")
     .max(255, "Email must be less than 255 characters")
-    .email("Invalid email address"),
+    .pipe(z.email({ message: "Invalid email address" })),
   phone: phoneValidation,
   address: optionalString(500, "Address must be less than 500 characters"),
   city: optionalString(100, "City must be less than 100 characters"),

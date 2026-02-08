@@ -7,10 +7,10 @@ import type { SupplierDto } from "@/types/api.types";
 import { formatDateTime } from "@/lib/utils";
 
 interface SupplierColumnsProps {
-  onEdit: (supplier: SupplierDto) => void;
-  onDelete: (supplier: SupplierDto) => void;
-  canEdit?: boolean;
-  canDelete?: boolean;
+  readonly onEdit: (supplier: SupplierDto) => void;
+  readonly onDelete: (supplier: SupplierDto) => void;
+  readonly canEdit?: boolean;
+  readonly canDelete?: boolean;
 }
 
 export function getSupplierColumns({

@@ -6,10 +6,10 @@ import { Permission } from "@/types/api.types"
 import { formatDateTime } from "@/lib/utils"
 
 interface PermissionColumnsProps {
-  onEdit: (permission: Permission) => void;
-  onDelete: (permission: Permission) => void;
-  canEdit?: boolean;
-  canDelete?: boolean;
+  readonly onEdit: (permission: Permission) => void;
+  readonly onDelete: (permission: Permission) => void;
+  readonly canEdit?: boolean;
+  readonly canDelete?: boolean;
 }
 
 export function getPermissionColumns({ onEdit, onDelete, canEdit = true, canDelete = true }: PermissionColumnsProps): Column<Permission>[] {

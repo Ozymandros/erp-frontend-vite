@@ -10,7 +10,7 @@ import {
 } from "@/lib/order-columns.utils";
 
 interface PurchaseOrderColumnsProps {
-  getSupplierName: (id: string) => string;
+  readonly getSupplierName: (id: string) => string;
 }
 
 const purchaseStatusMap = {

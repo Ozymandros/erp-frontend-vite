@@ -248,7 +248,7 @@ export function CreateSalesOrderDialog({
                             min={1}
                             className="h-9"
                             value={newLine.quantity}
-                            onChange={e => handleNewLineChange("quantity", parseInt(e.target.value) || 0)}
+                            onChange={e => handleNewLineChange("quantity", Number.parseInt(e.target.value) || 0)}
                         />
                     </div>
                     <div className="col-span-3 space-y-1">
@@ -260,7 +260,7 @@ export function CreateSalesOrderDialog({
                             step="0.01"
                             className="h-9"
                             value={newLine.unitPrice}
-                            onChange={e => handleNewLineChange("unitPrice", parseFloat(e.target.value) || 0)}
+                            onChange={e => handleNewLineChange("unitPrice", Number.parseFloat(e.target.value) || 0)}
                         />
                     </div>
                     <div className="col-span-1">

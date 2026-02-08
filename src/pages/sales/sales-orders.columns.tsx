@@ -10,7 +10,7 @@ import {
 } from "@/lib/order-columns.utils";
 
 interface SalesOrderColumnsProps {
-  getCustomerName: (id: string) => string;
+  readonly getCustomerName: (id: string) => string;
 }
 
 const salesStatusMap = {

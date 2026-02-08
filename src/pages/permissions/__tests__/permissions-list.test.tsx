@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { PermissionsListPage } from '../permissions-list';
 
@@ -43,13 +43,17 @@ const MockedPermissionsListPage = () => (
 );
 
 describe('PermissionsListPage', () => {
-  it('renders permissions list', () => {
+  it('renders permissions list', async () => {
     render(<MockedPermissionsListPage />);
-    expect(screen.getByRole('heading', { name: /permissions/i, level: 1 })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /permissions/i, level: 1 })).toBeInTheDocument();
+    });
   });
 
-  it('renders without crashing', () => {
+  it('renders without crashing', async () => {
     const { container } = render(<MockedPermissionsListPage />);
-    expect(container).toBeInTheDocument();
+    await waitFor(() => {
+      expect(container).toBeInTheDocument();
+    });
   });
 });

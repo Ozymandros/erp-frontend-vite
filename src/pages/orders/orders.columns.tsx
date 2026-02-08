@@ -7,7 +7,7 @@ import { OrderDto } from "@/types/api.types";
 import { formatDateTime, formatCurrency } from "@/lib/utils";
 
 interface OrderColumnsProps {
-  getCustomerName: (id: string) => string;
+  readonly getCustomerName: (id: string) => string;
 }
 
 export function getStatusBadge(status: string) {

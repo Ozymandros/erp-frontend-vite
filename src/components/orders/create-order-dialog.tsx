@@ -277,7 +277,7 @@ export function CreateOrderDialog({
                     onChange={(e) =>
                       handleNewLineChange(
                         "quantity",
-                        parseInt(e.target.value) || 0
+                        Number.parseInt(e.target.value) || 0
                       )
                     }
                   />
@@ -296,7 +296,7 @@ export function CreateOrderDialog({
                     onChange={(e) =>
                       handleNewLineChange(
                         "unitPrice",
-                        parseFloat(e.target.value) || 0
+                        Number.parseFloat(e.target.value) || 0
                       )
                     }
                   />

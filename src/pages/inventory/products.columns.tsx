@@ -6,10 +6,10 @@ import { ProductDto } from "@/types/api.types";
 import { formatCurrency } from "@/lib/utils";
 
 interface ProductColumnsProps {
-  onEdit: (product: ProductDto) => void;
-  onDelete: (product: ProductDto) => void;
-  canEdit?: boolean;
-  canDelete?: boolean;
+  readonly onEdit: (product: ProductDto) => void;
+  readonly onDelete: (product: ProductDto) => void;
+  readonly canEdit?: boolean;
+  readonly canDelete?: boolean;
 }
 
 export function getProductColumns({ onEdit, onDelete, canEdit = true, canDelete = true }: ProductColumnsProps): Column<ProductDto>[] {
