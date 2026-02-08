@@ -62,9 +62,9 @@ export function CustomerDetailPage() {
             <CardDescription>Basic customer details</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div><label className="text-sm font-medium text-muted-foreground">Name</label><p className="text-lg font-semibold">{customer.name}</p></div>
-            {customer.email && <div><label className="text-sm font-medium text-muted-foreground">Email</label><p className="text-base">{customer.email}</p></div>}
-            {customer.phoneNumber && <div><label className="text-sm font-medium text-muted-foreground">Phone</label><p className="text-base">{customer.phoneNumber}</p></div>}
+            <div><span className="text-sm font-medium text-muted-foreground">Name</span><p className="text-lg font-semibold">{customer.name}</p></div>
+            {customer.email && <div><span className="text-sm font-medium text-muted-foreground">Email</span><p className="text-base">{customer.email}</p></div>}
+            {customer.phoneNumber && <div><span className="text-sm font-medium text-muted-foreground">Phone</span><p className="text-base">{customer.phoneNumber}</p></div>}
           </CardContent>
         </Card>
 
@@ -74,7 +74,7 @@ export function CustomerDetailPage() {
             <CardDescription>Customer address details</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {customer.address && <div><label className="text-sm font-medium text-muted-foreground">Street Address</label><p className="text-base">{customer.address}</p></div>}
+            {customer.address && <div><span className="text-sm font-medium text-muted-foreground">Street Address</span><p className="text-base">{customer.address}</p></div>}
 
           </CardContent>
         </Card>
@@ -85,8 +85,8 @@ export function CustomerDetailPage() {
             <CardDescription>Creation and modification history</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
-            <div><label className="text-sm font-medium text-muted-foreground">Created At</label><p className="text-base">{formatDateTime(customer.createdAt)}</p></div>
-            {customer.updatedAt && <div><label className="text-sm font-medium text-muted-foreground">Last Updated</label><p className="text-base">{formatDateTime(customer.updatedAt)}</p></div>}
+            <div><span className="text-sm font-medium text-muted-foreground">Created At</span><p className="text-base">{formatDateTime(customer.createdAt)}</p></div>
+            {customer.updatedAt && <div><span className="text-sm font-medium text-muted-foreground">Last Updated</span><p className="text-base">{formatDateTime(customer.updatedAt)}</p></div>}
           </CardContent>
         </Card>
       </div>

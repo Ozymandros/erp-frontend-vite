@@ -106,7 +106,7 @@ export function CreatePermissionDialog({ open, onOpenChange, onSuccess }: Create
                 value={formData.description}
                 onChange={(e) => handleChange("description", e.target.value)}
                 disabled={isLoading}
-                placeholder="Describe what this permission allows..."
+                placeholder="Describe what this permission allows…"
                 rows={3}
               />
             </div>
@@ -117,7 +117,7 @@ export function CreatePermissionDialog({ open, onOpenChange, onSuccess }: Create
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Creating..." : "Create Permission"}
+              {isLoading ? "Creating…" : "Create Permission"}
             </Button>
           </DialogFooter>
         </form>

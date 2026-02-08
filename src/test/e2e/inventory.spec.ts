@@ -1,5 +1,5 @@
-import { test } from '@playwright/test';
-import { setupApiMocks, setupAuthenticatedSession } from './api-interceptor';
+import { test, expect } from '@playwright/test';
+import { setupApiMocks, gotoAuthenticated } from './api-interceptor';
 
 /**
  * E2E Tests for Inventory Management
@@ -7,131 +7,113 @@ import { setupApiMocks, setupAuthenticatedSession } from './api-interceptor';
  */
 
 test.describe('Inventory Management', () => {
-  
   test.beforeEach(async ({ page }) => {
-    test.setTimeout(90000);
-
     await page.context().clearCookies();
-    await page.waitForTimeout(500);
     await setupApiMocks(page);
-    
-    // Robust navigation with retry
-    const goToInventory = async () => {
-      await page.goto('/inventory/products', { 
-        waitUntil: 'domcontentloaded',
-        timeout: 60000 
-      });
-      await page.waitForLoadState("load", { timeout: 10000 }).catch(() => {});
-    };
-
-    let attempts = 0;
-    while (attempts < 3) {
-      try {
-        await goToInventory();
-        break;
-      } catch (error) {
-        attempts++;
-        if (attempts >= 3) throw error;
-        await page.waitForTimeout(2000);
-      }
-    }
-
-    // Clear localStorage after page loads
-    await page.evaluate(() => {
-      try {
-        localStorage.clear();
-      } catch (e) {
-        console.log("localStorage already clear");
-      }
-    });
-
-    // Setup authenticated session
-    await setupAuthenticatedSession(page);
   });
 
   test.describe('Products', () => {
-    test('should load products page', async ({ page }) => {
-      await page.goto('/inventory/products', { waitUntil: 'domcontentloaded' });
-      await page.waitForTimeout(1000);
+    test.beforeEach(async ({ page }) => {
+      await gotoAuthenticated(page, '/inventory/products', { waitForTable: true });
     });
-
+    
     test('should display products list', async ({ page }) => {
-      await page.goto('/inventory/products', { waitUntil: 'domcontentloaded' });
-      await page.waitForTimeout(1000);
+      // beforeEach already navigated and table is visible
+      await expect(page.locator('td:has-text("Product 1")')).toBeVisible({ timeout: 5000 });
     });
 
     test('should create new product', async ({ page }) => {
-      await page.goto('/inventory/products', { waitUntil: 'domcontentloaded' });
+      // beforeEach already navigated and table is visible
       
-      // Look for create button
-      const createBtn = page.locator('button:has-text("Create"), button:has-text("Add"), button:has-text("New")');
-      const createExists = await createBtn.count() > 0;
+      // Find create button
+      const createBtn = page.getByRole('button', { name: /add.*product/i }).first();
+      await expect(createBtn).toBeVisible({ timeout: 5000 });
+      await createBtn.click();
       
-      if (createExists) {
-        await createBtn.first().click();
-        await page.waitForTimeout(500);
-      }
+      // Wait for dialog
+      const dialog = page.locator('[role="dialog"]');
+      await expect(dialog).toBeVisible({ timeout: 5000 });
+
+      await dialog.locator('input#name').fill('New Product E2E');
+      await dialog.locator('input#sku').fill('SKU-E2E-001');
+      await dialog.locator('input#unitPrice').fill('150');
+      
+      await dialog.locator('button[type="submit"]').click();
+      
+      // Dialog should close
+      await expect(dialog).not.toBeVisible({ timeout: 5000 });
     });
 
     test('should search products', async ({ page }) => {
-      await page.goto('/inventory/products', { waitUntil: 'domcontentloaded' });
-      
-      // Look for search input
-      const searchInput = page.locator('input[type="search"], input[placeholder*="search" i]');
-      const searchExists = await searchInput.count() > 0;
-      
-      if (searchExists) {
-        await searchInput.first().fill('test');
-        await page.waitForTimeout(500);
-      }
-    });
-
-    test('should filter products', async ({ page }) => {
-      await page.goto('/inventory/products', { waitUntil: 'domcontentloaded' });
-      
-      // Look for filter button/controls
-      const filterBtn = page.locator('button:has-text("Filter"), button[aria-label*="filter" i]');
-      const filterExists = await filterBtn.count() > 0;
-      
-      if (filterExists) {
-        await filterBtn.first().click();
-        await page.waitForTimeout(500);
-      }
+      const searchInput = page.locator('input[type="search"], input[placeholder*="search" i]').first();
+      await expect(searchInput).toBeVisible({ timeout: 5000 });
+      await searchInput.fill('Product 1');
+      await page.keyboard.press('Enter');
+      await expect(page.locator('td:has-text("Product 1")')).toBeVisible({ timeout: 5000 });
     });
   });
 
   test.describe('Warehouses', () => {
-    test('should load warehouses page', async ({ page }) => {
-      await page.goto('/inventory/warehouses', { waitUntil: 'domcontentloaded' });
-      await page.waitForTimeout(1000);
+    test.beforeEach(async ({ page }) => {
+      await gotoAuthenticated(page, '/inventory/warehouses', { waitForTable: true });
     });
-
+    
     test('should display warehouses list', async ({ page }) => {
-      await page.goto('/inventory/warehouses', { waitUntil: 'domcontentloaded' });
-      await page.waitForTimeout(1000);
+      // beforeEach already navigated and table is visible
+      await expect(page.locator('td:has-text("Main Warehouse")')).toBeVisible({ timeout: 5000 });
     });
 
-    test('should create new warehouse', async ({ page }) => {
-      await page.goto('/inventory/warehouses', { waitUntil: 'domcontentloaded' });
+    test('should edit warehouse', async ({ page }) => {
+      // beforeEach already navigated and table is visible
       
-      const createBtn = page.locator('button:has-text("Create"), button:has-text("Add"), button:has-text("New")');
-      const createExists = await createBtn.count() > 0;
+      // Click edit button (icon button with title)
+      const editBtn = page.getByTitle('Edit Warehouse').first();
+      await expect(editBtn).toBeVisible({ timeout: 5000 });
+      await editBtn.click();
       
-      if (createExists) {
-        await createBtn.first().click();
-        await page.waitForTimeout(500);
-      }
-    });
+      // Wait for dialog
+      const dialog = page.locator('[role="dialog"]');
+      await expect(dialog).toBeVisible({ timeout: 5000 });
 
-    test('should search warehouses', async ({ page }) => {
-      await page.goto('/inventory/warehouses', { waitUntil: 'domcontentloaded' });
+      // Verify data is loaded
+      const nameInput = dialog.locator('input#name');
+      await expect(nameInput).toHaveValue('Main Warehouse');
+
+      await nameInput.fill('Updated Warehouse Name');
+      await dialog.locator('button[type="submit"]').click();
       
-      const searchInput = page.locator('input[type="search"], input[placeholder*="search" i]');
-      const searchExists = await searchInput.count() > 0;
-      
-      if (searchExists) {
-        await searchInput.first().fill('test');
-        await page.waitForTimeout(500);
+      // Dialog should close
+      await expect(dialog).not.toBeVisible({ timeout: 5000 });
+    });
+  });
+
+  test.describe('Stock Operations', () => {
+    test.beforeEach(async ({ page }) => {
+      await gotoAuthenticated(page, '/inventory/stock-ops');
+    });
+    
+    test('should perform stock transfer', async ({ page }) => {
+      // beforeEach already navigated
+
+      // Find transfer button or form
+      const transferBtn = page.locator('button:has-text("Transfer"), button:has-text("Stock Transfer")').first();
+      if (await transferBtn.count() > 0) {
+        await transferBtn.click();
+        
+        // Wait for dialog/form
+        const dialog = page.locator('[role="dialog"]');
+        await expect(dialog.or(page.locator('form'))).toBeVisible({ timeout: 5000 });
+        
+        const form = dialog.or(page.locator('form')).first();
+        
+        await form.locator('select[name="productId"]').selectOption({ label: 'Product 1' });
+        await form.locator('input[name="quantity"]').fill('10');
+        await form.locator('select[name="fromWarehouseId"]').selectOption({ label: 'Main Warehouse' });
+        await form.locator('select[name="toWarehouseId"]').selectOption({ label: 'Secondary Warehouse' });
+        await form.locator('textarea[name="reason"]').fill('E2E Test Transfer');
+
+        await form.locator('button[type="submit"]:has-text("Transfer")').click();
+        await expect(dialog).not.toBeVisible({ timeout: 5000 });
       }
     });
   });

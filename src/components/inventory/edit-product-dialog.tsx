@@ -240,7 +240,7 @@ export function EditProductDialog({
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Updating..." : "Update Product"}
+              {isLoading ? "Updating…" : "Update Product"}
             </Button>
           </DialogFooter>
         </form>

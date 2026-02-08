@@ -4,7 +4,7 @@ import type React from "react";
 
 import { useState } from "react";
 import { usersService } from "@/api/services/users.service";
-import { CreateUserSchema, type CreateUserFormData } from "@/lib/validation";
+import { CreateUserSchema, type CreateUserFormData, parseZodErrors } from "@/lib/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -58,16 +58,9 @@ export function CreateUserDialog({
     setError(null);
     setFieldErrors({});
 
-    // Client-side validation
     const validation = CreateUserSchema.safeParse(formData);
     if (!validation.success) {
-      const errors: Record<string, string> = {};
-      validation.error.issues.forEach(err => {
-        if (err.path[0]) {
-          errors[err.path[0].toString()] = err.message;
-        }
-      });
-      setFieldErrors(errors);
+      setFieldErrors(parseZodErrors(validation.error));
       setError("Please fix the validation errors");
       return;
     }
@@ -118,6 +111,7 @@ export function CreateUserDialog({
                 <Label htmlFor="firstName">First Name</Label>
                 <Input
                   id="firstName"
+                  autoComplete="given-name"
                   value={formData.firstName}
                   onChange={e => handleChange("firstName", e.target.value)}
                   disabled={isLoading}
@@ -127,6 +121,7 @@ export function CreateUserDialog({
                 <Label htmlFor="lastName">Last Name</Label>
                 <Input
                   id="lastName"
+                  autoComplete="family-name"
                   value={formData.lastName}
                   onChange={e => handleChange("lastName", e.target.value)}
                   disabled={isLoading}
@@ -138,6 +133,8 @@ export function CreateUserDialog({
               <Label htmlFor="username">Username *</Label>
               <Input
                 id="username"
+                autoComplete="username"
+                spellCheck={false}
                 value={formData.username}
                 onChange={e => handleChange("username", e.target.value)}
                 required
@@ -154,6 +151,8 @@ export function CreateUserDialog({
               <Input
                 id="email"
                 type="email"
+                autoComplete="email"
+                spellCheck={false}
                 value={formData.email}
                 onChange={e => handleChange("email", e.target.value)}
                 required
@@ -170,11 +169,12 @@ export function CreateUserDialog({
               <Input
                 id="password"
                 type="password"
+                autoComplete="new-password"
                 value={formData.password}
                 onChange={e => handleChange("password", e.target.value)}
                 required
                 disabled={isLoading}
-                placeholder="At least 8 characters"
+                placeholder="At least 8 characters…"
                 className={fieldErrors.password ? "border-red-500" : ""}
               />
               {fieldErrors.password && (
@@ -193,7 +193,7 @@ export function CreateUserDialog({
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Creating..." : "Create User"}
+              {isLoading ? "Creating…" : "Create User"}
             </Button>
           </DialogFooter>
         </form>

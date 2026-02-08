@@ -9,7 +9,6 @@ import type {
   RegisterRequest,
   AuthResponse,
   RefreshTokenRequest,
-  PermissionCheckRequest,
   PermissionCheckResponse,
   User,
 } from "@/types/api.types";
@@ -36,7 +35,7 @@ const silentAnalyticsLog = (data: unknown) => {
 };
 
 class AuthService {
-  private apiClient = getApiClient();
+  private readonly apiClient = getApiClient();
 
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     const endpoint = AUTH_ENDPOINTS.LOGIN;
@@ -97,10 +96,11 @@ class AuthService {
     module: string,
     action: string
   ): Promise<PermissionCheckResponse> {
-    const request: PermissionCheckRequest = { module, action };
-    return this.apiClient.post<PermissionCheckResponse>(
+    return this.apiClient.get<PermissionCheckResponse>(
       PERMISSIONS_ENDPOINTS.CHECK,
-      request
+      {
+        params: { module, action },
+      }
     );
   }
 }

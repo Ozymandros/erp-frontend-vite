@@ -8,6 +8,7 @@ import {
   CreatePurchaseOrderSchema,
   type CreatePurchaseOrderFormData,
 } from "@/lib/validation/purchasing/purchase-order.schemas";
+import { parseZodErrors } from "@/lib/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,7 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus, Trash2, CalendarIcon } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getDefaultDateTimeLocal } from "@/lib/utils";
 import type { SupplierDto, ProductDto } from "@/types/api.types";
 
 interface CreatePurchaseOrderDialogProps {
@@ -43,15 +44,9 @@ export function CreatePurchaseOrderDialog({
   onOpenChange,
   onSuccess,
 }: CreatePurchaseOrderDialogProps) {
-  const getDefaultDate = () => {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    return now.toISOString().slice(0, 16);
-  };
-
   const [formData, setFormData] = useState<CreatePurchaseOrderFormData>({
     supplierId: "",
-    orderDate: getDefaultDate(),
+    orderDate: getDefaultDateTimeLocal(),
     expectedDeliveryDate: undefined,
     orderLines: [],
   });
@@ -74,7 +69,7 @@ export function CreatePurchaseOrderDialog({
       // Reset form on open
       setFormData({
         supplierId: "",
-        orderDate: getDefaultDate(),
+        orderDate: getDefaultDateTimeLocal(),
         expectedDeliveryDate: undefined,
         orderLines: [],
       });
@@ -145,11 +140,7 @@ export function CreatePurchaseOrderDialog({
 
     const validation = CreatePurchaseOrderSchema.safeParse(formData);
     if (!validation.success) {
-      const errors: Record<string, string> = {};
-      validation.error.issues.forEach((err) => {
-        if (err.path[0]) errors[err.path[0].toString()] = err.message;
-      });
-      setFieldErrors(errors);
+      setFieldErrors(parseZodErrors(validation.error));
       setError("Please fix the validation errors");
       return;
     }
@@ -158,7 +149,6 @@ export function CreatePurchaseOrderDialog({
     try {
       const payload = {
         ...validation.data,
-        orderNumber: `PO-${Date.now()}`, // Auto-generate
         // Maps to backend DTO
         // Check if expectedDeliveryDate needs simple transformation if undefined
         expectedDeliveryDate: validation.data.expectedDeliveryDate || undefined
@@ -205,6 +195,7 @@ export function CreatePurchaseOrderDialog({
                 <Label htmlFor="supplierId">Supplier</Label>
                 <select
                   id="supplierId"
+                  aria-label="Supplier"
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   value={formData.supplierId}
                   onChange={(e) =>
@@ -288,6 +279,7 @@ export function CreatePurchaseOrderDialog({
                   </Label>
                   <select
                     id="productId"
+                    aria-label="Product"
                     className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm"
                     value={newLine.productId}
                     onChange={(e) =>
@@ -315,7 +307,7 @@ export function CreatePurchaseOrderDialog({
                     onChange={(e) =>
                       handleNewLineChange(
                         "quantity",
-                        parseInt(e.target.value) || 0
+                        Number.parseInt(e.target.value) || 0
                       )
                     }
                   />
@@ -334,7 +326,7 @@ export function CreatePurchaseOrderDialog({
                     onChange={(e) =>
                       handleNewLineChange(
                         "unitPrice",
-                        parseFloat(e.target.value) || 0
+                        Number.parseFloat(e.target.value) || 0
                       )
                     }
                   />
@@ -346,6 +338,7 @@ export function CreatePurchaseOrderDialog({
                     className="w-full"
                     onClick={addLine}
                     disabled={!newLine.productId}
+                    aria-label="Add item"
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -436,7 +429,7 @@ export function CreatePurchaseOrderDialog({
               type="submit"
               disabled={isLoading || formData.orderLines.length === 0}
             >
-              {isLoading ? "Creating..." : "Create Purchase Order"}
+              {isLoading ? "Creating…" : "Create Purchase Order"}
             </Button>
           </DialogFooter>
         </form>

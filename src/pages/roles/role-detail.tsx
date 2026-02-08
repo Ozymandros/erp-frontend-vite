@@ -3,24 +3,33 @@
 import { useState, useEffect, useCallback } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { rolesService } from "@/api/services/roles.service"
-import type { Role } from "@/types/api.types"
+import type { Role, User, Permission } from "@/types/api.types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Pencil, Trash2 } from "lucide-react"
+import { ArrowLeft, Pencil, Trash2, Users, Shield } from "lucide-react"
 import { EditRoleDialog } from "@/components/roles/edit-role-dialog"
 import { DeleteRoleDialog } from "@/components/roles/delete-role-dialog"
+import { PermissionSelector } from "@/components/roles/permission-selector"
 import { formatDateTime } from "@/lib/utils"
 import { handleApiError, isForbiddenError, getForbiddenMessage, getErrorMessage } from "@/lib/error-handling"
+import { usePermission } from "@/hooks/use-permissions"
 
 export function RoleDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [role, setRole] = useState<Role | null>(null)
+  const [usersInRole, setUsersInRole] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  
+  // Permissions
+  const canUpdate = usePermission("Roles", "Update")
+  const canDelete = usePermission("Roles", "Delete")
+  const canReadUsers = usePermission("Users", "Read")
 
   const fetchRole = useCallback(async () => {
     if (!id) return
@@ -42,9 +51,39 @@ export function RoleDetailPage() {
     }
   }, [id])
 
+  const fetchUsersInRole = useCallback(async () => {
+    if (!role?.name) return
+    setIsLoadingUsers(true)
+    try {
+      const users = await rolesService.getUsersInRole(role.name)
+      setUsersInRole(users)
+    } catch (error: unknown) {
+      // Silently fail - users section is optional
+      console.error("Failed to fetch users in role:", error)
+    } finally {
+      setIsLoadingUsers(false)
+    }
+  }, [role?.name])
+
   useEffect(() => {
     fetchRole()
   }, [fetchRole])
+
+  useEffect(() => {
+    if (role?.name && canReadUsers) {
+      fetchUsersInRole()
+    }
+  }, [role?.name, canReadUsers, fetchUsersInRole])
+
+  const handlePermissionsChange = useCallback((permissions: Permission[]) => {
+    // Use functional update to avoid dependency on role
+    setRole(prevRole => {
+      if (prevRole) {
+        return { ...prevRole, permissions }
+      }
+      return prevRole
+    })
+  }, [])
 
   const handleRoleUpdated = () => {
     setIsEditDialogOpen(false)
@@ -77,6 +116,64 @@ export function RoleDetailPage() {
     )
   }
 
+  const renderUsersContent = () => {
+    if (isLoadingUsers) {
+      return (
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      )
+    }
+
+    if (usersInRole.length === 0) {
+      return (
+        <p className="text-muted-foreground text-center py-4">
+          No users have this role assigned. Assign roles to users from the{" "}
+          <Link to="/users" className="text-primary hover:underline">
+            Users page
+          </Link>
+          .
+        </p>
+      )
+    }
+
+    return (
+      <div className="space-y-2">
+        {usersInRole.map((u) => (
+          <div
+            key={u.id}
+            className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-accent"
+          >
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <Link
+                  to={`/users/${u.id}`}
+                  className="font-medium text-foreground hover:underline"
+                >
+                  {u.username}
+                </Link>
+                {u.isAdmin && (
+                  <Badge variant="default" className="text-xs">
+                    Admin
+                  </Badge>
+                )}
+              </div>
+              <p className="text-sm text-muted-foreground">{u.email}</p>
+              {(u.firstName || u.lastName) && (
+                <p className="text-sm text-muted-foreground">
+                  {u.firstName} {u.lastName}
+                </p>
+              )}
+            </div>
+            <Badge variant={u.isActive ? "default" : "destructive"}>
+              {u.isActive ? "Active" : "Inactive"}
+            </Badge>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -87,14 +184,18 @@ export function RoleDetailPage() {
           </Link>
         </Button>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setIsEditDialogOpen(true)}>
-            <Pencil className="mr-2 h-4 w-4" />
-            Edit
-          </Button>
-          <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)}>
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete
-          </Button>
+          {canUpdate && (
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(true)}>
+              <Pencil className="mr-2 h-4 w-4" />
+              Edit
+            </Button>
+          )}
+          {canDelete && (
+            <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)}>
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete
+            </Button>
+          )}
         </div>
       </div>
 
@@ -111,16 +212,16 @@ export function RoleDetailPage() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Role Name</label>
+              <span className="text-sm font-medium text-muted-foreground block">Role Name</span>
               <p className="text-base text-foreground mt-1">{role.name}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Role ID</label>
+              <span className="text-sm font-medium text-muted-foreground block">Role ID</span>
               <p className="text-base text-foreground mt-1 font-mono text-sm">{role.id}</p>
             </div>
             {role.description && (
               <div className="md:col-span-2">
-                <label className="text-sm font-medium text-muted-foreground">Description</label>
+                <span className="text-sm font-medium text-muted-foreground block">Description</span>
                 <p className="text-base text-foreground mt-1">{role.description}</p>
               </div>
             )}
@@ -130,35 +231,44 @@ export function RoleDetailPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Permissions</CardTitle>
+          <div className="flex items-center gap-2">
+            <Shield className="h-5 w-5" />
+            <CardTitle>Permissions</CardTitle>
+          </div>
           <CardDescription>
-            {role.permissions && role.permissions.length > 0
-              ? `This role has ${role.permissions.length} permission(s)`
-              : "No permissions assigned to this role"}
+            Manage permissions assigned to this role. Select or deselect permissions to update the role.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {role.permissions && role.permissions.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {role.permissions?.map((permission) => (
-                <div key={permission.id} className="border border-border rounded-lg p-3">
-                  <div className="flex items-start justify-between mb-1">
-                    <Badge variant="secondary" className="text-xs">
-                      {permission.action}
-                    </Badge>
-                  </div>
-                  <p className="font-medium text-sm text-foreground">{permission.module}</p>
-                  {permission.description && (
-                    <p className="text-xs text-muted-foreground mt-1">{permission.description}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted-foreground">No permissions assigned to this role</p>
+          {id && (
+            <PermissionSelector
+              roleId={id}
+              initialPermissions={role.permissions || []}
+              onPermissionsChange={handlePermissionsChange}
+              readonly={!canUpdate}
+            />
           )}
         </CardContent>
       </Card>
+
+      {canReadUsers && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              <CardTitle>Users with this Role</CardTitle>
+            </div>
+            <CardDescription>
+              {usersInRole.length > 0
+                ? `${usersInRole.length} user(s) have this role assigned`
+                : "No users currently have this role assigned"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {renderUsersContent()}
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>
@@ -167,11 +277,11 @@ export function RoleDetailPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div>
-            <label className="text-sm font-medium text-muted-foreground">Created At</label>
+            <span className="text-sm font-medium text-muted-foreground block">Created At</span>
             <p className="text-base text-foreground mt-1">{formatDateTime(role.createdAt)}</p>
           </div>
           <div>
-            <label className="text-sm font-medium text-muted-foreground">Last Updated</label>
+            <span className="text-sm font-medium text-muted-foreground block">Last Updated</span>
             <p className="text-base text-foreground mt-1">{formatDateTime(role.updatedAt)}</p>
           </div>
         </CardContent>

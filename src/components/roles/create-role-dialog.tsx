@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { rolesService } from "@/api/services/roles.service"
 import type { CreateRoleRequest } from "@/types/api.types"
 import { Button } from "@/components/ui/button"
@@ -26,6 +27,7 @@ interface CreateRoleDialogProps {
 }
 
 export function CreateRoleDialog({ open, onOpenChange, onSuccess }: CreateRoleDialogProps) {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState<CreateRoleRequest>({
     name: "",
     description: "",
@@ -43,12 +45,15 @@ export function CreateRoleDialog({ open, onOpenChange, onSuccess }: CreateRoleDi
     setIsLoading(true)
 
     try {
-      await rolesService.createRole({
+      const newRole = await rolesService.createRole({
         ...formData,
         description: formData.description || undefined,
       })
       onSuccess()
       setFormData({ name: "", description: "" })
+      // Navigate to role detail page to assign permissions
+      onOpenChange(false)
+      navigate(`/roles/${newRole.id}`)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to create role")
     } finally {
@@ -58,11 +63,13 @@ export function CreateRoleDialog({ open, onOpenChange, onSuccess }: CreateRoleDi
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Create New Role</DialogTitle>
-            <DialogDescription>Add a new role to the system</DialogDescription>
+            <DialogDescription>
+              Add a new role to the system. You'll be able to assign permissions after creation.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
@@ -102,7 +109,7 @@ export function CreateRoleDialog({ open, onOpenChange, onSuccess }: CreateRoleDi
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Creating..." : "Create Role"}
+              {isLoading ? "Creating…" : "Create Role"}
             </Button>
           </DialogFooter>
         </form>

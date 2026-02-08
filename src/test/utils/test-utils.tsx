@@ -5,7 +5,7 @@ import { BrowserRouter } from "react-router-dom"
 import { AuthProvider } from "@/contexts/auth.context"
 
 interface AllTheProvidersProps {
-  children: React.ReactNode
+  readonly children: React.ReactNode
 }
 
 function AllTheProviders({ children }: AllTheProvidersProps) {

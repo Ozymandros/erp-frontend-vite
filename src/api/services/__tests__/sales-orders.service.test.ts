@@ -1,11 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type {
   SalesOrderDto,
+  SalesOrderLineDto,
   CreateUpdateSalesOrderDto,
   CreateQuoteDto,
   ConfirmQuoteDto,
   ConfirmQuoteResponseDto,
   StockAvailabilityCheckDto,
+  QuerySpec,
+  PaginatedResponse,
 } from "@/types/api.types";
 import { SalesOrderStatus } from "@/types/api.types";
 
@@ -60,7 +63,6 @@ describe("SalesOrdersService", () => {
     it("should create a new sales order", async () => {
       const newOrder: CreateUpdateSalesOrderDto = {
         customerId: "customer-1",
-        orderNumber: "SO-NEW-001",
         orderDate: "2024-01-01",
         orderLines: [
           {
@@ -73,6 +75,7 @@ describe("SalesOrdersService", () => {
 
       const mockOrder: SalesOrderDto = {
         id: "1",
+        orderNumber: "SO-001",
         ...newOrder,
         status: SalesOrderStatus.Draft,
         totalAmount: 499.95,
@@ -106,7 +109,6 @@ describe("SalesOrdersService", () => {
     it("should create a quote", async () => {
       const quoteData: CreateQuoteDto = {
         customerId: "customer-1",
-        orderNumber: "QUOTE-NEW-001",
         orderDate: "2024-01-01",
         orderLines: [
           {
@@ -217,6 +219,134 @@ describe("SalesOrdersService", () => {
         orderLines
       );
       expect(result).toEqual(mockAvailability);
+    });
+  });
+
+  describe("searchSalesOrders", () => {
+    it("should search sales orders with query spec", async () => {
+      const querySpec: QuerySpec = {
+        page: 1,
+        pageSize: 10,
+        searchTerm: "SO-001",
+      };
+      const mockResponse: PaginatedResponse<SalesOrderDto> = {
+        items: [],
+        page: 1,
+        pageSize: 10,
+        total: 0,
+        totalPages: 0,
+        hasNextPage: false,
+        hasPreviousPage: false,
+      };
+
+      mockApiClient.get.mockResolvedValue(mockResponse);
+
+      const result = await salesOrdersService.searchSalesOrders(querySpec);
+
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        "/sales/api/sales/orders/search",
+        { params: querySpec }
+      );
+      expect(result).toEqual(mockResponse);
+    });
+  });
+
+  describe("getSalesOrderById", () => {
+    it("should fetch sales order by ID", async () => {
+      const mockOrder: SalesOrderDto = {
+        id: "1",
+        orderNumber: "SO-001",
+        customerId: "customer-1",
+        status: SalesOrderStatus.Draft,
+        orderDate: "2024-01-01",
+        totalAmount: 499.95,
+        orderLines: [],
+        createdAt: "2024-01-01",
+        updatedAt: "2024-01-01",
+        createdBy: "user1",
+        updatedBy: "user1",
+        isQuote: false,
+      };
+
+      mockApiClient.get.mockResolvedValue(mockOrder);
+
+      const result = await salesOrdersService.getSalesOrderById("1");
+
+      expect(mockApiClient.get).toHaveBeenCalledWith("/sales/api/sales/orders/1");
+      expect(result).toEqual(mockOrder);
+    });
+  });
+
+  describe("updateSalesOrder", () => {
+    it("should update a sales order", async () => {
+      const updateData: CreateUpdateSalesOrderDto = {
+        customerId: "customer-2",
+        orderDate: "2024-01-02",
+        orderLines: [],
+      };
+      const mockOrder: SalesOrderDto = {
+        id: "1",
+        ...updateData,
+        orderNumber: "SO-001",
+        status: SalesOrderStatus.Draft,
+        totalAmount: 0,
+        orderLines: [] as SalesOrderLineDto[],
+        createdAt: "2024-01-01",
+        updatedAt: "2024-01-01",
+        createdBy: "user1",
+        updatedBy: "user1",
+        isQuote: false,
+      };
+
+      mockApiClient.put.mockResolvedValue(mockOrder);
+
+      const result = await salesOrdersService.updateSalesOrder("1", updateData);
+
+      expect(mockApiClient.put).toHaveBeenCalledWith(
+        "/sales/api/sales/orders/1",
+        updateData
+      );
+      expect(result).toEqual(mockOrder);
+    });
+  });
+
+  describe("deleteSalesOrder", () => {
+    it("should delete a sales order", async () => {
+      mockApiClient.delete.mockResolvedValue(undefined);
+
+      await salesOrdersService.deleteSalesOrder("1");
+
+      expect(mockApiClient.delete).toHaveBeenCalledWith("/sales/api/sales/orders/1");
+    });
+  });
+
+  describe("exportToXlsx", () => {
+    it("should export sales orders to xlsx", async () => {
+      const mockBlob = new Blob(["xlsx data"]);
+      mockApiClient.get.mockResolvedValue(mockBlob);
+
+      const result = await salesOrdersService.exportToXlsx();
+
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        "/sales/api/sales/orders/export-xlsx",
+        { responseType: "blob" }
+      );
+      expect(result).toEqual(mockBlob);
+    });
+  });
+
+  describe("exportToPdf", () => {
+    it("should export sales orders to pdf", async () => {
+      const mockBlob = new Blob(["pdf data"]);
+      mockApiClient.get.mockResolvedValue(mockBlob);
+
+      const result = await salesOrdersService.exportToPdf();
+
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        "/sales/api/sales/orders/export-pdf",
+        { responseType: "blob" }
+      );
+      expect(result).toEqual(mockBlob);
     });
   });
 });

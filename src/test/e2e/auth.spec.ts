@@ -8,42 +8,14 @@ import { setupApiMocks, setupAuthenticatedSession } from "./api-interceptor";
 
 test.describe("Authentication Flow", () => {
   test.beforeEach(async ({ page }) => {
-    test.setTimeout(90000);
-
-    // Clear any existing auth state
     await page.context().clearCookies();
-    await page.waitForTimeout(500);
-
-    // Setup API mocking
     await setupApiMocks(page);
-
-    // Robust navigation with retry
-    const goToLogin = async () => {
-      await page.goto("/login", { 
-        waitUntil: "domcontentloaded",
-        timeout: 60000 
-      });
-      await page.waitForLoadState("load", { timeout: 10000 }).catch(() => {});
-    };
-
-    let attempts = 0;
-    while (attempts < 3) {
-      try {
-        await goToLogin();
-        break;
-      } catch (error) {
-        attempts++;
-        if (attempts >= 3) throw error;
-        await page.waitForTimeout(2000);
-      }
-    }
-
-    // Clear localStorage after page loads
+    await page.goto("/login", { waitUntil: "domcontentloaded", timeout: 30000 });
     await page.evaluate(() => {
       try {
         localStorage.clear();
-      } catch (e) {
-        console.log("localStorage already clear");
+      } catch {
+        /* ignore */
       }
     });
   });
@@ -65,11 +37,8 @@ test.describe("Authentication Flow", () => {
       "password123"
     );
 
-    // Submit form
     await page.click('button[type="submit"]');
-
-    // Wait for response and redirect
-    await page.waitForTimeout(2000);
+    await expect(page).not.toHaveURL(/\/login/);
   });
 
   test("should show error with invalid credentials", async ({ page }) => {
@@ -83,11 +52,8 @@ test.describe("Authentication Flow", () => {
       "wrongpassword"
     );
 
-    // Submit form
     await page.click('button[type="submit"]');
-
-    // Wait for error
-    await page.waitForTimeout(1500);
+    await expect(page.getByText('Invalid credentials').first()).toBeVisible({ timeout: 5000 });
   });
 
   test("should show validation errors for empty fields", async ({ page }) => {
@@ -115,8 +81,6 @@ test.describe("Authentication Flow", () => {
 
     if (toggleExists) {
       await toggleBtn.first().click();
-      // Password visibility should change
-      await page.waitForTimeout(300);
     }
   });
 
@@ -130,7 +94,7 @@ test.describe("Authentication Flow", () => {
 
     if (linkExists) {
       await registerLink.first().click();
-      await page.waitForTimeout(1000);
+      await expect(page).toHaveURL(/register|signup/i);
     }
   });
 
@@ -141,8 +105,7 @@ test.describe("Authentication Flow", () => {
     // Store current URL (for debugging if needed)
     page.url();
 
-    // Reload page
-    await page.reload({ waitUntil: "networkidle" });
+    await page.reload({ waitUntil: "load" });
 
     // Should still be authenticated (or on same page)
     const urlAfterReload = page.url();
@@ -152,18 +115,15 @@ test.describe("Authentication Flow", () => {
   test("should display user info after login", async ({ page }) => {
     await setupAuthenticatedSession(page);
 
-    // Navigate to dashboard
-    await page.goto("/dashboard", { waitUntil: "networkidle" });
-
-    // Wait for page to load
-    await page.waitForTimeout(1000);
+    await page.goto("/dashboard", { waitUntil: "load" });
+    // App may redirect to / or /dashboard
+    await expect(page).toHaveURL(/\/(dashboard)?$/);
   });
 
   test("should handle logout", async ({ page }) => {
     await setupAuthenticatedSession(page);
 
-    // Navigate to dashboard
-    await page.goto("/dashboard", { waitUntil: "networkidle" });
+    await page.goto("/dashboard", { waitUntil: "load" });
 
     // Look for logout button
     const logoutBtn = page.locator(
@@ -174,7 +134,7 @@ test.describe("Authentication Flow", () => {
 
     if (logoutExists) {
       await logoutBtn.first().click();
-      await page.waitForTimeout(1000);
+      await expect(page).toHaveURL(/\/login/);
     }
   });
 
@@ -185,17 +145,21 @@ test.describe("Authentication Flow", () => {
     await page.evaluate(() => {
       try {
         localStorage.clear();
+        sessionStorage.clear();
       } catch (e) {
         console.log("Already clear");
       }
     });
 
-    // Try to access dashboard
-    await page.goto("/dashboard", { waitUntil: "networkidle" }).catch(() => {
-      // Navigation might fail, that's okay
-    });
-
-    await page.waitForTimeout(1000);
+    // Try to access protected route - should redirect to login
+    await page.goto("/users", { waitUntil: "domcontentloaded", timeout: 30000 });
+    
+    // Should be redirected to login page
+    await page.waitForURL("**/login", { timeout: 5000 }).catch(() => {});
+    
+    // Verify we're on login page
+    const loginForm = page.locator('input[type="email"], input[name="email"]');
+    await expect(loginForm).toBeVisible({ timeout: 5000 });
   });
 });
 
@@ -203,39 +167,25 @@ test.describe("Registration Flow", () => {
   test.beforeEach(async ({ page }) => {
     await page.context().clearCookies();
     await setupApiMocks(page);
-
-    // Navigate to registration page - use domcontentloaded instead of networkidle
-    await page.goto("/register", { 
-      waitUntil: "domcontentloaded",
-      timeout: 10000 
-    }).catch(async () => {
-      // Fallback: try without waiting
-      await page.goto("/register");
-    });
-
-    // Wait for page to be ready
-    await page.waitForLoadState("load", { timeout: 5000 }).catch(() => {});
-
-    // Clear localStorage after page loads
+    await page.goto("/register", { waitUntil: "load", timeout: 30000 });
     await page.evaluate(() => {
       try {
         localStorage.clear();
-      } catch (e) {
-        console.log("localStorage already clear");
+        sessionStorage.clear();
+      } catch {
+        /* ignore */
       }
     });
   });
 
   test("should load registration page", async ({ page }) => {
-    // Check for registration form
     const emailInput = page.locator('input[type="email"], input[name="email"]');
-    const pageContent = await page.content();
-
+    const pageContent = (await page.content()).toLowerCase();
     const hasRegistrationForm =
       pageContent.includes("password") ||
       pageContent.includes("register") ||
-      pageContent.includes("sign up");
-
+      pageContent.includes("sign up") ||
+      pageContent.includes("create account");
     expect(hasRegistrationForm || (await emailInput.count()) > 0).toBeTruthy();
   });
 
@@ -248,20 +198,17 @@ test.describe("Registration Flow", () => {
   });
 
   test("should validate password match", async ({ page }) => {
-    const confirmInput = page.getByLabel("Confirm Password");
-    await expect(confirmInput).toBeVisible();
+    const confirmInput = page.locator('input#passwordConfirm, input[name="passwordConfirm"]');
+    await expect(confirmInput).toBeVisible({ timeout: 5000 });
   });
   
   test("should register successfully with valid data", async ({ page }) => {
-    // Form already loaded by beforeEach
-    
-    // Fill in registration form with getByLabel (more reliable)
-    await page.getByLabel(/first name/i).fill("New");
-    await page.getByLabel(/last name/i).fill("User");
-    await page.getByLabel(/username/i).fill("newuser");
-    await page.getByLabel(/^email$/i).fill("newuser@example.com");
-    await page.getByLabel(/^password$/i).fill("Password123!");
-    await page.getByLabel(/confirm password/i).fill("Password123!");
+    await page.locator('input#firstName').fill("New");
+    await page.locator('input#lastName').fill("User");
+    await page.locator('input#username').fill("newuser");
+    await page.locator('input#email').fill("newuser@example.com");
+    await page.locator('input#password').fill("Password123!");
+    await page.locator('input#passwordConfirm').fill("Password123!");
 
     // Track network activity BEFORE submitting
     let apiCalled = false;
@@ -278,8 +225,10 @@ test.describe("Registration Flow", () => {
     await page.keyboard.press('Tab');
     await page.keyboard.press('Enter');
 
-    // Wait a bit for the async operation
-    await page.waitForTimeout(2000);
+    await page.waitForResponse(
+      (r) => r.url().includes('register') && r.request().method() === 'POST',
+      { timeout: 5000 }
+    ).catch(() => {});
 
     // Verify API was called
     if (!apiCalled) {

@@ -11,6 +11,7 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    strictPort: true, // Fail if 3000 is in use (required for Playwright webServer)
     proxy: {
       "/api": {
         target: process.env.VITE_API_BASE_URL || "http://localhost:8080",
@@ -18,4 +19,26 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("react")) {
+              return "vendor-react";
+            }
+            if (id.includes("lucide-react")) {
+              return "vendor-icons";
+            }
+            if (id.includes("axios")) {
+              return "vendor-axios";
+            }
+            return "vendor";
+          }
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+  },
 })
+

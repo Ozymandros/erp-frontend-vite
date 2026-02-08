@@ -1,12 +1,13 @@
+# syntax=docker/dockerfile:1
 FROM mcr.microsoft.com/devcontainers/javascript-node:1-20-bullseye
 
-# Enable Corepack for pnpm support (works for all users)
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Pin pnpm version to match CI and lockfile (pnpm 10.28.2)
+ARG PNPM_VERSION=10.28.2
+RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
 
-# Install Playwright system dependencies
+# Install Playwright system dependencies (for E2E tests)
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
-    # Playwright dependencies
     libnss3 \
     libnspr4 \
     libatk1.0-0 \
@@ -23,7 +24,9 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     libasound2 \
     libpango-1.0-0 \
     libcairo2 \
-    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+    xvfb \
+    && apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
 
-# Switch to non-root user
 USER node

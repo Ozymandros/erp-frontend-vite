@@ -1,0 +1,106 @@
+---
+description: "Eliminate async waterfalls by parallelizing independent operations and deferring await until needed"
+globs: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"]
+alwaysApply: false
+---
+
+# Eliminating Async Waterfalls
+
+**Impact: CRITICAL** - Waterfalls are the #1 performance killer. Each sequential await adds full network latency.
+
+## When Editing Async Code
+
+### Rule 1: Use Promise.all() for Independent Operations
+
+**When you see:** Sequential `await` statements with no dependencies
+
+**Action:** Immediately refactor to `Promise.all()` to parallelize execution.
+
+**Incorrect:**
+
+```typescript
+const user = await fetchUser();
+const posts = await fetchPosts();
+const comments = await fetchComments();
+```
+
+**Correct:**
+
+```typescript
+const [user, posts, comments] = await Promise.all([
+  fetchUser(),
+  fetchPosts(),
+  fetchComments(),
+]);
+```
+
+### Rule 2: Defer Await Until Needed
+
+**When you see:** `await` operations before conditional branches
+
+**Action:** Move `await` into the branch where it's actually used.
+
+**Incorrect:**
+
+```typescript
+async function handleRequest(userId: string, skipProcessing: boolean) {
+  const userData = await fetchUserData(userId); // Blocks even when skipped
+
+  if (skipProcessing) {
+    return { skipped: true };
+  }
+  return processUserData(userData);
+}
+```
+
+**Correct:**
+
+```typescript
+async function handleRequest(userId: string, skipProcessing: boolean) {
+  if (skipProcessing) {
+    return { skipped: true }; // Returns immediately
+  }
+
+  const userData = await fetchUserData(userId); // Only fetch when needed
+  return processUserData(userData);
+}
+```
+
+### Rule 3: Parallelize in API Service Functions
+
+**When you see:** Sequential `await` in API service functions (e.g., `src/api/services/`) or async handlers that fetch multiple independent resources
+
+**Action:** Use `Promise.all()` to parallelize independent fetches. Start dependent fetches only after their prerequisites resolve.
+
+**Incorrect:**
+
+```typescript
+// In src/api/services/ - sequential awaits
+export async function fetchDashboardData(userId: string) {
+  const user = await userService.getUser(userId);
+  const orders = await orderService.getOrders(userId);
+  const inventory = await inventoryService.getSummary();
+  return { user, orders, inventory };
+}
+```
+
+**Correct:**
+
+```typescript
+export async function fetchDashboardData(userId: string) {
+  const [user, orders, inventory] = await Promise.all([
+    userService.getUser(userId),
+    orderService.getOrders(userId),
+    inventoryService.getSummary(),
+  ]);
+  return { user, orders, inventory };
+}
+```
+
+**When one fetch depends on another:** Start independent fetches first, await the prerequisite, then run dependent fetches in parallel with remaining independent ones.
+
+## Never Do These
+
+- ❌ Never await operations sequentially when they're independent
+- ❌ Never await before checking if the result is needed
+- ❌ Never chain sequential awaits in API service functions when fetches can run in parallel
