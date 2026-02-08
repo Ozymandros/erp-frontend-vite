@@ -2,18 +2,17 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ListPageLayout } from '../list-page-layout';
-import type { PaginatedResponse } from '@/types/api.types';
+import { BaseDto, PaginatedResponse } from '@/types/api.types';
 import type { Column } from '@/components/ui/data-table';
 
-interface TestItem {
-  id: number;
+interface TestItem extends BaseDto<string> {
   name: string;
 }
 
 const mockData: PaginatedResponse<TestItem> = {
   items: [
-    { id: 1, name: 'Item 1' },
-    { id: 2, name: 'Item 2' },
+    { id: '1', name: 'Item 1' },
+    { id: '2', name: 'Item 2' },
   ],
   total: 2,
   page: 1,

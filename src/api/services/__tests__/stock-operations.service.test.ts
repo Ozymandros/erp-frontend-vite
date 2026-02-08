@@ -42,6 +42,8 @@ describe("StockOperationsService", () => {
         orderId: reserveData.orderId,
         reservedAt: "2024-01-01",
         expiresAt: reserveData.expiresAt!,
+        createdAt: "2024-01-01T00:00:00Z",
+        createdBy: "system",
       };
 
       mockApiClient.post.mockResolvedValue(mockReservation);

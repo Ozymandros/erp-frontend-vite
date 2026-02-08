@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/table";
 import { Plus, Trash2, CalendarIcon } from "lucide-react";
 import { formatCurrency, getDefaultDateTimeLocal } from "@/lib/utils";
-import type { SupplierDto, ProductDto } from "@/types/api.types";
+import { type SupplierDto, type ProductDto, PurchaseOrderLineDto } from "@/types/api.types";
 
 interface CreatePurchaseOrderDialogProps {
   readonly open: boolean;
@@ -102,11 +102,11 @@ export function CreatePurchaseOrderDialog({
       setNewLine((prev) => ({
         ...prev,
         productId: value as string,
-        // For purchase orders, unitPrice is cost price. Assuming product.unitPrice is sales price approx, 
+        // For purchase orders, unitPrice is cost price. Assuming product.unitPrice is sales price approx,
         // usually we might want to manually enter cost or fetch last cost.
         // For simplicity, we default to 0 or product price if needed, but allow edit.
-         // Defaulting to 0 to force user to enter cost, or use product price as placeholder.
-        unitPrice: product ? product.unitPrice : 0, 
+        // Defaulting to 0 to force user to enter cost, or use product price as placeholder.
+        unitPrice: product ? product.unitPrice : 0,
       }));
     } else {
       setNewLine((prev) => ({ ...prev, [field]: value }));
@@ -117,19 +117,27 @@ export function CreatePurchaseOrderDialog({
     if (!newLine.productId) return;
     if (newLine.quantity <= 0) return;
 
+    const lineDto = new PurchaseOrderLineDto({
+      id: crypto.randomUUID(),
+      productId: newLine.productId,
+      quantity: newLine.quantity,
+      unitPrice: newLine.unitPrice,
+      lineTotal: newLine.quantity * newLine.unitPrice,
+    });
+
     setFormData((prev) => ({
       ...prev,
-      orderLines: [...prev.orderLines, { ...newLine }],
+      orderLines: [...prev.orderLines, lineDto],
     }));
 
     // Reset new line
     setNewLine({ productId: "", quantity: 1, unitPrice: 0 });
   };
 
-  const removeLine = (index: number) => {
+  const removeLine = (id: string) => {
     setFormData((prev) => ({
       ...prev,
-      orderLines: prev.orderLines.filter((_, i) => i !== index),
+      orderLines: prev.orderLines.filter((line) => line.id !== id),
     }));
   };
 
@@ -368,12 +376,12 @@ export function CreatePurchaseOrderDialog({
                         </TableCell>
                       </TableRow>
                     ) : (
-                      formData.orderLines?.map((line, index) => {
+                      formData.orderLines?.map((line) => {
                         const product = products.find(
                           (p) => p.id === line.productId
                         );
                         return (
-                          <TableRow key={index}>
+                          <TableRow key={line.id}>
                             <TableCell>
                               {product?.name || line.productId}
                             </TableCell>
@@ -392,7 +400,7 @@ export function CreatePurchaseOrderDialog({
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8 text-red-500"
-                                onClick={() => removeLine(index)}
+                                onClick={() => removeLine(line.id!)}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>

@@ -164,7 +164,7 @@ export function InventoryTransactionsListPage() {
   }
 
   return (
-    <ListPageLayout
+    <ListPageLayout<InventoryTransactionDto>
       title="Inventory Transactions"
       description="View all inventory movement transactions"
       resourceName="Transaction"

@@ -374,7 +374,7 @@ describe('Backend Synchronization Validation', () => {
       expect(typeof mockUser.updatedAt).toBe('string')
       
       // Should be parseable as Date
-      const createdDate = new Date(mockUser.createdAt)
+      const createdDate = new Date(mockUser.createdAt!)
       expect(createdDate.toISOString()).toBe('2024-01-01T00:00:00.000Z')
     })
   })

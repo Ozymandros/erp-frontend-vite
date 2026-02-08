@@ -478,6 +478,64 @@ export async function setupApiMocks(page: Page) {
       
       // Inventory endpoints - /inventory/api/inventory/*
       if (url.includes('/inventory/api/inventory/')) {
+        // Warehouse Stocks endpoints
+        if (url.includes('/warehouse-stocks')) {
+          const mockStocks = [
+            {
+              id: 'stock-1',
+              productId: '1',
+              warehouseId: '1',
+              quantity: 5,
+              reservedQuantity: 0,
+              reorderLevel: 10,
+              lastUpdated: '2024-01-01T00:00:00Z',
+              createdAt: '2024-01-01T00:00:00Z',
+              createdBy: 'system',
+            },
+            {
+              id: 'stock-2',
+              productId: '2',
+              warehouseId: '1',
+              quantity: 50,
+              reservedQuantity: 10,
+              reorderLevel: 10,
+              lastUpdated: '2024-01-01T00:00:00Z',
+              createdAt: '2024-01-01T00:00:00Z',
+              createdBy: 'system',
+            },
+          ];
+
+          // GET /inventory/api/inventory/warehouse-stocks/low-stock
+          if (url.includes('/low-stock') && method === 'GET') {
+            await route.fulfill({
+              status: 200,
+              contentType: 'application/json',
+              body: JSON.stringify([mockStocks[0]]),
+            });
+            return;
+          }
+
+          // GET /inventory/api/inventory/warehouse-stocks/product/{productId}
+          if (url.includes('/product/') && method === 'GET') {
+            await route.fulfill({
+              status: 200,
+              contentType: 'application/json',
+              body: JSON.stringify(mockStocks),
+            });
+            return;
+          }
+
+          // GET /inventory/api/inventory/warehouse-stocks/warehouse/{warehouseId}
+          if (url.includes('/warehouse/') && method === 'GET') {
+            await route.fulfill({
+              status: 200,
+              contentType: 'application/json',
+              body: JSON.stringify(mockStocks),
+            });
+            return;
+          }
+        }
+
         // Products endpoints
         if (url.includes('/products')) {
           // Search products: GET /inventory/api/inventory/products/search

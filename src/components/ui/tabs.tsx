@@ -19,8 +19,10 @@ interface TabsProps {
 export function Tabs({ defaultValue, className, children }: TabsProps) {
   const [value, setValue] = React.useState(defaultValue);
 
+  const contextValue = React.useMemo(() => ({ value, onValueChange: setValue }), [value]);
+
   return (
-    <TabsContext.Provider value={{ value, onValueChange: setValue }}>
+    <TabsContext.Provider value={contextValue}>
       <div className={cn("w-full", className)}>{children}</div>
     </TabsContext.Provider>
   );

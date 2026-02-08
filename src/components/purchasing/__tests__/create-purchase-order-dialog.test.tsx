@@ -120,15 +120,15 @@ describe('CreatePurchaseOrderDialog', () => {
     await userEvent.click(screen.getByRole("button", { name: /add item/i }));
 
     const table = screen.getByRole('table');
-    expect(within(table).getByText("Product 1")).toBeInTheDocument();
-    expect(within(table).getAllByText("$50").length).toBeGreaterThanOrEqual(1);
+    expect(within(table).getByText(/Product 1/i)).toBeInTheDocument();
+    expect(within(table).getAllByText(/\$50/)).toHaveLength(2);
 
     // Remove item
     const deleteBtn = screen.getByRole('table').querySelector('button .lucide-trash2')?.closest('button');
     if (deleteBtn) await userEvent.click(deleteBtn);
 
     await waitFor(() => {
-      expect(within(table).queryByText("Product 1")).not.toBeInTheDocument();
+      expect(within(table).queryByText(/Product 1/i)).not.toBeInTheDocument();
     });
   });
 
@@ -158,7 +158,7 @@ describe('CreatePurchaseOrderDialog', () => {
     await userEvent.type(costInput, "150");
     await userEvent.click(screen.getByRole("button", { name: /add item/i }));
 
-    expect(screen.getByText("$200")).toBeInTheDocument();
+    expect(screen.getByText(/\$200/)).toBeInTheDocument();
   });
 
   it('validates required fields', async () => {
@@ -243,7 +243,7 @@ describe('CreatePurchaseOrderDialog', () => {
     
     // Should not add if no product
     await userEvent.click(screen.getByRole("button", { name: /add item/i }));
-    expect(within(screen.getByRole('table')).queryByText("Product 1")).toBeNull();
+    expect(within(screen.getByRole('table')).queryByText(/Product 1/i)).toBeNull();
 
     // Should not add if quantity <= 0
     await userEvent.selectOptions(screen.getByLabelText(/product/i), "1");
@@ -251,7 +251,7 @@ describe('CreatePurchaseOrderDialog', () => {
     await userEvent.clear(qtyInput);
     await userEvent.type(qtyInput, "0");
     await userEvent.click(screen.getByRole("button", { name: /add item/i }));
-    expect(within(screen.getByRole('table')).queryByText("Product 1")).toBeNull();
+    expect(within(screen.getByRole('table')).queryByText(/Product 1/i)).toBeNull();
   });
 
   it('handles API error on load', async () => {

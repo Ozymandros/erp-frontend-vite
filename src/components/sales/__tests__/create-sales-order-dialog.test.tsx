@@ -119,16 +119,17 @@ describe('CreateSalesOrderDialog', () => {
     await userEvent.click(screen.getByRole("button", { name: /add item/i }));
 
     const table = screen.getByRole('table');
-    expect(within(table).getByText("Product 1")).toBeInTheDocument();
+    expect(within(table).getByText(/Product 1/i)).toBeInTheDocument();
     // Use getAllByText because $100 appears in both Price and Total columns
-    expect(within(table).getAllByText("$100").length).toBeGreaterThanOrEqual(1);
+    expect(within(table).getAllByText(/\$100/)).toHaveLength(2);
 
     // Remove item
     const deleteBtn = screen.getByRole('table').querySelector('button .lucide-trash2')?.closest('button');
     if (deleteBtn) await userEvent.click(deleteBtn);
 
     await waitFor(() => {
-      expect(screen.queryByText("Product 1")).not.toBeInTheDocument();
+      const table = screen.getByRole('table');
+      expect(within(table).queryByText(/Product 1/i)).not.toBeInTheDocument();
     });
   });
 
@@ -157,7 +158,7 @@ describe('CreateSalesOrderDialog', () => {
     await userEvent.click(screen.getByRole("button", { name: /add item/i }));
 
     // Total: 100 + 200 = 300
-    expect(screen.getByText("$300")).toBeInTheDocument();
+    expect(screen.getByText(/\$300/)).toBeInTheDocument();
   });
 
   it('handles successful submission', async () => {
@@ -197,8 +198,8 @@ describe('CreateSalesOrderDialog', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole('option', { name: /Customer 1/ })).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: /Product 1/ })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: /Customer 1/i })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: /Product 1/i })).toBeInTheDocument();
     });
 
     await userEvent.selectOptions(screen.getByLabelText(/customer/i), "1");
@@ -280,7 +281,7 @@ describe('CreateSalesOrderDialog', () => {
     
     // Should not add if no product
     await userEvent.click(screen.getByRole("button", { name: /add item/i }));
-    expect(within(screen.getByRole('table')).queryByText("Product 1")).toBeNull();
+    expect(within(screen.getByRole('table')).queryByText(/Product 1/i)).toBeNull();
 
     // Should not add if quantity <= 0
     await userEvent.selectOptions(screen.getByLabelText(/product/i), "1");
@@ -288,7 +289,7 @@ describe('CreateSalesOrderDialog', () => {
     await userEvent.clear(qtyInput);
     await userEvent.type(qtyInput, "0");
     await userEvent.click(screen.getByRole("button", { name: /add item/i }));
-    expect(within(screen.getByRole('table')).queryByText("Product 1")).toBeNull();
+    expect(within(screen.getByRole('table')).queryByText(/Product 1/i)).toBeNull();
   });
 
   it('handles cancel button', async () => {

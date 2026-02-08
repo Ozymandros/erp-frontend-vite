@@ -85,6 +85,8 @@ describe("SalesOrdersService", () => {
           salesOrderId: "1",
           totalPrice: (line.quantity || 0) * (line.unitPrice || 0),
           lineTotal: (line.quantity || 0) * (line.unitPrice || 0),
+          createdAt: "2024-01-01",
+          createdBy: "user1",
         })),
         isQuote: false,
         createdAt: "2024-01-01",

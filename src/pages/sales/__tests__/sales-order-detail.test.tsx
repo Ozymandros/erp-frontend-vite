@@ -40,6 +40,8 @@ const mockSalesOrder: SalesOrderDto = {
       quantity: 3,
       unitPrice: 1000.00,
       lineTotal: 3000.00,
+      createdAt: "2024-01-01T00:00:00Z",
+      createdBy: "admin",
     },
   ],
   createdAt: "2024-01-01T00:00:00Z",

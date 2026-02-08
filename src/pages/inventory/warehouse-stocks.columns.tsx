@@ -73,6 +73,10 @@ export function getWarehouseStockColumns({
         const available = availableQuantity(stock);
         const low = isLowStock(stock);
         
+        if (available <= 0) {
+          return <Badge variant="secondary">Out of Stock</Badge>;
+        }
+
         if (low) {
           return (
             <Badge variant="destructive">
@@ -82,11 +86,7 @@ export function getWarehouseStockColumns({
           );
         }
 
-        if (available > 0) {
-          return <Badge variant="default">In Stock</Badge>;
-        }
-
-        return <Badge variant="secondary">Out of Stock</Badge>;
+        return <Badge variant="default">In Stock</Badge>;
       },
     },
   ];

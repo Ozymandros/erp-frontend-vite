@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/table";
 import { Plus, Trash2, CalendarIcon } from "lucide-react";
 import { formatCurrency, getDefaultDateTimeLocal } from "@/lib/utils";
-import type { CustomerDto, ProductDto } from "@/types/api.types";
+import { type CustomerDto, type ProductDto, OrderLineDto } from "@/types/api.types";
 
 interface CreateOrderDialogProps {
   readonly open: boolean;
@@ -110,19 +110,27 @@ export function CreateOrderDialog({
     if (!newLine.productId) return;
     if (newLine.quantity <= 0) return;
 
+    const lineDto = new OrderLineDto({
+      id: crypto.randomUUID(),
+      productId: newLine.productId,
+      quantity: newLine.quantity,
+      unitPrice: newLine.unitPrice,
+      totalPrice: newLine.quantity * newLine.unitPrice,
+    });
+
     setFormData((prev) => ({
       ...prev,
-      orderLines: [...prev.orderLines, { ...newLine }],
+      orderLines: [...prev.orderLines, lineDto],
     }));
 
     // Reset new line, keep unitPrice 0 until product selected
     setNewLine({ productId: "", quantity: 1, unitPrice: 0 });
   };
 
-  const removeLine = (index: number) => {
+  const removeLine = (id: string) => {
     setFormData((prev) => ({
       ...prev,
-      orderLines: prev.orderLines.filter((_, i) => i !== index),
+      orderLines: prev.orderLines.filter((line) => line.id !== id),
     }));
   };
 
@@ -338,12 +346,12 @@ export function CreateOrderDialog({
                         </TableCell>
                       </TableRow>
                     ) : (
-                      formData.orderLines?.map((line, index) => {
+                      formData.orderLines?.map((line) => {
                         const product = products.find(
                           (p) => p.id === line.productId
                         );
                         return (
-                          <TableRow key={index}>
+                          <TableRow key={line.id}>
                             <TableCell>
                               {product?.name || line.productId}
                             </TableCell>
@@ -362,7 +370,7 @@ export function CreateOrderDialog({
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8 text-red-500"
-                                onClick={() => removeLine(index)}
+                                onClick={() => removeLine(line.id!)}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>

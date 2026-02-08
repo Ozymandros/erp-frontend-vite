@@ -33,9 +33,11 @@ export function WarehouseStocksListPage() {
       data = await warehouseStocksService.getStocksByProduct(selectedProductId);
     } else if (filterType === "warehouse" && selectedWarehouseId) {
       data = await warehouseStocksService.getStocksByWarehouse(selectedWarehouseId);
+    } else if (filterType === "all") {
+      data = await warehouseStocksService.getLowStocks(); // Until we have a real getAllStocks
     } else {
       data = await warehouseStocksService.getLowStocks();
-      if (filterType === "all") setFilterType("low");
+      setFilterType("low");
     }
     return {
       items: data,

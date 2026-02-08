@@ -10,9 +10,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DataTable, Column } from "@/components/ui/data-table";
-import { PaginatedResponse, QuerySpec } from "@/types/api.types";
+import { BaseDto, PaginatedResponse, QuerySpec } from "@/types/api.types";
 
-interface ListPageLayoutProps<T> {
+interface ListPageLayoutProps<T extends BaseDto<string>> {
   readonly title: string;
   readonly description: string;
   readonly resourceName: string;
@@ -45,7 +45,7 @@ interface ListPageLayoutProps<T> {
  * A standardized layout for list pages.
  * Handles search, sorting, pagination, and provides slots for actions.
  */
-export function ListPageLayout<T>({
+export function ListPageLayout<T extends BaseDto<string>>({
   title,
   description,
   resourceName,
@@ -119,7 +119,7 @@ export function ListPageLayout<T>({
             </div>
           </div>
 
-          <DataTable
+          <DataTable<T>
             columns={columns}
             data={data?.items || []}
             onSort={onSort}

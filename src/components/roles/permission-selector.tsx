@@ -425,7 +425,7 @@ export function PermissionSelector({
             return (
               p.module.toLowerCase().includes(term) ||
               p.action.toLowerCase().includes(term) ||
-              (p.description && p.description.toLowerCase().includes(term))
+              p.description?.toLowerCase().includes(term)
             )
           })
         }

@@ -39,6 +39,8 @@ const mockPurchaseOrder: PurchaseOrderDto = {
       quantity: 5,
       unitPrice: 500.00,
       lineTotal: 2500.00,
+      createdAt: "2024-01-01T00:00:00Z",
+      createdBy: "admin",
     },
   ],
   createdAt: "2024-01-01T00:00:00Z",

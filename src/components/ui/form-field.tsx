@@ -25,32 +25,41 @@ export function FormField({
 }: FormFieldProps) {
   const baseInputClass = "w-full rounded-md border border-input bg-background px-3 py-2 text-sm";
 
+  let inputElement;
+  if (type === "select") {
+    inputElement = (
+      <select name={name} required={required} className={baseInputClass}>
+        {children}
+      </select>
+    );
+  } else if (type === "textarea") {
+    inputElement = (
+      <textarea
+        name={name}
+        required={required}
+        className={baseInputClass}
+        rows={rows}
+        placeholder={placeholder}
+      />
+    );
+  } else {
+    inputElement = (
+      <input
+        name={name}
+        type={type}
+        required={required}
+        min={min}
+        className={baseInputClass}
+        placeholder={placeholder}
+      />
+    );
+  }
+
   return (
     <div className={className}>
       <label className="text-sm font-medium flex flex-col gap-1">
         <span>{label}</span>
-        {type === "select" ? (
-          <select name={name} required={required} className={baseInputClass}>
-            {children}
-          </select>
-        ) : type === "textarea" ? (
-          <textarea
-            name={name}
-            required={required}
-            className={baseInputClass}
-            rows={rows}
-            placeholder={placeholder}
-          />
-        ) : (
-          <input
-            name={name}
-            type={type}
-            required={required}
-            min={min}
-            className={baseInputClass}
-            placeholder={placeholder}
-          />
-        )}
+        {inputElement}
       </label>
     </div>
   );

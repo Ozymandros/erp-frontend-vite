@@ -51,6 +51,10 @@ describe("StockOperationsPage", () => {
       </MemoryRouter>
     );
 
+    await waitFor(() => {
+      expect(productsService.getProducts).toHaveBeenCalled();
+    });
+
     expect(screen.getByRole("heading", { name: /Stock Operations/i, level: 1 })).toBeInTheDocument();
     expect(screen.getByText(/Perform stock operations/)).toBeInTheDocument();
   });
@@ -61,6 +65,10 @@ describe("StockOperationsPage", () => {
         <StockOperationsPage />
       </MemoryRouter>
     );
+
+    await waitFor(() => {
+      expect(productsService.getProducts).toHaveBeenCalled();
+    });
 
     // Tab triggers (Transfer, Adjust, Release have no duplicate; Reserve also appears as submit btn)
     expect(screen.getByRole("button", { name: /Transfer Stock/i })).toBeInTheDocument();

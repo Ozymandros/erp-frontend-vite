@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@/test/utils/test-utils';
+import { render, screen, waitFor, within } from '@/test/utils/test-utils';
 import userEvent from '@testing-library/user-event';
 import { CreateOrderDialog } from '../create-order-dialog';
 import { customersService } from '@/api/services/customers.service';
@@ -214,7 +214,7 @@ describe('CreateOrderDialog', () => {
 
     // Wait for products to load (option with value "1" must be available)
     await waitFor(() => {
-      expect(screen.getByRole('option', { name: /Product 1/ })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: /Product 1/i })).toBeInTheDocument();
     });
 
     // Select Product
@@ -232,9 +232,10 @@ describe('CreateOrderDialog', () => {
 
     // Verify item in list (formatCurrency(200) = "$200" - appears in line total and footer total)
     await waitFor(() => {
-      expect(screen.getByText("Product 1")).toBeInTheDocument();
-      expect(screen.getByText("2")).toBeInTheDocument();
-      expect(screen.getAllByText("$200").length).toBeGreaterThanOrEqual(1);
+      const table = screen.getByRole('table');
+      expect(within(table).getByText(/Product 1/i)).toBeInTheDocument();
+      expect(within(table).getByText("2")).toBeInTheDocument();
+      expect(screen.getAllByText(/\$200/)).toHaveLength(2);
     });
   });
 
@@ -255,7 +256,8 @@ describe('CreateOrderDialog', () => {
     await userEvent.selectOptions(screen.getByLabelText(/product/i), "1");
     await userEvent.click(screen.getByRole("button", { name: /add item/i }));
 
-    expect(screen.getByText("Product 1")).toBeInTheDocument();
+    const table = screen.getByRole('table');
+    expect(within(table).getByText(/Product 1/i)).toBeInTheDocument();
 
     // Remove Item
     // Find the trash button in the table row
@@ -270,8 +272,9 @@ describe('CreateOrderDialog', () => {
     }
 
     await waitFor(() => {
-      expect(screen.queryByText("Product 1")).not.toBeInTheDocument();
-      expect(screen.getByText(/no items added/i)).toBeInTheDocument();
+      const table = screen.getByRole('table');
+      expect(within(table).queryByText(/Product 1/i)).not.toBeInTheDocument();
+      expect(within(table).getByText(/no items added/i)).toBeInTheDocument();
     });
   });
 
@@ -302,7 +305,8 @@ describe('CreateOrderDialog', () => {
     // The button might not be disabled by quantity in the current implementation, 
     // but the addLine function has a guard: if (newLine.quantity <= 0) return;
     await userEvent.click(addButton);
-    expect(screen.queryByText("Product 1")).not.toBeInTheDocument();
+    const table = screen.getByRole('table');
+    expect(within(table).queryByText(/Product 1/i)).not.toBeInTheDocument();
   });
 
   it('should handle submission loading state and error', async () => {
@@ -354,8 +358,8 @@ describe('CreateOrderDialog', () => {
 
     // Wait for customers and products to load
     await waitFor(() => {
-      expect(screen.getByRole('option', { name: /Customer 1/ })).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: /Product 1/ })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: /Customer 1/i })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: /Product 1/i })).toBeInTheDocument();
     });
 
     // Select Customer

@@ -204,7 +204,7 @@ export function OrderDetailPage() {
               </TableHeader>
               <TableBody>
                 {order.orderLines?.map((line) => (
-                  <TableRow key={line.productId}> {/* Assuming productId is unique per order for simplicity, otherwise update backend to return line IDs */}
+                  <TableRow key={line.productId}>
                     <TableCell className="font-medium">
                       {line.productId}
                     </TableCell>

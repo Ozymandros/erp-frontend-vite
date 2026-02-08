@@ -43,12 +43,15 @@ const mockWarehouses: WarehouseDto[] = [{ id: "wh-1", name: "Main Warehouse", lo
 
 const mockStocks: WarehouseStockDto[] = [
   {
+    id: "stock-1",
     productId: "prod-1",
     warehouseId: "wh-1",
     quantity: 5,
     reservedQuantity: 0,
     reorderLevel: 10,
     lastUpdated: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    createdBy: "admin",
   },
 ];
 
@@ -115,6 +118,108 @@ describe("WarehouseStocksListPage", () => {
 
     await waitFor(() => {
       expect(warehouseStocksService.getStocksByWarehouse).toHaveBeenCalledWith("wh-1");
+    });
+  });
+
+  it("should switch to All Stocks and handle exports", async () => {
+    vi.mocked(warehouseStocksService.getLowStocks).mockResolvedValue(mockStocks);
+    vi.mocked(warehouseStocksService.getStocksByProduct).mockResolvedValue(mockStocks);
+
+    render(
+      <MemoryRouter>
+        <WarehouseStocksListPage />
+      </MemoryRouter>
+    );
+
+    const allStocksBtn = await screen.findByRole('button', { name: /all stocks/i });
+    await userEvent.click(allStocksBtn);
+
+    const exportXlsxBtn = screen.getByRole('button', { name: /xlsx/i });
+    const exportPdfBtn = screen.getByRole('button', { name: /pdf/i });
+
+    await userEvent.click(exportXlsxBtn);
+    expect(warehouseStocksService.exportToXlsx).toHaveBeenCalled();
+
+    await userEvent.click(exportPdfBtn);
+    expect(warehouseStocksService.exportToPdf).toHaveBeenCalled();
+
+    // Switch back to Low Stock to cover lines 161-163
+    const lowStockBtn = await screen.findByRole('button', { name: /low stock/i });
+    await userEvent.click(lowStockBtn);
+    expect(warehouseStocksService.getLowStocks).toHaveBeenCalled();
+  });
+
+  it("should handle fetch errors", async () => {
+    vi.mocked(productsService.getProducts).mockRejectedValue(new Error("Fetch failed"));
+    vi.mocked(warehousesService.getWarehouses).mockRejectedValue(new Error("Fetch failed"));
+    
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(
+      <MemoryRouter>
+        <WarehouseStocksListPage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith("Failed to fetch products", expect.any(Error));
+      expect(consoleSpy).toHaveBeenCalledWith("Failed to fetch warehouses", expect.any(Error));
+    });
+
+    consoleSpy.mockRestore();
+  });
+
+  it("should render different stock statuses correctly", async () => {
+    const variedStocks: WarehouseStockDto[] = [
+      {
+        id: "stock-1",
+        productId: "prod-1",
+        warehouseId: "wh-1",
+        quantity: 50,
+        reservedQuantity: 0,
+        reorderLevel: 10,
+        lastUpdated: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        createdBy: "admin",
+      },
+      {
+        id: "stock-2",
+        productId: "prod-1",
+        warehouseId: "wh-1",
+        quantity: 0,
+        reservedQuantity: 0,
+        reorderLevel: 10,
+        lastUpdated: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        createdBy: "admin",
+      },
+      {
+        id: "stock-3",
+        productId: "prod-1",
+        warehouseId: "wh-1",
+        quantity: 5,
+        reservedQuantity: 0,
+        reorderLevel: 10,
+        lastUpdated: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        createdBy: "admin",
+      }
+    ];
+
+    vi.mocked(warehouseStocksService.getLowStocks).mockResolvedValue(variedStocks);
+
+    render(
+      <MemoryRouter>
+        <WarehouseStocksListPage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("In Stock")).toBeInTheDocument();
+      expect(screen.getByText("Out of Stock")).toBeInTheDocument();
+      // "Low Stock" appears in both the filter button and the table badge
+      const lowStockElements = screen.getAllByText("Low Stock");
+      expect(lowStockElements.length).toBeGreaterThanOrEqual(2);
     });
   });
 });

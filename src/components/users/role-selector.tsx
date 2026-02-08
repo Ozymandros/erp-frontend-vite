@@ -27,7 +27,7 @@ export function RoleSelector({
 }: RoleSelectorProps) {
   const [allRoles, setAllRoles] = useState<Role[]>([])
   const [selectedRoleNames, setSelectedRoleNames] = useState<Set<string>>(
-    new Set(initialRoles.map(r => r.name))
+    new Set((initialRoles ?? []).map(r => r.name))
   )
   const [searchTerm, setSearchTerm] = useState("")
   const [isLoading, setIsLoading] = useState(true)
@@ -69,7 +69,7 @@ export function RoleSelector({
           // If no initial roles provided, fetch user's current roles
           try {
             const userRoles = await usersService.getUserRoles(userId)
-            setSelectedRoleNames(new Set(userRoles.map(r => r.name)))
+            setSelectedRoleNames(new Set((userRoles ?? []).map(r => r.name)))
           } catch (err) {
             // If fetching fails, just use empty set
             console.warn("Failed to fetch user roles:", err)
@@ -92,7 +92,7 @@ export function RoleSelector({
 
   // Update selected roles when initialRoles prop changes
   useEffect(() => {
-    if (initialRoles.length > 0) {
+    if (initialRoles && initialRoles.length > 0) {
       setSelectedRoleNames(new Set(initialRoles.map(r => r.name)))
     }
   }, [initialRoles])

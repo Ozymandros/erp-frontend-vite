@@ -32,16 +32,22 @@ const mockOrder: OrderDto = {
   totalAmount: 1500.00,
   orderLines: [
     {
+      id: "line-1",
       productId: "product-1",
       quantity: 2,
       unitPrice: 500.00,
       totalPrice: 1000.00,
+      createdAt: "2024-01-01T00:00:00Z",
+      createdBy: "admin",
     },
     {
+      id: "line-2",
       productId: "product-2",
       quantity: 1,
       unitPrice: 500.00,
       totalPrice: 500.00,
+      createdAt: "2024-01-01T00:00:00Z",
+      createdBy: "admin",
     },
   ],
   createdAt: "2024-01-01T00:00:00Z",

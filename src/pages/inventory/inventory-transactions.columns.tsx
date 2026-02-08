@@ -59,11 +59,12 @@ export function getInventoryTransactionColumns({
       accessor: (tx) => {
         const isPositive = tx.quantity > 0;
         const isNegative = tx.quantity < 0;
-        const colorClass = isPositive 
-          ? "text-green-600 font-semibold" 
-          : isNegative 
-          ? "text-red-600 font-semibold" 
-          : "";
+        let colorClass = "";
+        if (isPositive) {
+          colorClass = "text-green-600 font-semibold";
+        } else if (isNegative) {
+          colorClass = "text-red-600 font-semibold";
+        }
         
         return (
           <span className={colorClass}>
