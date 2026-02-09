@@ -163,7 +163,7 @@ export function EditWarehouseDialog({
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Updating..." : "Update Warehouse"}
+              {isLoading ? "Updating…" : "Update Warehouse"}
             </Button>
           </DialogFooter>
         </form>

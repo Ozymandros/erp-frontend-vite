@@ -29,8 +29,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus, Trash2, CalendarIcon } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
-import type { CustomerDto, ProductDto } from "@/types/api.types";
+import { formatCurrency, getDefaultDateTimeLocal } from "@/lib/utils";
+import { type CustomerDto, type ProductDto, SalesOrderLineDto } from "@/types/api.types";
 
 interface CreateSalesOrderDialogProps {
   readonly open: boolean;
@@ -43,15 +43,9 @@ export function CreateSalesOrderDialog({
   onOpenChange,
   onSuccess,
 }: CreateSalesOrderDialogProps) {
-  const getDefaultDate = () => {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    return now.toISOString().slice(0, 16);
-  };
-
   const [formData, setFormData] = useState<CreateSalesOrderFormData>({
     customerId: "",
-    orderDate: getDefaultDate(),
+    orderDate: getDefaultDateTimeLocal(),
     orderLines: [],
   });
   const [customers, setCustomers] = useState<CustomerDto[]>([]);
@@ -73,7 +67,7 @@ export function CreateSalesOrderDialog({
       // Reset form on open
       setFormData({
         customerId: "",
-        orderDate: getDefaultDate(),
+        orderDate: getDefaultDateTimeLocal(),
         orderLines: [],
       });
       setNewLine({ productId: "", quantity: 1, unitPrice: 0 });
@@ -116,19 +110,30 @@ export function CreateSalesOrderDialog({
     if (!newLine.productId) return;
     if (newLine.quantity <= 0) return;
 
+    const lineDto = new SalesOrderLineDto({
+      id: crypto.randomUUID(),
+      productId: newLine.productId,
+      quantity: newLine.quantity,
+      unitPrice: newLine.unitPrice,
+      lineTotal: newLine.quantity * newLine.unitPrice,
+    });
+
     setFormData(prev => ({
       ...prev,
-      orderLines: [...prev.orderLines, { ...newLine }],
+      orderLines: [
+        ...prev.orderLines, 
+        lineDto
+      ],
     }));
 
     // Reset new line, keep unitPrice 0 until product selected
     setNewLine({ productId: "", quantity: 1, unitPrice: 0 });
   };
 
-  const removeLine = (index: number) => {
+  const removeLine = (id: string) => {
     setFormData(prev => ({
       ...prev,
-      orderLines: prev.orderLines.filter((_, i) => i !== index),
+      orderLines: prev.orderLines.filter((line) => line.id !== id),
     }));
   };
 
@@ -150,37 +155,8 @@ export function CreateSalesOrderDialog({
 
     setIsLoading(true);
     try {
-      // Need to include orderNumber for backend. DTO requires it.
-      // Assuming auto-generated or manual input. 
-      // Schema CreateSalesOrderSchema does NOT include orderNumber in src/lib/validation/sales/sales-order.schemas.ts
-      // But CreateUpdateSalesOrderDto in api.types.ts HAS orderNumber.
-      // This is a mismatch. I will generate a temporary one or add an input if needed.
-      // Usually backend generates it, or it's required input.
-      // Let's check api.types.ts again.
-      // CreateUpdateSalesOrderDto: orderNumber: string;
-      
-      // I'll add orderNumber to component state and form, but schema update might be needed.
-      // Wait, I saw CreateSalesOrderSchema in previous step:
-      /*
-      export const CreateSalesOrderSchema = z.object({
-        customerId: z.string().min(1, "Customer is required"),
-        orderDate: z.string().min(1, "Order date is required"),
-        orderLines: z
-            .array(SalesOrderLineSchema)
-            .min(1, "At least one order line is required"),
-        });
-      */
-      // It implies orderNumber is NOT validated by Zod schema, but might be required by API.
-      // I will assume the API might accept it or I should add it.
-      // To be safe, I'll generate a timestamp-based order number or let the user input it.
-      // For now, let's include 'orderNumber' in the API payload from a generated value or input.
-      // Actually, ideally we should update the Schema to include it if it's in the DTO.
-      // I'll inject a placeholder order number for now to satisfy the TS type if I cast it, 
-      // or better, I will assume the backend handles it or I should add an arbitrary one.
-      
       const payload = {
         ...validation.data,
-        orderNumber: `SO-${Date.now()}`, // Auto-generate for now
       };
 
       await salesOrdersService.createSalesOrder(payload);
@@ -221,6 +197,7 @@ export function CreateSalesOrderDialog({
                 <Label htmlFor="customerId">Customer</Label>
                 <select
                     id="customerId"
+                    aria-label="Customer"
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     value={formData.customerId}
                     onChange={e => setFormData(prev => ({ ...prev, customerId: e.target.value }))}
@@ -263,6 +240,7 @@ export function CreateSalesOrderDialog({
                         <Label htmlFor="productId" className="text-xs">Product</Label>
                         <select
                             id="productId"
+                            aria-label="Product"
                             className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm"
                             value={newLine.productId}
                             onChange={e => handleNewLineChange("productId", e.target.value)}
@@ -281,7 +259,7 @@ export function CreateSalesOrderDialog({
                             min={1}
                             className="h-9"
                             value={newLine.quantity}
-                            onChange={e => handleNewLineChange("quantity", parseInt(e.target.value) || 0)}
+                            onChange={e => handleNewLineChange("quantity", Number.parseInt(e.target.value) || 0)}
                         />
                     </div>
                     <div className="col-span-3 space-y-1">
@@ -293,7 +271,7 @@ export function CreateSalesOrderDialog({
                             step="0.01"
                             className="h-9"
                             value={newLine.unitPrice}
-                            onChange={e => handleNewLineChange("unitPrice", parseFloat(e.target.value) || 0)}
+                            onChange={e => handleNewLineChange("unitPrice", Number.parseFloat(e.target.value) || 0)}
                         />
                     </div>
                     <div className="col-span-1">
@@ -303,6 +281,7 @@ export function CreateSalesOrderDialog({
                             className="w-full" 
                             onClick={addLine}
                             disabled={!newLine.productId}
+                            aria-label="Add item"
                         >
                             <Plus className="h-4 w-4" />
                         </Button>
@@ -329,10 +308,10 @@ export function CreateSalesOrderDialog({
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                formData.orderLines?.map((line, index) => {
+                                formData.orderLines?.map((line) => {
                                     const product = products.find(p => p.id === line.productId);
                                     return (
-                                        <TableRow key={index}>
+                                        <TableRow key={line.id}>
                                             <TableCell>{product?.name || line.productId}</TableCell>
                                             <TableCell className="text-right">{line.quantity}</TableCell>
                                             <TableCell className="text-right">{formatCurrency(line.unitPrice)}</TableCell>
@@ -343,7 +322,7 @@ export function CreateSalesOrderDialog({
                                                     variant="ghost" 
                                                     size="icon" 
                                                     className="h-8 w-8 text-red-500"
-                                                    onClick={() => removeLine(index)}
+                                                    onClick={() => removeLine(line.id!)}
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                 </Button>
@@ -376,7 +355,7 @@ export function CreateSalesOrderDialog({
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading || formData.orderLines.length === 0}>
-              {isLoading ? "Creating..." : "Create Sales Order"}
+              {isLoading ? "Creating…" : "Create Sales Order"}
             </Button>
           </DialogFooter>
         </form>

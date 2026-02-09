@@ -178,4 +178,34 @@ describe("OrdersService", () => {
       );
     });
   });
+
+  describe("exportToXlsx", () => {
+    it("should export orders to xlsx", async () => {
+      const mockBlob = new Blob(["xlsx data"]);
+      mockApiClient.get.mockResolvedValue(mockBlob);
+
+      const result = await ordersService.exportToXlsx();
+
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        "/orders/api/orders/export-xlsx",
+        { responseType: "blob" }
+      );
+      expect(result).toEqual(mockBlob);
+    });
+  });
+
+  describe("exportToPdf", () => {
+    it("should export orders to pdf", async () => {
+      const mockBlob = new Blob(["pdf data"]);
+      mockApiClient.get.mockResolvedValue(mockBlob);
+
+      const result = await ordersService.exportToPdf();
+
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        "/orders/api/orders/export-pdf",
+        { responseType: "blob" }
+      );
+      expect(result).toEqual(mockBlob);
+    });
+  });
 });

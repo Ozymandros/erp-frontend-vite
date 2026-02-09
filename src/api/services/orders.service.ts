@@ -9,7 +9,7 @@ import type {
 } from "@/types/api.types";
 
 class OrdersService {
-  private apiClient = getApiClient();
+  private readonly apiClient = getApiClient();
 
   async getOrders(): Promise<OrderDto[]> {
     return this.apiClient.get<OrderDto[]>(ORDERS_ENDPOINTS.BASE);

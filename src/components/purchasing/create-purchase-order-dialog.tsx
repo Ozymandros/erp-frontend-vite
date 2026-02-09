@@ -8,6 +8,7 @@ import {
   CreatePurchaseOrderSchema,
   type CreatePurchaseOrderFormData,
 } from "@/lib/validation/purchasing/purchase-order.schemas";
+import { parseZodErrors } from "@/lib/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,8 +30,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus, Trash2, CalendarIcon } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
-import type { SupplierDto, ProductDto } from "@/types/api.types";
+import { formatCurrency, getDefaultDateTimeLocal } from "@/lib/utils";
+import { type SupplierDto, type ProductDto, PurchaseOrderLineDto } from "@/types/api.types";
 
 interface CreatePurchaseOrderDialogProps {
   readonly open: boolean;
@@ -43,15 +44,9 @@ export function CreatePurchaseOrderDialog({
   onOpenChange,
   onSuccess,
 }: CreatePurchaseOrderDialogProps) {
-  const getDefaultDate = () => {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    return now.toISOString().slice(0, 16);
-  };
-
   const [formData, setFormData] = useState<CreatePurchaseOrderFormData>({
     supplierId: "",
-    orderDate: getDefaultDate(),
+    orderDate: getDefaultDateTimeLocal(),
     expectedDeliveryDate: undefined,
     orderLines: [],
   });
@@ -74,7 +69,7 @@ export function CreatePurchaseOrderDialog({
       // Reset form on open
       setFormData({
         supplierId: "",
-        orderDate: getDefaultDate(),
+        orderDate: getDefaultDateTimeLocal(),
         expectedDeliveryDate: undefined,
         orderLines: [],
       });
@@ -107,11 +102,11 @@ export function CreatePurchaseOrderDialog({
       setNewLine((prev) => ({
         ...prev,
         productId: value as string,
-        // For purchase orders, unitPrice is cost price. Assuming product.unitPrice is sales price approx, 
+        // For purchase orders, unitPrice is cost price. Assuming product.unitPrice is sales price approx,
         // usually we might want to manually enter cost or fetch last cost.
         // For simplicity, we default to 0 or product price if needed, but allow edit.
-         // Defaulting to 0 to force user to enter cost, or use product price as placeholder.
-        unitPrice: product ? product.unitPrice : 0, 
+        // Defaulting to 0 to force user to enter cost, or use product price as placeholder.
+        unitPrice: product ? product.unitPrice : 0,
       }));
     } else {
       setNewLine((prev) => ({ ...prev, [field]: value }));
@@ -122,19 +117,27 @@ export function CreatePurchaseOrderDialog({
     if (!newLine.productId) return;
     if (newLine.quantity <= 0) return;
 
+    const lineDto = new PurchaseOrderLineDto({
+      id: crypto.randomUUID(),
+      productId: newLine.productId,
+      quantity: newLine.quantity,
+      unitPrice: newLine.unitPrice,
+      lineTotal: newLine.quantity * newLine.unitPrice,
+    });
+
     setFormData((prev) => ({
       ...prev,
-      orderLines: [...prev.orderLines, { ...newLine }],
+      orderLines: [...prev.orderLines, lineDto],
     }));
 
     // Reset new line
     setNewLine({ productId: "", quantity: 1, unitPrice: 0 });
   };
 
-  const removeLine = (index: number) => {
+  const removeLine = (id: string) => {
     setFormData((prev) => ({
       ...prev,
-      orderLines: prev.orderLines.filter((_, i) => i !== index),
+      orderLines: prev.orderLines.filter((line) => line.id !== id),
     }));
   };
 
@@ -145,11 +148,7 @@ export function CreatePurchaseOrderDialog({
 
     const validation = CreatePurchaseOrderSchema.safeParse(formData);
     if (!validation.success) {
-      const errors: Record<string, string> = {};
-      validation.error.issues.forEach((err) => {
-        if (err.path[0]) errors[err.path[0].toString()] = err.message;
-      });
-      setFieldErrors(errors);
+      setFieldErrors(parseZodErrors(validation.error));
       setError("Please fix the validation errors");
       return;
     }
@@ -158,7 +157,6 @@ export function CreatePurchaseOrderDialog({
     try {
       const payload = {
         ...validation.data,
-        orderNumber: `PO-${Date.now()}`, // Auto-generate
         // Maps to backend DTO
         // Check if expectedDeliveryDate needs simple transformation if undefined
         expectedDeliveryDate: validation.data.expectedDeliveryDate || undefined
@@ -205,6 +203,7 @@ export function CreatePurchaseOrderDialog({
                 <Label htmlFor="supplierId">Supplier</Label>
                 <select
                   id="supplierId"
+                  aria-label="Supplier"
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   value={formData.supplierId}
                   onChange={(e) =>
@@ -288,6 +287,7 @@ export function CreatePurchaseOrderDialog({
                   </Label>
                   <select
                     id="productId"
+                    aria-label="Product"
                     className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm"
                     value={newLine.productId}
                     onChange={(e) =>
@@ -315,7 +315,7 @@ export function CreatePurchaseOrderDialog({
                     onChange={(e) =>
                       handleNewLineChange(
                         "quantity",
-                        parseInt(e.target.value) || 0
+                        Number.parseInt(e.target.value) || 0
                       )
                     }
                   />
@@ -334,7 +334,7 @@ export function CreatePurchaseOrderDialog({
                     onChange={(e) =>
                       handleNewLineChange(
                         "unitPrice",
-                        parseFloat(e.target.value) || 0
+                        Number.parseFloat(e.target.value) || 0
                       )
                     }
                   />
@@ -346,6 +346,7 @@ export function CreatePurchaseOrderDialog({
                     className="w-full"
                     onClick={addLine}
                     disabled={!newLine.productId}
+                    aria-label="Add item"
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -375,12 +376,12 @@ export function CreatePurchaseOrderDialog({
                         </TableCell>
                       </TableRow>
                     ) : (
-                      formData.orderLines?.map((line, index) => {
+                      formData.orderLines?.map((line) => {
                         const product = products.find(
                           (p) => p.id === line.productId
                         );
                         return (
-                          <TableRow key={index}>
+                          <TableRow key={line.id}>
                             <TableCell>
                               {product?.name || line.productId}
                             </TableCell>
@@ -399,7 +400,7 @@ export function CreatePurchaseOrderDialog({
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8 text-red-500"
-                                onClick={() => removeLine(index)}
+                                onClick={() => removeLine(line.id!)}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -436,7 +437,7 @@ export function CreatePurchaseOrderDialog({
               type="submit"
               disabled={isLoading || formData.orderLines.length === 0}
             >
-              {isLoading ? "Creating..." : "Create Purchase Order"}
+              {isLoading ? "Creating…" : "Create Purchase Order"}
             </Button>
           </DialogFooter>
         </form>

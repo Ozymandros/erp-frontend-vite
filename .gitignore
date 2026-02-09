@@ -15,7 +15,8 @@ dist-ssr
 
 # Editor directories and files
 playwright-report
-test-results/*
+test-results
+.playwright-output
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -30,3 +31,12 @@ test-results/*
 .env
 .env.local
 .env.production
+
+# SonarQube/SonarCloud
+.scannerwork
+
+# Coverage
+coverage
+playwright-report/index.html
+playwright-report/results.json
+.pnpm-store

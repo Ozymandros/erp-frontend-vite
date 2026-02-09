@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { cn, formatDateTime, formatDate } from "@/lib/utils";
+import { cn, formatDateTime, formatDate, formatCurrency } from "@/lib/utils";
 
 describe("Utility Functions", () => {
   describe("cn", () => {
@@ -67,6 +67,32 @@ describe("Utility Functions", () => {
       const formatted = formatDateTime(date);
       expect(formatted).toBeTruthy();
       expect(formatted).toContain("2024");
+    });
+  });
+
+  describe("formatCurrency", () => {
+    it("should return empty string for zero", () => {
+      expect(formatCurrency(0)).toBe("");
+    });
+
+    it("should format whole numbers without decimals", () => {
+      expect(formatCurrency(15000)).toBe("$15000");
+      expect(formatCurrency(100)).toBe("$100");
+    });
+
+    it("should format amounts with one decimal place when trailing zero", () => {
+      expect(formatCurrency(15000.5)).toBe("$15000.5");
+      expect(formatCurrency(10.1)).toBe("$10.1");
+    });
+
+    it("should format amounts with two decimal places", () => {
+      expect(formatCurrency(15000.99)).toBe("$15000.99");
+      expect(formatCurrency(10.23)).toBe("$10.23");
+    });
+
+    it("should handle decimal.endsWith('0') branch", () => {
+      expect(formatCurrency(10.1)).toBe("$10.1");
+      expect(formatCurrency(99.9)).toBe("$99.9");
     });
   });
 });

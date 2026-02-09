@@ -98,4 +98,94 @@ describe("CustomersService", () => {
       expect(result).toEqual(newCustomer);
     });
   });
+
+  describe("getCustomerById", () => {
+    it("should fetch customer by ID", async () => {
+      const mockCustomer: CustomerDto = {
+        id: "1",
+        name: "Test Customer",
+        email: "customer@example.com",
+        phoneNumber: "123-456-7890",
+        createdAt: "2024-01-01",
+        updatedAt: "2024-01-01",
+        createdBy: "user1",
+        updatedBy: "user1",
+      };
+
+      mockApiClient.get.mockResolvedValue(mockCustomer);
+
+      const result = await customersService.getCustomerById("1");
+
+      expect(mockApiClient.get).toHaveBeenCalledWith("/sales/api/sales/customers/1");
+      expect(result).toEqual(mockCustomer);
+    });
+  });
+
+  describe("updateCustomer", () => {
+    it("should update an existing customer", async () => {
+      const updateData = {
+        name: "Updated Customer",
+        email: "updated@example.com",
+      };
+      const mockCustomer: CustomerDto = {
+        id: "1",
+        ...updateData,
+        phoneNumber: "123-456-7890",
+        createdAt: "2024-01-01",
+        updatedAt: "2024-01-01",
+        createdBy: "user1",
+        updatedBy: "user1",
+      };
+
+      mockApiClient.put.mockResolvedValue(mockCustomer);
+
+      const result = await customersService.updateCustomer("1", updateData);
+
+      expect(mockApiClient.put).toHaveBeenCalledWith(
+        "/sales/api/sales/customers/1",
+        updateData
+      );
+      expect(result).toEqual(mockCustomer);
+    });
+  });
+
+  describe("deleteCustomer", () => {
+    it("should delete a customer", async () => {
+      mockApiClient.delete.mockResolvedValue(undefined);
+
+      await customersService.deleteCustomer("1");
+
+      expect(mockApiClient.delete).toHaveBeenCalledWith("/sales/api/sales/customers/1");
+    });
+  });
+
+  describe("exportToXlsx", () => {
+    it("should export customers to xlsx", async () => {
+      const mockBlob = new Blob(["xlsx data"]);
+      mockApiClient.get.mockResolvedValue(mockBlob);
+
+      const result = await customersService.exportToXlsx();
+
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        "/sales/api/sales/customers/export-xlsx",
+        { responseType: "blob" }
+      );
+      expect(result).toEqual(mockBlob);
+    });
+  });
+
+  describe("exportToPdf", () => {
+    it("should export customers to pdf", async () => {
+      const mockBlob = new Blob(["pdf data"]);
+      mockApiClient.get.mockResolvedValue(mockBlob);
+
+      const result = await customersService.exportToPdf();
+
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        "/sales/api/sales/customers/export-pdf",
+        { responseType: "blob" }
+      );
+      expect(result).toEqual(mockBlob);
+    });
+  });
 });

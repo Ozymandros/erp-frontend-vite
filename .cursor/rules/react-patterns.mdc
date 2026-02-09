@@ -1,0 +1,124 @@
+---
+description: "React performance patterns: memoization, re-render optimization, and effect management"
+globs: ["**/*.tsx", "**/components/**/*.tsx"]
+alwaysApply: false
+---
+
+# React Performance Patterns
+
+**Impact: MEDIUM-HIGH** - Optimizing re-renders and component performance.
+
+## When Writing React Components
+
+### Rule 1: Use Functional setState Updates
+
+**When you see:** `setState` that depends on current state value
+
+**Action:** Use functional update form to prevent stale closures and create stable callbacks.
+
+**Incorrect:**
+
+```tsx
+const addItem = useCallback(
+  (newItem: Item) => {
+    setItems([...items, newItem]); // Requires items dependency
+  },
+  [items]
+); // Recreated on every items change
+```
+
+**Correct:**
+
+```tsx
+const addItem = useCallback((newItem: Item) => {
+  setItems(curr => [...curr, newItem]); // No dependency needed
+}, []); // Stable callback
+```
+
+### Rule 2: Derive State During Rendering
+
+**When you see:** State updated in `useEffect` based on props/other state
+
+**Action:** Calculate derived values during render, not in effects.
+
+**Incorrect:**
+
+```tsx
+const [fullName, setFullName] = useState("");
+useEffect(() => {
+  setFullName(firstName + " " + lastName);
+}, [firstName, lastName]);
+```
+
+**Correct:**
+
+```tsx
+const fullName = firstName + " " + lastName; // Derive during render
+```
+
+### Rule 3: Narrow Effect Dependencies
+
+**When you see:** Object dependencies in `useEffect`
+
+**Action:** Specify primitive dependencies instead of objects.
+
+**Incorrect:**
+
+```tsx
+useEffect(() => {
+  console.log(user.id);
+}, [user]); // Re-runs on any user field change
+```
+
+**Correct:**
+
+```tsx
+useEffect(() => {
+  console.log(user.id);
+}, [user.id]); // Re-runs only when id changes
+```
+
+### Rule 4: Extract to Memoized Components
+
+**When you see:** Expensive computation in component with early returns
+
+**Action:** Extract expensive work into memoized components.
+
+**Incorrect:**
+
+```tsx
+function Profile({ user, loading }: Props) {
+  const avatar = useMemo(() => {
+    const id = computeAvatarId(user);
+    return <Avatar id={id} />;
+  }, [user]);
+
+  if (loading) return <Skeleton />; // Still computes avatar
+  return <div>{avatar}</div>;
+}
+```
+
+**Correct:**
+
+```tsx
+const UserAvatar = memo(function UserAvatar({ user }: { user: User }) {
+  const id = useMemo(() => computeAvatarId(user), [user]);
+  return <Avatar id={id} />;
+});
+
+function Profile({ user, loading }: Props) {
+  if (loading) return <Skeleton />; // Skips avatar computation
+  return (
+    <div>
+      <UserAvatar user={user} />
+    </div>
+  );
+}
+```
+
+## Never Do These
+
+- ❌ Never use `setState` with direct state reference in callbacks (use functional updates)
+- ❌ Never update state in effects solely in response to prop changes (derive instead)
+- ❌ Never use object dependencies in effects (use primitives)
+- ❌ Never compute expensive values before early returns (extract to memoized components)

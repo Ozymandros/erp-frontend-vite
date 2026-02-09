@@ -19,8 +19,10 @@ interface TabsProps {
 export function Tabs({ defaultValue, className, children }: TabsProps) {
   const [value, setValue] = React.useState(defaultValue);
 
+  const contextValue = React.useMemo(() => ({ value, onValueChange: setValue }), [value]);
+
   return (
-    <TabsContext.Provider value={{ value, onValueChange: setValue }}>
+    <TabsContext.Provider value={contextValue}>
       <div className={cn("w-full", className)}>{children}</div>
     </TabsContext.Provider>
   );
@@ -30,8 +32,8 @@ export function TabsList({
   className,
   children,
 }: {
-  className?: string;
-  children: React.ReactNode;
+  readonly className?: string;
+  readonly children: React.ReactNode;
 }) {
   return (
     <div
@@ -50,9 +52,9 @@ export function TabsTrigger({
   className,
   children,
 }: {
-  value: string;
-  className?: string;
-  children: React.ReactNode;
+  readonly value: string;
+  readonly className?: string;
+  readonly children: React.ReactNode;
 }) {
   const context = React.useContext(TabsContext);
   if (!context) {
@@ -83,9 +85,9 @@ export function TabsContent({
   className,
   children,
 }: {
-  value: string;
-  className?: string;
-  children: React.ReactNode;
+  readonly value: string;
+  readonly className?: string;
+  readonly children: React.ReactNode;
 }) {
   const context = React.useContext(TabsContext);
   if (!context) {

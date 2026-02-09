@@ -8,33 +8,44 @@ export interface ApiResponse<T = any> {
 }
 
 // Base DTO Types
-export interface BaseDto<T> {
+export interface IDto<T> {
   id: T;
 }
 
-export interface IAuditableDto<T> extends BaseDto<T> {
-  createdAt: string;
-  createdBy: string;
+export abstract class BaseDto<T> implements IDto<T> {
+  public id!: T;
+
+  constructor(_data?: Partial<BaseDto<T>>) {
+    // Moved Object.assign to leaf constructors to avoid issues with initializers
+  }
+}
+
+export interface IAuditableDto<T> extends IDto<T> {
+  createdAt?: string;
+  createdBy?: string;
   updatedAt?: string;
   updatedBy?: string;
 }
 
-export abstract class AuditableDto<T = string> implements IAuditableDto<T> {
-  public id!: T;
-  public createdAt!: string;
-  public createdBy: string = "";
+export abstract class AuditableDto<T> extends BaseDto<T> implements IAuditableDto<T> {
+  public createdAt: string = new Date().toISOString();
+  public createdBy: string = "system";
   public updatedAt?: string;
   public updatedBy?: string;
 
   constructor(data?: Partial<AuditableDto<T>>) {
-    if (data) {
-      Object.assign(this, data);
-    }
+    super(data);
+  }
+}
+
+export abstract class AuditableGuidDto extends AuditableDto<string> {
+  constructor(data?: Partial<AuditableGuidDto>) {
+    super(data);
   }
 }
 
 // Concrete DTO Classes
-export class UserDto extends AuditableDto<string> {
+export class UserDto extends AuditableGuidDto {
   public username!: string;
   public email!: string;
   public firstName?: string;
@@ -50,6 +61,7 @@ export class UserDto extends AuditableDto<string> {
   constructor(data?: Partial<UserDto>) {
     super(data);
     if (data) {
+      Object.assign(this, data);
       this.roles = data.roles?.map(role => new RoleDto(role)) ?? [];
       this.permissions =
         data.permissions?.map(permission => new PermissionDto(permission)) ??
@@ -58,7 +70,7 @@ export class UserDto extends AuditableDto<string> {
   }
 }
 
-export class RoleDto extends AuditableDto<string> {
+export class RoleDto extends AuditableGuidDto {
   public name!: string;
   public description?: string;
   public permissions: PermissionDto[] = [];
@@ -66,6 +78,7 @@ export class RoleDto extends AuditableDto<string> {
   constructor(data?: Partial<RoleDto>) {
     super(data);
     if (data) {
+      Object.assign(this, data);
       this.permissions =
         data.permissions?.map(permission => new PermissionDto(permission)) ??
         [];
@@ -73,18 +86,19 @@ export class RoleDto extends AuditableDto<string> {
   }
 }
 
-export class PermissionDto extends AuditableDto<string> {
+export class PermissionDto extends AuditableGuidDto {
   public module!: string;
   public action!: string;
   public description?: string;
 
   constructor(data?: Partial<PermissionDto>) {
     super(data);
+    if (data) Object.assign(this, data);
   }
 }
 
 // Utility functions for auditable entities
-export const createAuditableEntity = <T extends AuditableDto>(
+export const createAuditableEntity = <T extends AuditableDto<any>>(
   ctor: new (data?: any) => T,
   data: any,
   createdBy: string
@@ -95,7 +109,7 @@ export const createAuditableEntity = <T extends AuditableDto>(
   return entity;
 };
 
-export const updateAuditableEntity = <T extends AuditableDto>(
+export const updateAuditableEntity = <T extends AuditableDto<any>>(
   entity: T,
   updates: Partial<T>,
   updatedBy: string
@@ -108,8 +122,7 @@ export const updateAuditableEntity = <T extends AuditableDto>(
 
 export const isAuditable = (obj: any): obj is IAuditableDto<any> => {
   return (
-    obj &&
-    obj.id !== undefined &&
+    obj?.id !== undefined &&
     typeof obj.createdAt === "string" &&
     typeof obj.createdBy === "string"
   );
@@ -313,13 +326,18 @@ export interface UpdatePermissionRequest {
 // ==================== INVENTORY MODULE ====================
 
 // Product Types
-export interface ProductDto extends IAuditableDto<string> {
-  sku: string;
-  name: string;
-  description?: string;
-  unitPrice: number;
-  quantityInStock: number;
-  reorderLevel: number;
+export class ProductDto extends AuditableGuidDto {
+  public sku!: string;
+  public name!: string;
+  public description?: string;
+  public unitPrice!: number;
+  public quantityInStock!: number;
+  public reorderLevel!: number;
+
+  constructor(data?: Partial<ProductDto>) {
+    super(data);
+    if (data) Object.assign(this, data);
+  }
 }
 
 export interface CreateUpdateProductDto {
@@ -332,9 +350,14 @@ export interface CreateUpdateProductDto {
 }
 
 // Warehouse Types
-export interface WarehouseDto extends IAuditableDto<string> {
-  name: string;
-  location: string;
+export class WarehouseDto extends AuditableGuidDto {
+  public name!: string;
+  public location!: string;
+
+  constructor(data?: Partial<WarehouseDto>) {
+    super(data);
+    if (data) Object.assign(this, data);
+  }
 }
 
 export interface CreateUpdateWarehouseDto {
@@ -343,13 +366,18 @@ export interface CreateUpdateWarehouseDto {
 }
 
 // Warehouse Stock Types
-export interface WarehouseStockDto {
-  productId: string;
-  warehouseId: string;
-  quantity: number;
-  reservedQuantity: number;
-  reorderLevel: number;
-  lastUpdated: string;
+export class WarehouseStockDto extends AuditableGuidDto {
+  public productId!: string;
+  public warehouseId!: string;
+  public quantity!: number;
+  public reservedQuantity!: number;
+  public reorderLevel!: number;
+  public lastUpdated!: string;
+
+  constructor(data?: Partial<WarehouseStockDto>) {
+    super(data);
+    if (data) Object.assign(this, data);
+  }
 }
 
 export interface StockAvailabilityDto {
@@ -367,14 +395,18 @@ export interface ReserveStockDto {
   expiresAt?: string;
 }
 
-export interface ReservationDto {
-  id: string;
-  productId: string;
-  warehouseId: string;
-  quantity: number;
-  orderId: string;
-  reservedAt: string;
-  expiresAt: string;
+export class ReservationDto extends AuditableGuidDto {
+  public productId!: string;
+  public warehouseId!: string;
+  public quantity!: number;
+  public orderId!: string;
+  public reservedAt!: string;
+  public expiresAt!: string;
+
+  constructor(data?: Partial<ReservationDto>) {
+    super(data);
+    if (data) Object.assign(this, data);
+  }
 }
 
 export interface StockTransferDto {
@@ -394,15 +426,20 @@ export interface StockAdjustmentDto {
 }
 
 // Inventory Transaction Types
-export interface InventoryTransactionDto extends IAuditableDto<string> {
-  transactionType: TransactionType;
-  productId: string;
-  warehouseId: string;
-  quantity: number;
-  referenceId?: string;
-  referenceType?: string;
-  reason?: string;
-  transactionDate: string;
+export class InventoryTransactionDto extends AuditableGuidDto {
+  public transactionType!: TransactionType;
+  public productId!: string;
+  public warehouseId!: string;
+  public quantity!: number;
+  public referenceId?: string;
+  public referenceType?: string;
+  public reason?: string;
+  public transactionDate!: string;
+
+  constructor(data?: Partial<InventoryTransactionDto>) {
+    super(data);
+    if (data) Object.assign(this, data);
+  }
 }
 
 export interface CreateUpdateInventoryTransactionDto {
@@ -418,17 +455,26 @@ export interface CreateUpdateInventoryTransactionDto {
 
 // ==================== ORDERS MODULE ====================
 
-export interface OrderDto extends IAuditableDto<string> {
-  orderNumber: string;
-  status: OrderStatus;
-  orderDate: string;
-  customerId: string;
-  orderLines: OrderLineDto[];
-  totalAmount: number;
+export class OrderDto extends AuditableGuidDto {
+  public orderNumber!: string;
+  public status!: OrderStatus;
+  public orderDate!: string;
+  public customerId!: string;
+  public orderLines: OrderLineDto[] = [];
+  public totalAmount!: number;
+
+  constructor(data?: Partial<OrderDto>) {
+    super(data);
+    if (data) {
+      Object.assign(this, data);
+      if (data.orderLines) {
+        this.orderLines = data.orderLines.map(l => new OrderLineDto(l));
+      }
+    }
+  }
 }
 
 export interface CreateUpdateOrderDto {
-  orderNumber: string;
   customerId: string;
   orderLines: CreateUpdateOrderLineDto[];
   orderDate: string;
@@ -456,32 +502,46 @@ export interface CancelOrderDto {
   cancellationReason: string;
 }
 
-export interface OrderLineDto {
-  productId: string;
-  quantity: number;
-  unitPrice: number;
-  totalPrice: number;
+export class OrderLineDto extends AuditableGuidDto {
+  public productId!: string;
+  public quantity!: number;
+  public unitPrice!: number;
+  public totalPrice!: number;
+
+  constructor(data?: Partial<OrderLineDto>) {
+    super(data);
+    if (data) Object.assign(this, data);
+  }
 }
 
 // ==================== SALES MODULE ====================
 
-export interface SalesOrderDto extends IAuditableDto<string> {
-  orderNumber: string;
-  customerId: string;
-  status: SalesOrderStatus;
-  orderDate: string;
-  totalAmount: number;
-  orderLines: SalesOrderLineDto[];
+export class SalesOrderDto extends AuditableGuidDto {
+  public orderNumber!: string;
+  public customerId!: string;
+  public status!: SalesOrderStatus;
+  public orderDate!: string;
+  public totalAmount!: number;
+  public orderLines: SalesOrderLineDto[] = [];
   // Quote tracking fields
-  isQuote: boolean;
-  quoteExpiryDate?: string;
-  convertedToOrderId?: string;
+  public isQuote: boolean = false;
+  public quoteExpiryDate?: string;
+  public convertedToOrderId?: string;
   // Navigation properties
-  customer?: CustomerDto;
+  public customer?: CustomerDto;
+
+  constructor(data?: Partial<SalesOrderDto>) {
+    super(data);
+    if (data) {
+      Object.assign(this, data);
+      if (data.orderLines) {
+        this.orderLines = data.orderLines.map(l => new SalesOrderLineDto(l));
+      }
+    }
+  }
 }
 
 export interface CreateUpdateSalesOrderDto {
-  orderNumber: string;
   customerId: string;
   orderDate: string;
   status?: number;
@@ -489,13 +549,17 @@ export interface CreateUpdateSalesOrderDto {
   orderLines: CreateUpdateSalesOrderLineDto[];
 }
 
-export interface SalesOrderLineDto {
-  id: string;
-  salesOrderId: string;
-  productId: string;
-  quantity: number;
-  unitPrice: number;
-  lineTotal: number;
+export class SalesOrderLineDto extends AuditableGuidDto {
+  public salesOrderId!: string;
+  public productId!: string;
+  public quantity!: number;
+  public unitPrice!: number;
+  public lineTotal!: number;
+
+  constructor(data?: Partial<SalesOrderLineDto>) {
+    super(data);
+    if (data) Object.assign(this, data);
+  }
 }
 
 export interface CreateUpdateSalesOrderLineDto {
@@ -505,7 +569,6 @@ export interface CreateUpdateSalesOrderLineDto {
 }
 
 export interface CreateQuoteDto {
-  orderNumber: string;
   customerId: string;
   orderDate: string;
   validityDays?: number;
@@ -537,11 +600,16 @@ export interface WarehouseAvailabilityDto {
   availableQuantity: number;
 }
 
-export interface CustomerDto extends IAuditableDto<string> {
-  name: string;
-  email: string;
-  phoneNumber?: string;
-  address?: string;
+export class CustomerDto extends AuditableGuidDto {
+  public name!: string;
+  public email!: string;
+  public phoneNumber?: string;
+  public address?: string;
+
+  constructor(data?: Partial<CustomerDto>) {
+    super(data);
+    if (data) Object.assign(this, data);
+  }
 }
 
 export interface CreateUpdateCustomerDto {
@@ -553,20 +621,29 @@ export interface CreateUpdateCustomerDto {
 
 // ==================== PURCHASING MODULE ====================
 
-export interface PurchaseOrderDto extends IAuditableDto<string> {
-  orderNumber: string;
-  supplierId: string;
-  status: PurchaseOrderStatus;
-  orderDate: string;
-  expectedDeliveryDate?: string;
-  totalAmount: number;
-  orderLines: PurchaseOrderLineDto[];
+export class PurchaseOrderDto extends AuditableGuidDto {
+  public orderNumber!: string;
+  public supplierId!: string;
+  public status!: PurchaseOrderStatus;
+  public orderDate!: string;
+  public expectedDeliveryDate?: string;
+  public totalAmount!: number;
+  public orderLines: PurchaseOrderLineDto[] = [];
   // Navigation properties
-  supplier?: SupplierDto;
+  public supplier?: SupplierDto;
+
+  constructor(data?: Partial<PurchaseOrderDto>) {
+    super(data);
+    if (data) {
+      Object.assign(this, data);
+      if (data.orderLines) {
+        this.orderLines = data.orderLines.map(l => new PurchaseOrderLineDto(l));
+      }
+    }
+  }
 }
 
 export interface CreateUpdatePurchaseOrderDto {
-  orderNumber: string;
   supplierId: string;
   orderDate: string;
   expectedDeliveryDate?: string;
@@ -575,13 +652,17 @@ export interface CreateUpdatePurchaseOrderDto {
   orderLines: CreateUpdatePurchaseOrderLineDto[];
 }
 
-export interface PurchaseOrderLineDto {
-  id: string;
-  purchaseOrderId: string;
-  productId: string;
-  quantity: number;
-  unitPrice: number;
-  lineTotal: number;
+export class PurchaseOrderLineDto extends AuditableGuidDto {
+  public purchaseOrderId!: string;
+  public productId!: string;
+  public quantity!: number;
+  public unitPrice!: number;
+  public lineTotal!: number;
+
+  constructor(data?: Partial<PurchaseOrderLineDto>) {
+    super(data);
+    if (data) Object.assign(this, data);
+  }
 }
 
 export interface CreateUpdatePurchaseOrderLineDto {
@@ -609,15 +690,20 @@ export interface ReceivePurchaseOrderLineDto {
   notes?: string;
 }
 
-export interface SupplierDto extends IAuditableDto<string> {
-  name: string;
-  email: string;
-  phone?: string;
-  address?: string;
-  city?: string;
-  country?: string;
-  postalCode?: string;
-  isActive: boolean;
+export class SupplierDto extends AuditableGuidDto {
+  public name!: string;
+  public email!: string;
+  public phone?: string;
+  public address?: string;
+  public city?: string;
+  public country?: string;
+  public postalCode?: string;
+  public isActive: boolean = true;
+
+  constructor(data?: Partial<SupplierDto>) {
+    super(data);
+    if (data) Object.assign(this, data);
+  }
 }
 
 export interface CreateUpdateSupplierDto {

@@ -180,27 +180,27 @@ WAREHOUSE_STOCKS_ENDPOINTS.BY_PRODUCT_AND_WAREHOUSE(productId, warehouseId);
 - [x] `roles.service.ts` - Using `ROLES_ENDPOINTS`
 - [x] `permissions.service.ts` - Using `PERMISSIONS_ENDPOINTS`
 
-### ⏳ Inventory Module (Ready to Update)
+### ✅ Inventory Module (Completed)
 
-- [ ] `products.service.ts` - Update to use `PRODUCTS_ENDPOINTS`
-- [ ] `warehouses.service.ts` - Update to use `WAREHOUSES_ENDPOINTS`
-- [ ] `warehouse-stocks.service.ts` - Update to use `WAREHOUSE_STOCKS_ENDPOINTS`
-- [ ] `stock-operations.service.ts` - Update to use `STOCK_OPERATIONS_ENDPOINTS`
-- [ ] `inventory-transactions.service.ts` - Update to use `INVENTORY_TRANSACTIONS_ENDPOINTS`
+- [x] `products.service.ts` - Updated to use `PRODUCTS_ENDPOINTS`
+- [x] `warehouses.service.ts` - Updated to use `WAREHOUSES_ENDPOINTS`
+- [x] `warehouse-stocks.service.ts` - Updated to use `WAREHOUSE_STOCKS_ENDPOINTS`
+- [x] `stock-operations.service.ts` - Updated to use `STOCK_OPERATIONS_ENDPOINTS`
+- [x] `inventory-transactions.service.ts` - Updated to use `INVENTORY_TRANSACTIONS_ENDPOINTS`
 
-### ⏳ Orders Module (Ready to Update)
+### ✅ Orders Module (Completed)
 
-- [ ] `orders.service.ts` - Update to use `ORDERS_ENDPOINTS`
+- [x] `orders.service.ts` - Updated to use `ORDERS_ENDPOINTS`
 
-### ⏳ Sales Module (Ready to Update)
+### ✅ Sales Module (Completed)
 
-- [ ] `sales-orders.service.ts` - Update to use `SALES_ORDERS_ENDPOINTS`
-- [ ] `customers.service.ts` - Update to use `CUSTOMERS_ENDPOINTS`
+- [x] `sales-orders.service.ts` - Updated to use `SALES_ORDERS_ENDPOINTS`
+- [x] `customers.service.ts` - Updated to use `CUSTOMERS_ENDPOINTS`
 
-### ⏳ Purchasing Module (Ready to Update)
+### ✅ Purchasing Module (Completed)
 
-- [ ] `purchase-orders.service.ts` - Update to use `PURCHASE_ORDERS_ENDPOINTS`
-- [ ] `suppliers.service.ts` - Update to use `SUPPLIERS_ENDPOINTS`
+- [x] `purchase-orders.service.ts` - Updated to use `PURCHASE_ORDERS_ENDPOINTS`
+- [x] `suppliers.service.ts` - Updated to use `SUPPLIERS_ENDPOINTS`
 
 ## Migration Pattern
 
@@ -212,7 +212,7 @@ For each service file:
 import { SERVICE_ENDPOINTS } from "../constants/endpoints";
 ```
 
-2. Replace hardcoded strings with constants:
+1. Replace hardcoded strings with constants:
 
 ```typescript
 // Before
@@ -222,7 +222,7 @@ return this.apiClient.get<Type>(`/service/api/resource/${id}`);
 return this.apiClient.get<Type>(SERVICE_ENDPOINTS.BY_ID(id));
 ```
 
-3. Test to ensure endpoints still work correctly
+1. Test to ensure endpoints still work correctly
 
 ## Benefits Summary
 
@@ -251,10 +251,10 @@ return this.apiClient.get<Type>(SERVICE_ENDPOINTS.BY_ID(id));
 To complete the refactoring:
 
 1. Update remaining 10 service files to use constants
-2. Run linter to ensure no errors
-3. Run tests to verify functionality
-4. Update documentation if needed
-5. Consider adding endpoint constants to API documentation
+1. Run linter to ensure no errors
+1. Run tests to verify functionality
+1. Update documentation if needed
+1. Consider adding endpoint constants to API documentation
 
 ## Example: Complete Service with Constants
 

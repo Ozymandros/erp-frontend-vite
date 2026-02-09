@@ -118,16 +118,16 @@ export function WarehouseDetailPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
+              <span className="text-sm font-medium text-muted-foreground">
                 Name
-              </label>
+              </span>
               <p className="text-lg font-semibold">{warehouse.name}</p>
             </div>
             {warehouse.location && (
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
+                <span className="text-sm font-medium text-muted-foreground">
                   Location
-                </label>
+                </span>
                 <p className="text-base">{warehouse.location}</p>
               </div>
             )}
@@ -144,9 +144,9 @@ export function WarehouseDetailPage() {
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
+              <span className="text-sm font-medium text-muted-foreground">
                 Created At
-              </label>
+              </span>
               <p className="text-base">{formatDateTime(warehouse.createdAt)}</p>
               {warehouse.createdBy && (
                 <p className="text-sm text-muted-foreground">
@@ -156,9 +156,9 @@ export function WarehouseDetailPage() {
             </div>
             {warehouse.updatedAt && (
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
+                <span className="text-sm font-medium text-muted-foreground">
                   Last Updated
-                </label>
+                </span>
                 <p className="text-base">{formatDateTime(warehouse.updatedAt)}</p>
                 {warehouse.updatedBy && (
                   <p className="text-sm text-muted-foreground">

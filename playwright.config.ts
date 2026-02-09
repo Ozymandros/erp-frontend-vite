@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import * as os from "os";
 
 /**
  * Playwright configuration for E2E testing with API mocking
@@ -8,23 +9,76 @@ import { defineConfig, devices } from "@playwright/test";
  * - Mocks all backend API calls for isolated frontend testing
  * - Tests meaningful user interactions and workflows
  * - Ensures compliance with documented functionality
+ * - Works on both Linux and Windows platforms
+ *
+ * Before first run: ensure Rollup native binary is installed so the dev server starts.
+ * Run: pnpm install (or pnpm install --no-frozen-lockfile in CI if lockfile was updated).
  */
+
+const isWindows = os.platform() === "win32";
+
+// Base projects that work on all platforms
+const baseProjects = [
+  {
+    name: "chromium",
+    use: {
+      ...devices["Desktop Chrome"],
+      launchOptions: {
+        args: ["--disable-dev-shm-usage"],
+      },
+    },
+  },
+  {
+    name: "firefox",
+    use: {
+      ...devices["Desktop Firefox"],
+      launchOptions: {
+        firefoxUserPrefs: {
+          "dom.storage.enabled": true,
+        },
+      },
+    },
+  },
+  /* Test against mobile viewports (Chromium-based) */
+  {
+    name: "Mobile Chrome",
+    use: { ...devices["Pixel 5"] },
+  },
+];
+
+// WebKit-based projects only work on macOS and Linux (not Windows)
+const webkitProjects = isWindows
+  ? []
+  : [
+      {
+        name: "webkit",
+        use: { ...devices["Desktop Safari"] },
+      },
+      {
+        name: "Mobile Safari",
+        use: { ...devices["iPhone 12"] },
+      },
+    ];
+
 export default defineConfig({
   testDir: "./src/test/e2e",
+
+  /* Use writable output dir to avoid EACCES when cleaning leftover artifacts */
+  outputDir: ".playwright-output",
 
   /* Only match files ending in .spec.ts in the e2e directory */
   testMatch: "**/src/test/e2e/**/*.spec.ts",
 
-  /* Increase overall test timeout to reduce flakiness on slower Firefox startups */
-  timeout: 90_000,
+  /* Test timeout - reduced from 90s with lighter setup (load vs networkidle) */
+  timeout: 60_000,
 
   /* Default expectation timeout */
   expect: {
     timeout: 10_000,
   },
 
-  /* Run tests in files in parallel */
-  fullyParallel: false,
+  /* Run tests in parallel when using multiple workers */
+  fullyParallel: true,
 
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
@@ -32,8 +86,8 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 1,
 
-  /* Opt out of parallel tests on CI. */
-  workers: 1,
+  /* 1 worker in CI for stability; 2 locally for faster runs */
+  workers: process.env.CI ? 1 : 2,
 
   /* Max failures before stopping */
   maxFailures: process.env.CI ? 10 : undefined,
@@ -41,7 +95,7 @@ export default defineConfig({
   /* Reporter to use */
   reporter: process.env.CI
     ? [
-        ["junit", { outputFile: "test-results/junit.xml" }],
+        ["junit", { outputFile: ".playwright-output/junit.xml" }],
         ["html", { outputFolder: "playwright-report" }],
         ["json", { outputFile: "playwright-report/results.json" }],
         ["list"],
@@ -69,8 +123,8 @@ export default defineConfig({
     /* Screenshot on failure */
     screenshot: "only-on-failure",
 
-    /* Video on failure */
-    video: "retain-on-failure",
+    /* Video off to avoid EACCES on artifact cleanup in some environments */
+    video: "off",
 
     /* Emulate timezone */
     timezoneId: "America/New_York",
@@ -78,57 +132,23 @@ export default defineConfig({
     /* Emulate locale */
     locale: "en-US",
 
+    /* Headless mode - explicit for cross-platform compatibility */
+    headless: true,
+
     /* Longer timeout for context creation */
     contextOptions: {
       strictSelectors: false,
     },
   },
 
-  /* Configure projects for major browsers */
-  projects: [
-    {
-      name: "chromium",
-      use: {
-        ...devices["Desktop Chrome"],
-        launchOptions: {
-          args: ["--disable-dev-shm-usage"],
-        },
-      },
-    },
-
-    {
-      name: "firefox",
-      use: {
-        ...devices["Desktop Firefox"],
-        launchOptions: {
-          firefoxUserPrefs: {
-            "dom.storage.enabled": true,
-          },
-        },
-      },
-    },
-
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
-    },
-
-    /* Test against mobile viewports. */
-    {
-      name: "Mobile Chrome",
-      use: { ...devices["Pixel 5"] },
-    },
-    {
-      name: "Mobile Safari",
-      use: { ...devices["iPhone 12"] },
-    },
-  ],
+  /* Configure projects for major browsers (platform-aware) */
+  projects: [...baseProjects, ...webkitProjects],
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "pnpm dev",
+    command: "pnpm exec vite",
     url: "http://localhost:3000",
-    reuseExistingServer: true,
+    reuseExistingServer: !process.env.CI, // Only reuse in local dev, not CI
     stdout: "pipe",
     stderr: "pipe",
     timeout: 300 * 1000,

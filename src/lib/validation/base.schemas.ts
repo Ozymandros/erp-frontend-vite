@@ -72,5 +72,5 @@ export const optionalEmail = z.preprocess(
     }
     return typeof val === "string" ? val.trim() : val;
   },
-  z.string().max(255, "Email must be less than 255 characters").email("Invalid email address").optional()
+  z.string().max(255, "Email must be less than 255 characters").pipe(z.email({ message: "Invalid email address" })).optional()
 );

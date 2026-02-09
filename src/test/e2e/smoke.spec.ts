@@ -1,59 +1,21 @@
 import { test, expect } from "@playwright/test";
+import { setupApiMocks } from "./api-interceptor";
 
 /**
  * Smoke Tests - Basic E2E tests that verify core functionality works
- * These tests run against the actual dev server without heavy mocking
+ * All tests use mocked API - no real backend dependency
  */
 
 test.describe("Application Smoke Tests", () => {
   test.beforeEach(async ({ page }) => {
-    // Give Firefox extra time for slow startups
-    test.setTimeout(90000);
-
-    // Clear auth state before each test - do this BEFORE navigation
     await page.context().clearCookies();
-
-    // Small delay to ensure browser context is ready
-    await page.waitForTimeout(500);
-
-    // Robust navigation so Firefox doesn't time out on first paint
-    const goToLogin = async () => {
-      try {
-        await page.goto("/login", {
-          waitUntil: "domcontentloaded",
-          timeout: 60000,
-        });
-        await page.waitForLoadState("load", { timeout: 10000 }).catch(() => {});
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log("Navigation attempt failed, will retry:", error.message);
-        } else {
-          console.log("Navigation attempt failed, will retry:", error);
-        }
-        throw error;
-      }
-    };
-
-    // Try navigation with extended retry
-    let attempts = 0;
-    while (attempts < 3) {
-      try {
-        await goToLogin();
-        break;
-      } catch (error) {
-        attempts++;
-        if (attempts >= 3) throw error;
-        console.log(`Navigation retry ${attempts}/3`);
-        await page.waitForTimeout(2000);
-      }
-    }
-
-    // Clear localStorage after page loads
+    await setupApiMocks(page);
+    await page.goto("/login", { waitUntil: "domcontentloaded", timeout: 30000 });
     await page.evaluate(() => {
       try {
         localStorage.clear();
-      } catch (e) {
-        console.log("localStorage already clear");
+      } catch {
+        /* ignore */
       }
     });
   });
@@ -62,8 +24,8 @@ test.describe("Application Smoke Tests", () => {
     // Navigate to login
     await page.goto("/login", { waitUntil: "domcontentloaded" });
 
-    // Check page loads
-    await expect(page).toHaveTitle(/login|sign in|erp/i);
+    // Check page loads (title is "ERP Admin Portal")
+    await expect(page).toHaveTitle(/erp|login|sign in|admin|portal/i);
 
     // Check login form exists
     const emailInput = page.locator('input[type="email"], input[name="email"]');
@@ -119,7 +81,7 @@ test.describe("Application Smoke Tests", () => {
   test("should display app layout after successful login", async ({ page }) => {
     await page.goto("/login", { waitUntil: "domcontentloaded" });
 
-    // Try to fill in form with test credentials
+    // Fill in form with mocked credentials (api-interceptor mocks login)
     const emailInput = page.locator('input[type="email"], input[name="email"]');
     const passwordInput = page.locator(
       'input[type="password"], input[name="password"]'
@@ -131,20 +93,12 @@ test.describe("Application Smoke Tests", () => {
     await emailInput.fill("admin@example.com");
     await passwordInput.fill("password123");
 
-    // Click submit but don't fail if login fails (backend might not be available)
     await submitButton.click();
 
-    // Wait a bit for potential redirect
-    await page.waitForTimeout(3000);
-
-    // Check if we got to dashboard or stayed on login
+    await expect(page).not.toHaveURL(/\/login/);
     const currentUrl = page.url();
-    // Check if logged in or still on login (either is valid)
-    const isLoggedIn =
-      currentUrl.includes("dashboard") || currentUrl.includes("inventory");
-    const isOnLogin = currentUrl.includes("login");
-    // Either we're logged in, or still on login page
-    expect(isLoggedIn || isOnLogin).toBeTruthy();
+    // After mocked login, app redirects to "/" (dashboard) - we should no longer be on login
+    expect(currentUrl).not.toContain("login");
   });
 
   test("should have responsive design", async ({ page }) => {
@@ -173,7 +127,7 @@ test.describe("Application Smoke Tests", () => {
   });
 
   test("should load static assets", async ({ page }) => {
-    await page.goto("/login", { waitUntil: "networkidle" });
+    await page.goto("/login", { waitUntil: "load" });
 
     // Check that CSS is loaded
     const styles = await page.locator('style, link[rel="stylesheet"]');

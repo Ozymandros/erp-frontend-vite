@@ -86,4 +86,50 @@ describe("LoginPage", () => {
     expect(emailInput).toBeDisabled()
     expect(passwordInput).toBeDisabled()
   })
+
+  it("should show validation errors for empty form", async () => {
+    render(<LoginPage />)
+
+    const form = document.querySelector("form")
+    if (form) fireEvent.submit(form)
+    else fireEvent.click(screen.getByRole("button", { name: /sign in/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/please fix the validation errors/i)).toBeInTheDocument()
+    })
+  })
+
+  it("should show validation error for invalid email", async () => {
+    render(<LoginPage />)
+
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: "not-an-email" } })
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: "password123" } })
+    const form = document.querySelector("form")
+    if (form) fireEvent.submit(form)
+    else fireEvent.click(screen.getByRole("button", { name: /sign in/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/invalid email address/i)).toBeInTheDocument()
+    })
+  })
+
+  it("should clear field error when user types", async () => {
+    render(<LoginPage />)
+
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: "bad" } })
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: "pass" } })
+    const form = document.querySelector("form")
+    if (form) fireEvent.submit(form)
+    else fireEvent.click(screen.getByRole("button", { name: /sign in/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/invalid email address/i)).toBeInTheDocument()
+    })
+
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: "valid@example.com" } })
+
+    await waitFor(() => {
+      expect(screen.queryByText(/invalid email address/i)).not.toBeInTheDocument()
+    })
+  })
 })

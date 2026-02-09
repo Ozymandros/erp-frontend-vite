@@ -156,13 +156,13 @@ describe("AuthService", () => {
         allowed: true,
       };
 
-      mockApiClient.post.mockResolvedValue(mockResponse);
+      mockApiClient.get.mockResolvedValue(mockResponse);
 
       const result = await authService.checkPermission(module, action);
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
+      expect(mockApiClient.get).toHaveBeenCalledWith(
         "/auth/api/permissions/check",
-        { module, action }
+        { params: { module, action } }
       );
       expect(result).toEqual(mockResponse);
     });

@@ -29,8 +29,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Plus, Trash2, CalendarIcon } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
-import type { CustomerDto, ProductDto } from "@/types/api.types";
+import { formatCurrency, getDefaultDateTimeLocal } from "@/lib/utils";
+import { type CustomerDto, type ProductDto, OrderLineDto } from "@/types/api.types";
 
 interface CreateOrderDialogProps {
   readonly open: boolean;
@@ -43,21 +43,9 @@ export function CreateOrderDialog({
   onOpenChange,
   onSuccess,
 }: CreateOrderDialogProps) {
-  const getDefaultDate = () => {
-    const now = new Date();
-    // Adjust for local timezone for datetime-local
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    return now.toISOString().slice(0, 16);
-  };
-
-  const generateOrderNumber = () => {
-    return `ORD-${Date.now().toString().slice(-6)}`;
-  };
-
   const [formData, setFormData] = useState<CreateOrderFormData>({
-    orderNumber: generateOrderNumber(),
     customerId: "",
-    orderDate: getDefaultDate(),
+    orderDate: getDefaultDateTimeLocal(),
     orderLines: [],
   });
   const [customers, setCustomers] = useState<CustomerDto[]>([]);
@@ -78,9 +66,8 @@ export function CreateOrderDialog({
       loadData();
       // Reset form on open
       setFormData({
-        orderNumber: generateOrderNumber(),
         customerId: "",
-        orderDate: getDefaultDate(),
+        orderDate: getDefaultDateTimeLocal(),
         orderLines: [],
       });
       setNewLine({ productId: "", quantity: 1, unitPrice: 0 });
@@ -123,19 +110,27 @@ export function CreateOrderDialog({
     if (!newLine.productId) return;
     if (newLine.quantity <= 0) return;
 
+    const lineDto = new OrderLineDto({
+      id: crypto.randomUUID(),
+      productId: newLine.productId,
+      quantity: newLine.quantity,
+      unitPrice: newLine.unitPrice,
+      totalPrice: newLine.quantity * newLine.unitPrice,
+    });
+
     setFormData((prev) => ({
       ...prev,
-      orderLines: [...prev.orderLines, { ...newLine }],
+      orderLines: [...prev.orderLines, lineDto],
     }));
 
     // Reset new line, keep unitPrice 0 until product selected
     setNewLine({ productId: "", quantity: 1, unitPrice: 0 });
   };
 
-  const removeLine = (index: number) => {
+  const removeLine = (id: string) => {
     setFormData((prev) => ({
       ...prev,
-      orderLines: prev.orderLines.filter((_, i) => i !== index),
+      orderLines: prev.orderLines.filter((line) => line.id !== id),
     }));
   };
 
@@ -194,33 +189,13 @@ export function CreateOrderDialog({
             )}
 
             <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="orderNumber">Order Number</Label>
-                <Input
-                  id="orderNumber"
-                  value={formData.orderNumber}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      orderNumber: e.target.value,
-                    }))
-                  }
-                  placeholder="e.g., ORD-001"
-                  disabled={isLoading}
-                  required
-                />
-                {fieldErrors.orderNumber && (
-                  <p className="text-sm text-red-500">
-                    {fieldErrors.orderNumber}
-                  </p>
-                )}
-              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="customerId">Customer</Label>
                   <select
                     id="customerId"
+                    aria-label="Customer"
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     value={formData.customerId}
                     onChange={(e) =>
@@ -282,6 +257,7 @@ export function CreateOrderDialog({
                   </Label>
                   <select
                     id="productId"
+                    aria-label="Product"
                     className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm"
                     value={newLine.productId}
                     onChange={(e) =>
@@ -309,7 +285,7 @@ export function CreateOrderDialog({
                     onChange={(e) =>
                       handleNewLineChange(
                         "quantity",
-                        parseInt(e.target.value) || 0
+                        Number.parseInt(e.target.value) || 0
                       )
                     }
                   />
@@ -328,7 +304,7 @@ export function CreateOrderDialog({
                     onChange={(e) =>
                       handleNewLineChange(
                         "unitPrice",
-                        parseFloat(e.target.value) || 0
+                        Number.parseFloat(e.target.value) || 0
                       )
                     }
                   />
@@ -340,6 +316,7 @@ export function CreateOrderDialog({
                     className="w-full"
                     onClick={addLine}
                     disabled={!newLine.productId}
+                    aria-label="Add item"
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -369,12 +346,12 @@ export function CreateOrderDialog({
                         </TableCell>
                       </TableRow>
                     ) : (
-                      formData.orderLines?.map((line, index) => {
+                      formData.orderLines?.map((line) => {
                         const product = products.find(
                           (p) => p.id === line.productId
                         );
                         return (
-                          <TableRow key={index}>
+                          <TableRow key={line.id}>
                             <TableCell>
                               {product?.name || line.productId}
                             </TableCell>
@@ -393,7 +370,7 @@ export function CreateOrderDialog({
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8 text-red-500"
-                                onClick={() => removeLine(index)}
+                                onClick={() => removeLine(line.id!)}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -430,7 +407,7 @@ export function CreateOrderDialog({
               type="submit"
               disabled={isLoading || formData.orderLines.length === 0}
             >
-              {isLoading ? "Creating..." : "Create Order"}
+              {isLoading ? "Creating…" : "Create Order"}
             </Button>
           </DialogFooter>
         </form>

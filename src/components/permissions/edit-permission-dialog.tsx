@@ -105,7 +105,7 @@ export function EditPermissionDialog({ permission, open, onOpenChange, onSuccess
                 value={formData.description || ""}
                 onChange={(e) => handleChange("description", e.target.value)}
                 disabled={isLoading}
-                placeholder="Describe what this permission allows..."
+                placeholder="Describe what this permission allows…"
                 rows={3}
               />
             </div>
@@ -116,7 +116,7 @@ export function EditPermissionDialog({ permission, open, onOpenChange, onSuccess
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save Changes"}
+              {isLoading ? "Saving…" : "Save Changes"}
             </Button>
           </DialogFooter>
         </form>

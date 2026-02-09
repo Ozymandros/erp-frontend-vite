@@ -13,6 +13,7 @@ const optionalString = (maxLength: number, errorMessage: string) =>
   );
 
 export const PurchaseOrderLineSchema = z.object({
+  id: z.string().uuid().optional(),
   productId: z.string().min(1, "Product is required"),
   quantity: z.number().int().min(1, "Quantity must be at least 1"),
   unitPrice: z.number().min(0, "Unit price must be 0 or greater"),

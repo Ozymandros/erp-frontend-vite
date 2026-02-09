@@ -10,7 +10,7 @@ import type {
 } from "@/types/api.types";
 
 class PermissionsService {
-  private apiClient = getApiClient();
+  private readonly apiClient = getApiClient();
 
   async getPermissions(): Promise<Permission[]> {
     return this.apiClient.get<Permission[]>(PERMISSIONS_ENDPOINTS.BASE);

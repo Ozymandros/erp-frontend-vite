@@ -93,7 +93,8 @@ export function EditUserDialog({
                 <Label htmlFor="edit-firstName">First Name</Label>
                 <Input
                   id="edit-firstName"
-                  value={formData.firstName || ""}
+                  autoComplete="given-name"
+                  value={formData.firstName}
                   onChange={e => handleChange("firstName", e.target.value)}
                   disabled={isLoading}
                 />
@@ -102,7 +103,8 @@ export function EditUserDialog({
                 <Label htmlFor="edit-lastName">Last Name</Label>
                 <Input
                   id="edit-lastName"
-                  value={formData.lastName || ""}
+                  autoComplete="family-name"
+                  value={formData.lastName}
                   onChange={e => handleChange("lastName", e.target.value)}
                   disabled={isLoading}
                 />
@@ -113,9 +115,11 @@ export function EditUserDialog({
               <Label htmlFor="edit-email">Email</Label>
               <Input
                 id="edit-email"
-                type="email"
-                value={formData.email || ""}
+                autoComplete="username"
+                spellCheck={false}
+                value={formData.email}
                 onChange={e => handleChange("email", e.target.value)}
+                required
                 disabled={isLoading}
               />
             </div>
@@ -146,7 +150,7 @@ export function EditUserDialog({
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save Changes"}
+              {isLoading ? "Saving…" : "Save Changes"}
             </Button>
           </DialogFooter>
         </form>

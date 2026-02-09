@@ -1,5 +1,5 @@
-import { test } from '@playwright/test';
-import { setupApiMocks, setupAuthenticatedSession } from './api-interceptor';
+import { test, expect } from '@playwright/test';
+import { setupApiMocks, gotoAuthenticated } from './api-interceptor';
 
 /**
  * E2E Tests for Sales Management
@@ -7,153 +7,89 @@ import { setupApiMocks, setupAuthenticatedSession } from './api-interceptor';
  */
 
 test.describe('Sales Management', () => {
-  
   test.beforeEach(async ({ page }) => {
-    test.setTimeout(90000);
-
     await page.context().clearCookies();
-    await page.waitForTimeout(500);
     await setupApiMocks(page);
-    
-    // Robust navigation with retry
-    const goToSales = async () => {
-      await page.goto('/sales/customers', { 
-        waitUntil: 'domcontentloaded',
-        timeout: 60000 
-      });
-      await page.waitForLoadState("load", { timeout: 10000 }).catch(() => {});
-    };
-
-    let attempts = 0;
-    while (attempts < 3) {
-      try {
-        await goToSales();
-        break;
-      } catch (error) {
-        attempts++;
-        if (attempts >= 3) throw error;
-        await page.waitForTimeout(2000);
-      }
-    }
-
-    // Clear localStorage after page loads
-    await page.evaluate(() => {
-      try {
-        localStorage.clear();
-      } catch (e) {
-        console.log("localStorage already clear");
-      }
-    });
-
-    // Setup authenticated session
-    await setupAuthenticatedSession(page);
   });
 
   test.describe('Customers', () => {
-    test('should load customers page', async ({ page }) => {
-      await page.goto('/sales/customers', { waitUntil: 'domcontentloaded' });
-      await page.waitForTimeout(1000);
+    test.beforeEach(async ({ page }) => {
+      await gotoAuthenticated(page, '/sales/customers', { waitForTable: true });
     });
-
+    
     test('should display customers list', async ({ page }) => {
-      await page.goto('/sales/customers', { waitUntil: 'domcontentloaded' });
-      await page.waitForTimeout(1000);
+      // beforeEach already navigated and table is visible
+      await expect(page.locator('td:has-text("Customer 1")')).toBeVisible({ timeout: 5000 });
     });
 
     test('should create new customer', async ({ page }) => {
-      await page.goto('/sales/customers', { waitUntil: 'domcontentloaded' });
+      // beforeEach already navigated and table is visible
       
-      const createBtn = page.locator('button:has-text("Create"), button:has-text("Add"), button:has-text("New")');
-      const createExists = await createBtn.count() > 0;
+      // Find create button
+      const createBtn = page.getByRole('button', { name: /add.*customer/i }).first();
+      await expect(createBtn).toBeVisible({ timeout: 5000 });
+      await createBtn.click();
       
-      if (createExists) {
-        await createBtn.first().click();
-        await page.waitForTimeout(500);
-      }
-    });
+      // Wait for dialog
+      const dialog = page.locator('[role="dialog"]');
+      await expect(dialog).toBeVisible({ timeout: 5000 });
 
-    test('should search customers', async ({ page }) => {
-      await page.goto('/sales/customers', { waitUntil: 'domcontentloaded' });
+      await dialog.locator('input#name').fill('New Customer E2E');
+      await dialog.locator('input#email').fill('e2e@customer.com');
       
-      const searchInput = page.locator('input[type="search"], input[placeholder*="search" i]');
-      const searchExists = await searchInput.count() > 0;
+      await dialog.locator('button[type="submit"]').click();
       
-      if (searchExists) {
-        await searchInput.first().fill('test');
-        await page.waitForTimeout(500);
-      }
-    });
-
-    test('should filter customers', async ({ page }) => {
-      await page.goto('/sales/customers', { waitUntil: 'domcontentloaded' });
-      
-      const filterBtn = page.locator('button:has-text("Filter"), button[aria-label*="filter" i]');
-      const filterExists = await filterBtn.count() > 0;
-      
-      if (filterExists) {
-        await filterBtn.first().click();
-        await page.waitForTimeout(500);
-      }
+      // Dialog should close
+      await expect(dialog).not.toBeVisible({ timeout: 5000 });
     });
   });
 
   test.describe('Sales Orders', () => {
-    test('should load sales orders page', async ({ page }) => {
-      await page.goto('/sales/orders', { waitUntil: 'domcontentloaded' });
-      await page.waitForTimeout(1000);
+    test.beforeEach(async ({ page }) => {
+      await gotoAuthenticated(page, '/sales/orders', { waitForTable: true });
     });
-
+    
     test('should display sales orders list', async ({ page }) => {
-      await page.goto('/sales/orders', { waitUntil: 'domcontentloaded' });
-      await page.waitForTimeout(1000);
+      // beforeEach already navigated and table is visible
+      await expect(page.locator('td:has-text("SO001")')).toBeVisible({ timeout: 5000 });
     });
 
-    test('should create new sales order', async ({ page }) => {
-      await page.goto('/sales/orders', { waitUntil: 'domcontentloaded' });
+    test('should create new sales order with items', async ({ page }) => {
+      // beforeEach already navigated and table is visible
       
-      const createBtn = page.locator('button:has-text("Create"), button:has-text("Add"), button:has-text("New")');
-      const createExists = await createBtn.count() > 0;
+      // Find create button (ListPageLayout uses resourceName="Order" -> "Add Order")
+      const createBtn = page.getByRole('button', { name: /add.*order/i }).first();
+      await expect(createBtn).toBeVisible({ timeout: 5000 });
+      await createBtn.click();
       
-      if (createExists) {
-        await createBtn.first().click();
-        await page.waitForTimeout(1000);
-      }
+      const dialog = page.locator('[role="dialog"]');
+      await expect(dialog).toBeVisible({ timeout: 5000 });
+      await expect(dialog.locator('select#customerId')).toBeVisible({ timeout: 5000 });
+
+      // Select customer
+      await dialog.locator('select#customerId').selectOption({ label: 'Customer 1' });
+
+      // Add order line: select product, quantity, unitPrice, then click Add
+      await dialog.locator('select#productId').selectOption({ value: '1' });
+      await dialog.locator('input#quantity').fill('5');
+      await dialog.locator('input#unitPrice').fill('100');
+      // Click the Plus button to add the line (in the Order Lines section)
+      await dialog.locator('div.border.rounded-md button[type="button"]').first().click();
+
+      await dialog.locator('button[type="submit"]').click();
+      
+      // Dialog should close
+      await expect(dialog).not.toBeVisible({ timeout: 5000 });
     });
 
-    test('should search sales orders', async ({ page }) => {
-      await page.goto('/sales/orders', { waitUntil: 'domcontentloaded' });
+    test('should view order details and check status', async ({ page }) => {
+      // beforeEach already navigated and table is visible
       
-      const searchInput = page.locator('input[type="search"], input[placeholder*="search" i]');
-      const searchExists = await searchInput.count() > 0;
-      
-      if (searchExists) {
-        await searchInput.first().fill('test');
-        await page.waitForTimeout(500);
-      }
-    });
-
-    test('should filter orders by status', async ({ page }) => {
-      await page.goto('/sales/orders', { waitUntil: 'domcontentloaded' });
-      
-      const filterBtn = page.locator('button:has-text("Filter"), select[name*="status" i]');
-      const filterExists = await filterBtn.count() > 0;
-      
-      if (filterExists) {
-        await filterBtn.first().click();
-        await page.waitForTimeout(500);
-      }
-    });
-
-    test('should view order details', async ({ page }) => {
-      await page.goto('/sales/orders', { waitUntil: 'domcontentloaded' });
-      
-      // Look for order row
-      const orderRow = page.locator('tr, [role="row"]').first();
-      const rowExists = await orderRow.count() > 0;
-      
-      if (rowExists) {
-        await orderRow.click();
-        await page.waitForTimeout(500);
+      // Click on order number to view details
+      const orderLink = page.locator('a[href*="/sales/orders/"]').first();
+      if (await orderLink.count() > 0) {
+        await orderLink.click();
+        await page.waitForURL('**/sales/orders/*', { timeout: 5000 });
       }
     });
   });

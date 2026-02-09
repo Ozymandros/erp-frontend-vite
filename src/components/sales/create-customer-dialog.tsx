@@ -177,7 +177,7 @@ export function CreateCustomerDialog({
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Creating..." : "Create Customer"}
+              {isLoading ? "Creating…" : "Create Customer"}
             </Button>
           </DialogFooter>
         </form>

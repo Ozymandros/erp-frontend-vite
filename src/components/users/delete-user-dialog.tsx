@@ -71,7 +71,7 @@ export function DeleteUserDialog({ user, open, onOpenChange, onSuccess }: Delete
             Cancel
           </Button>
           <Button type="button" variant="destructive" onClick={handleDelete} disabled={isLoading}>
-            {isLoading ? "Deleting..." : "Delete User"}
+            {isLoading ? "Deleting…" : "Delete User"}
           </Button>
         </DialogFooter>
       </DialogContent>

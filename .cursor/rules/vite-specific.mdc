@@ -1,0 +1,133 @@
+---
+description: "Vite-specific patterns and anti-patterns. This is NOT Next.js - use Vite conventions"
+globs: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"]
+alwaysApply: true
+---
+
+# Vite-Specific Patterns
+
+**CRITICAL:** This project uses **Vite + React Router**, NOT Next.js. Never use Next.js patterns.
+
+## When Writing Code
+
+### Rule 1: Use React Router, Not Next.js Routing
+
+**When you see:** Next.js routing patterns (`getServerSideProps`, `getStaticProps`, `next/link`)
+
+**Action:** Use React Router patterns instead.
+
+**Incorrect (Next.js):**
+
+```tsx
+import Link from 'next/link'
+import { getServerSideProps } from 'next'
+
+export async function getServerSideProps() { ... }
+```
+
+**Correct (Vite + React Router):**
+
+```tsx
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+// Data fetching in component
+function Page() {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    fetchData().then(setData);
+  }, []);
+  // ...
+}
+```
+
+### Rule 2: Use Vite Environment Variables
+
+**When you see:** `process.env` usage
+
+**Action:** Use `import.meta.env` (Vite's convention).
+
+**Incorrect:**
+
+```tsx
+const apiUrl = process.env.VITE_API_BASE_URL;
+```
+
+**Correct:**
+
+```tsx
+const apiUrl = import.meta.env.VITE_API_BASE_URL;
+```
+
+**Note:** Only variables prefixed with `VITE_` are exposed to client code.
+
+### Rule 3: Client-Side Routing Only
+
+**When you see:** Server-side rendering patterns
+
+**Action:** This is a SPA - all routing is client-side.
+
+**Incorrect:**
+
+```tsx
+// Server components (Next.js only)
+export default async function Page() {
+  const data = await fetchData();
+  return <div>{data}</div>;
+}
+```
+
+**Correct:**
+
+```tsx
+// Client component (Vite)
+function Page() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetchData().then(setData);
+  }, []);
+
+  if (!data) return <div>Loading...</div>;
+  return <div>{data}</div>;
+}
+```
+
+### Rule 4: Import Assets Correctly
+
+**When you see:** Asset imports
+
+**Action:** Use Vite's asset handling.
+
+**Correct:**
+
+```tsx
+import logo from "./logo.png"; // Vite handles this
+import "./styles.css"; // CSS imports work
+```
+
+## Never Do These
+
+- ❌ **Never use Next.js patterns** - No `getServerSideProps`, `getStaticProps`, `next/link`, `next/image`
+- ❌ **Never use `process.env`** - Use `import.meta.env` instead
+- ❌ **Never assume SSR** - This is a client-side SPA
+- ❌ **Never use Next.js API routes** - Use external API calls or Vite dev server proxy
+- ❌ **Never use `next/dynamic`** - Use `React.lazy()` instead
+
+## Project-Specific: API Client Selection
+
+**When configuring API calls:**
+
+The project supports two HTTP clients selected via `VITE_USE_DAPR`:
+
+1. **Axios** (default): `VITE_USE_DAPR=false`
+
+   - Base URL: `import.meta.env.VITE_API_BASE_URL`
+   - **Never include `/api` suffix** - endpoints already include full paths
+
+2. **Dapr** (`VITE_USE_DAPR=true`):
+   - Uses Dapr service invocation
+   - App ID: `import.meta.env.VITE_DAPR_APP_ID`
+   - Port: `import.meta.env.VITE_DAPR_PORT`
+
+Both clients share the same interface. See `src/api/clients/` for implementations.

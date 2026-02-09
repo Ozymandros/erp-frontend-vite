@@ -78,7 +78,7 @@ export function DeleteRoleDialog({ role, open, onOpenChange, onSuccess }: Delete
             Cancel
           </Button>
           <Button type="button" variant="destructive" onClick={handleDelete} disabled={isLoading}>
-            {isLoading ? "Deleting..." : "Delete Role"}
+            {isLoading ? "Deleting…" : "Delete Role"}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -13,7 +13,7 @@ import type {
 } from "@/types/api.types";
 
 class SalesOrdersService {
-  private apiClient = getApiClient();
+  private readonly apiClient = getApiClient();
 
   async getSalesOrders(): Promise<SalesOrderDto[]> {
     return this.apiClient.get<SalesOrderDto[]>(SALES_ORDERS_ENDPOINTS.BASE);

@@ -162,9 +162,16 @@ pnpm test:e2e
 
 # Run E2E tests in UI mode
 pnpm exec playwright test --ui
+
+# Open the last HTML report
+pnpm test:e2e:report
 ```
 
 **Note**: E2E tests use mocked API endpoints and don't require a running backend. See [E2E Testing docs](docs/E2E_TESTING.md) for details.
+
+- **Port 3000**: Ensure nothing else is using port 3000 before `pnpm test:e2e` (the dev server must bind to 3000).
+- **Rollup**: If the dev server fails with `Cannot find module @rollup/rollup-*-*`, run `pnpm install` (or `pnpm install --no-frozen-lockfile` if the lockfile was updated) so optional Rollup native binaries are installed for your platform.
+- **EACCES on test-results**: If you get permission denied when running E2E tests, delete the `test-results` folder (if it exists) and run again. The config uses `.playwright-output` for new runs to avoid this.
 
 ## 🏗️ Project Structure
 

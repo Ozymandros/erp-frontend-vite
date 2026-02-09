@@ -36,3 +36,12 @@ global.IntersectionObserver = class IntersectionObserver {
   }
   unobserve() {}
 } as any
+
+// Mock crypto.randomUUID
+if (typeof global.crypto === 'undefined') {
+  (global as any).crypto = {}
+}
+
+if (typeof global.crypto.randomUUID !== 'function') {
+  (global.crypto as any).randomUUID = () => '12345678-1234-1234-1234-123456789012'
+}

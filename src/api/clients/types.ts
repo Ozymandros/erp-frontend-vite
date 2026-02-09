@@ -36,9 +36,9 @@ export interface ApiClient {
 export class ApiClientError extends Error {
   constructor(
     message: string,
-    public statusCode?: number,
-    public code?: string,
-    public details?: any,
+    public readonly statusCode?: number,
+    public readonly code?: string,
+    public readonly details?: any,
   ) {
     super(message)
     this.name = "ApiClientError"

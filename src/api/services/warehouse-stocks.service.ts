@@ -6,7 +6,7 @@ import type {
 } from "@/types/api.types";
 
 class WarehouseStocksService {
-  private apiClient = getApiClient();
+  private readonly apiClient = getApiClient();
 
   async getStockByProductAndWarehouse(
     productId: string,
