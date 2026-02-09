@@ -41,7 +41,7 @@ jobs:
       - name: Remove cached Sonar Scanner (fixes "Automatic Analysis is enabled" false positive)
         run: rm -rf /opt/hostedtoolcache/sonar-scanner-cli 2>/dev/null || true
       - name: SonarQube Community Scan
-        uses: sonarsource/sonarqube-scan-action@v2
+        uses: sonarsource/sonarqube-scan-action@v7
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
