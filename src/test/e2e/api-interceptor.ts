@@ -71,10 +71,47 @@ const createPaginatedResponse = <T>(items: T[], page = 1, pageSize = 10): Pagina
 
 export async function setupApiMocks(page: Page) {
   // Intercept all API calls - use broad pattern to catch requests to any origin
-  await page.route(/\/auth\/api\/|\/inventory\/api\/|\/sales\/api\/|\/purchasing\/api\/|\/orders\/api\//, async (route) => {
+  // Note: add `/crm/api/crm/` to mock CRM endpoints.
+  let mockLeads = [
+    {
+      id: "lead-1",
+      title: "Lead 1",
+      source: "Website",
+      contactName: "Jane Doe",
+      contactEmail: "jane@example.com",
+      contactPhone: "123456789",
+      customerId: "cust-1",
+      status: "Open",
+      ownerUsername: "admin",
+      createdAt: "2024-01-01T00:00:00Z",
+      updatedAt: "2024-01-01T00:00:00Z",
+      createdBy: "system",
+      updatedBy: "system",
+    },
+  ];
+
+  let mockOpportunities = [
+    {
+      id: "opp-1",
+      name: "Opportunity 1",
+      stage: "Qualification",
+      ownerUsername: "admin",
+      expectedCloseDate: "2026-03-31",
+      expectedAmount: 5000,
+      customerId: "1",
+      leadId: "lead-1",
+      createdAt: "2024-01-01T00:00:00Z",
+      updatedAt: "2024-01-01T00:00:00Z",
+      createdBy: "system",
+      updatedBy: "system",
+    },
+  ];
+
+  await page.route(/\/auth\/api\/|\/inventory\/api\/|\/sales\/api\/|\/purchasing\/api\/|\/orders\/api\/|\/crm\/api\/crm\//, async (route) => {
     const request = route.request();
     const url = request.url();
     const method = request.method();
+    const urlPath = url.split("?")[0];
     
     try {
       // Auth endpoints - /auth/api/*
@@ -1112,6 +1149,150 @@ export async function setupApiMocks(page: Page) {
             });
             return;
           }
+        }
+      }
+
+      // CRM endpoints - /crm/api/crm/*
+      if (urlPath.includes("/crm/api/crm/")) {
+        // Leads - paginated search
+        if (
+          method === "GET" &&
+          urlPath.endsWith("/crm/api/crm/leads")
+        ) {
+          await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify(
+              createPaginatedResponse(mockLeads, 1, 10),
+            ),
+          });
+          return;
+        }
+
+        // Leads - get by id
+        if (
+          method === "GET" &&
+          urlPath.match(/\/crm\/api\/crm\/leads\/[^/]+$/)
+        ) {
+          const id = urlPath.split("/").pop();
+          const lead = mockLeads.find(l => l.id === id);
+          if (!lead) {
+            await route.fulfill({
+              status: 404,
+              contentType: "application/json",
+              body: JSON.stringify({ message: "Lead not found" }),
+            });
+            return;
+          }
+
+          await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify(lead),
+          });
+          return;
+        }
+
+        // Leads - create
+        if (
+          method === "POST" &&
+          urlPath.endsWith("/crm/api/crm/leads")
+        ) {
+          const body = request.postDataJSON();
+          const created = {
+            id: `lead-${mockLeads.length + 1}`,
+            title: body.title ?? "Untitled Lead",
+            source: body.source,
+            contactName: body.contactName,
+            contactEmail: body.contactEmail,
+            contactPhone: body.contactPhone,
+            customerId: body.customerId ?? "cust-1",
+            status: "Open",
+            ownerUsername: body.ownerUsername ?? "admin",
+            createdAt: "2024-01-01T00:00:00Z",
+            updatedAt: "2024-01-01T00:00:00Z",
+            createdBy: "system",
+            updatedBy: "system",
+          };
+
+          mockLeads = [created, ...mockLeads];
+
+          await route.fulfill({
+            status: 201,
+            contentType: "application/json",
+            body: JSON.stringify(created),
+          });
+          return;
+        }
+
+        // Leads - qualify (No content)
+        if (
+          method === "POST" &&
+          urlPath.match(/\/crm\/api\/crm\/leads\/[^/]+\/qualify$/)
+        ) {
+          const id = urlPath.split("/").slice(-2)[0]; // .../leads/{id}/qualify
+          const body = request.postDataJSON();
+          mockLeads = mockLeads.map(l =>
+            l.id === id
+              ? {
+                  ...l,
+                  status: "Qualified",
+                  customerId: body.customerId ?? l.customerId,
+                }
+              : l,
+          );
+
+          await route.fulfill({
+            status: 204,
+            contentType: "application/json",
+          });
+          return;
+        }
+
+        // Opportunities - paginated search
+        if (
+          method === "GET" &&
+          urlPath.endsWith("/crm/api/crm/opportunities")
+        ) {
+          await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify(
+              createPaginatedResponse(mockOpportunities, 1, 10),
+            ),
+          });
+          return;
+        }
+
+        // Opportunities - create
+        if (
+          method === "POST" &&
+          urlPath.endsWith("/crm/api/crm/opportunities")
+        ) {
+          const body = request.postDataJSON();
+          const created = {
+            id: `opp-${mockOpportunities.length + 1}`,
+            name: body.name ?? "Untitled Opportunity",
+            stage: "Qualification",
+            ownerUsername: body.ownerUsername ?? "admin",
+            expectedCloseDate: "2026-03-31",
+            expectedAmount: 0,
+            customerId: body.customerId,
+            leadId: body.leadId ?? "lead-1",
+            createdAt: "2024-01-01T00:00:00Z",
+            updatedAt: "2024-01-01T00:00:00Z",
+            createdBy: "system",
+            updatedBy: "system",
+          };
+
+          mockOpportunities = [created, ...mockOpportunities];
+
+          await route.fulfill({
+            status: 201,
+            contentType: "application/json",
+            body: JSON.stringify(created),
+          });
+          return;
         }
       }
       

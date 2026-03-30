@@ -23,3 +23,10 @@ export * from './customers.service'
 // Purchasing module
 export * from './purchase-orders.service'
 export * from './suppliers.service'
+
+// CRM module
+export * from './leads.service'
+export * from './crm-accounts.service'
+export * from './crm-contacts.service'
+export * from './crm-activities.service'
+export * from './crm-opportunities.service'

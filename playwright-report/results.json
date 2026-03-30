@@ -10,7 +10,9 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {},
+    "metadata": {
+      "actualWorkers": 2
+    },
     "preserveOutput": "always",
     "reporter": [
       [
@@ -40,7 +42,9 @@
         "outputDir": "C:/Projects/ERP_ASPIRE_APP/erp-frontend-vite/.playwright-output",
         "repeatEach": 1,
         "retries": 1,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 2
+        },
         "id": "chromium",
         "name": "chromium",
         "testDir": "C:/Projects/ERP_ASPIRE_APP/erp-frontend-vite/src/test/e2e",
@@ -54,7 +58,9 @@
         "outputDir": "C:/Projects/ERP_ASPIRE_APP/erp-frontend-vite/.playwright-output",
         "repeatEach": 1,
         "retries": 1,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 2
+        },
         "id": "firefox",
         "name": "firefox",
         "testDir": "C:/Projects/ERP_ASPIRE_APP/erp-frontend-vite/src/test/e2e",
@@ -68,7 +74,9 @@
         "outputDir": "C:/Projects/ERP_ASPIRE_APP/erp-frontend-vite/.playwright-output",
         "repeatEach": 1,
         "retries": 1,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 2
+        },
         "id": "Mobile Chrome",
         "name": "Mobile Chrome",
         "testDir": "C:/Projects/ERP_ASPIRE_APP/erp-frontend-vite/src/test/e2e",
@@ -94,17 +102,353 @@
       "timeout": 300000
     }
   },
-  "suites": [],
-  "errors": [
+  "suites": [
     {
-      "message": "Error: Process from config.webServer was not able to start. Exit code: 1",
-      "stack": "Error: Process from config.webServer was not able to start. Exit code: 1"
+      "title": "crm.spec.ts",
+      "file": "crm.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "CRM Management",
+          "file": "crm.spec.ts",
+          "line": 8,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Leads",
+              "file": "crm.spec.ts",
+              "line": 15,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should create a new lead",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 23088,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-03-30T09:56:19.984Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "1b49a9ede2a2b64a34c9-dd26fb43d5f0ba2bb225",
+                  "file": "crm.spec.ts",
+                  "line": 23,
+                  "column": 5
+                },
+                {
+                  "title": "should qualify an existing lead",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 23106,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-03-30T09:56:19.997Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "1b49a9ede2a2b64a34c9-9efbab545a02d3c7ed1a",
+                  "file": "crm.spec.ts",
+                  "line": 43,
+                  "column": 5
+                },
+                {
+                  "title": "should create a new lead",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 5077,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-03-30T09:56:45.499Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "1b49a9ede2a2b64a34c9-51103b5fa6001278c408",
+                  "file": "crm.spec.ts",
+                  "line": 23,
+                  "column": 5
+                },
+                {
+                  "title": "should qualify an existing lead",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 4814,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-03-30T09:56:47.982Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "1b49a9ede2a2b64a34c9-3df57097fa9d80adebd5",
+                  "file": "crm.spec.ts",
+                  "line": 43,
+                  "column": 5
+                },
+                {
+                  "title": "should create a new lead",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1493,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-03-30T09:56:55.001Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "1b49a9ede2a2b64a34c9-ee25b16958e6b1a4d14e",
+                  "file": "crm.spec.ts",
+                  "line": 23,
+                  "column": 5
+                },
+                {
+                  "title": "should qualify an existing lead",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 926,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-03-30T09:56:57.701Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "1b49a9ede2a2b64a34c9-48055611dcb76443da0d",
+                  "file": "crm.spec.ts",
+                  "line": 43,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Opportunities",
+              "file": "crm.spec.ts",
+              "line": 70,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should create a new opportunity",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 2909,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-03-30T09:56:43.893Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "1b49a9ede2a2b64a34c9-7bfc501bc6ceccf9e59f",
+                  "file": "crm.spec.ts",
+                  "line": 78,
+                  "column": 5
+                },
+                {
+                  "title": "should create a new opportunity",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 3945,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-03-30T09:56:52.136Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "1b49a9ede2a2b64a34c9-8e8a099f3aafc793052e",
+                  "file": "crm.spec.ts",
+                  "line": 78,
+                  "column": 5
+                },
+                {
+                  "title": "should create a new opportunity",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 790,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-03-30T09:56:56.711Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "1b49a9ede2a2b64a34c9-a625a9a3abe67b29f44f",
+                  "file": "crm.spec.ts",
+                  "line": 78,
+                  "column": 5
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
+  "errors": [],
   "stats": {
-    "startTime": "2026-02-08T14:55:09.428Z",
-    "duration": 1275.84,
-    "expected": 0,
+    "startTime": "2026-03-30T09:56:13.495Z",
+    "duration": 45736.913,
+    "expected": 9,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

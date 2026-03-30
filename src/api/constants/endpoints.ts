@@ -39,6 +39,9 @@ export const SALES_SERVICE_BASE = "/sales/api/sales";
 /** Purchasing service gateway upstream: /purchasing/api/purchasing/ → routes to /api/purchasing/ */
 export const PURCHASING_SERVICE_BASE = "/purchasing/api/purchasing";
 
+/** CRM service gateway upstream: /crm/api/crm/ → routes to /api/crm/ */
+export const CRM_SERVICE_BASE = "/crm/api/crm";
+
 // ==================== AUTH MODULE ENDPOINTS ====================
 
 export const AUTH_ENDPOINTS = {
@@ -231,4 +234,59 @@ export const SUPPLIERS_ENDPOINTS = {
   ADVANCED_SEARCH: `${PURCHASING_SERVICE_BASE}/suppliers/advanced-search`,
   EXPORT_XLSX: `${PURCHASING_SERVICE_BASE}/suppliers/export-xlsx`,
   EXPORT_PDF: `${PURCHASING_SERVICE_BASE}/suppliers/export-pdf`,
+} as const;
+
+// ==================== CRM MODULE ENDPOINTS ====================
+
+export const LEADS_ENDPOINTS = {
+  // Gateway: /crm/api/crm/leads → Backend: /api/crm/leads
+  BASE: `${CRM_SERVICE_BASE}/leads`,
+  BY_ID: (id: string) => `${CRM_SERVICE_BASE}/leads/${id}`,
+  QUALIFY: (id: string) => `${CRM_SERVICE_BASE}/leads/${id}/qualify`,
+} as const;
+
+export const ACCOUNTS_ENDPOINTS = {
+  // Gateway: /crm/api/crm/accounts → Backend: /api/crm/accounts
+  BASE: `${CRM_SERVICE_BASE}/accounts`,
+  BY_ID: (id: string) => `${CRM_SERVICE_BASE}/accounts/${id}`,
+  UPDATE_OWNER: (id: string) => `${CRM_SERVICE_BASE}/accounts/${id}/owner`,
+} as const;
+
+export const CONTACTS_ENDPOINTS = {
+  // Gateway: /crm/api/crm/contacts → Backend: /api/crm/contacts
+  BASE: `${CRM_SERVICE_BASE}/contacts`,
+  BY_ID: (id: string) => `${CRM_SERVICE_BASE}/contacts/${id}`,
+
+  // Account-scoped contacts (absolute route in backend)
+  BY_ACCOUNT: (accountId: string) =>
+    `${CRM_SERVICE_BASE}/accounts/${accountId}/contacts`,
+
+  SET_PRIMARY: (accountId: string, contactId: string) =>
+    `${CRM_SERVICE_BASE}/accounts/${accountId}/contacts/${contactId}/set-primary`,
+} as const;
+
+export const ACTIVITIES_ENDPOINTS = {
+  // Gateway: /crm/api/crm/activities → Backend: /api/crm/activities
+  BASE: `${CRM_SERVICE_BASE}/activities`,
+  BY_ID: (id: string) => `${CRM_SERVICE_BASE}/activities/${id}`,
+  COMPLETE: (id: string) => `${CRM_SERVICE_BASE}/activities/${id}/complete`,
+} as const;
+
+export const OPPORTUNITIES_ENDPOINTS = {
+  // Gateway: /crm/api/crm/opportunities → Backend: /api/crm/opportunities
+  BASE: `${CRM_SERVICE_BASE}/opportunities`,
+  BY_ID: (id: string) => `${CRM_SERVICE_BASE}/opportunities/${id}`,
+
+  // Non-CRUD actions
+  FORECAST: `${CRM_SERVICE_BASE}/opportunities/forecast`,
+  UPDATE_FORECAST: (id: string) => `${CRM_SERVICE_BASE}/opportunities/${id}/forecast`,
+  MOVE_STAGE: (id: string) => `${CRM_SERVICE_BASE}/opportunities/${id}/move-stage`,
+  MARK_WON: (id: string) => `${CRM_SERVICE_BASE}/opportunities/${id}/mark-won`,
+  MARK_LOST: (id: string) => `${CRM_SERVICE_BASE}/opportunities/${id}/mark-lost`,
+
+  // Opportunity lines sub-resource
+  LINES_BASE: (opportunityId: string) =>
+    `${CRM_SERVICE_BASE}/opportunities/${opportunityId}/lines`,
+  LINE_BY_ID: (opportunityId: string, lineId: string) =>
+    `${CRM_SERVICE_BASE}/opportunities/${opportunityId}/lines/${lineId}`,
 } as const;
