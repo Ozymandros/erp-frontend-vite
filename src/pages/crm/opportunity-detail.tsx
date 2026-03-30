@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,12 @@ export function OpportunityDetailPage() {
 
   const [markWonNote, setMarkWonNote] = useState<string>("");
   const [markLostReason, setMarkLostReason] = useState<string>("");
+
+  const isOpportunityClosed = useMemo(() => {
+    const normalized = opportunity?.stage?.toLowerCase().trim() ?? "";
+    if (!normalized) return false;
+    return normalized.includes("closed") || normalized.includes("won") || normalized.includes("lost");
+  }, [opportunity?.stage]);
 
   const refreshOpportunity = useCallback(async () => {
     if (!id) return;
@@ -139,14 +145,29 @@ export function OpportunityDetailPage() {
         </Link>
 
         <div className="flex items-center gap-2">
-          <Button onClick={() => setIsForecastOpen(true)}>
+          <Button
+            onClick={() => setIsForecastOpen(true)}
+            disabled={isOpportunityClosed}
+          >
             Update Forecast
           </Button>
-          <Button variant="outline" onClick={() => setIsLineOpen(true)}>
+          <Button
+            variant="outline"
+            onClick={() => setIsLineOpen(true)}
+            disabled={isOpportunityClosed}
+          >
             Add Line
           </Button>
         </div>
       </div>
+
+      {isOpportunityClosed && (
+        <Alert>
+          <AlertDescription>
+            This opportunity is closed and can no longer be modified.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {error && (
         <Alert variant="destructive">
@@ -200,9 +221,12 @@ export function OpportunityDetailPage() {
                 id="stage"
                 value={stage}
                 onChange={e => setStage(e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || isOpportunityClosed}
               />
-              <Button onClick={() => void handleMoveStage()} disabled={!stage}>
+              <Button
+                onClick={() => void handleMoveStage()}
+                disabled={!stage || isOpportunityClosed}
+              >
                 Move Stage
               </Button>
             </div>
@@ -214,9 +238,13 @@ export function OpportunityDetailPage() {
                 value={markWonNote}
                 onChange={e => setMarkWonNote(e.target.value)}
                 placeholder="Optional note"
-                disabled={isLoading}
+                disabled={isLoading || isOpportunityClosed}
               />
-              <Button variant="default" onClick={() => void handleMarkWon()} disabled={isLoading}>
+              <Button
+                variant="default"
+                onClick={() => void handleMarkWon()}
+                disabled={isLoading || isOpportunityClosed}
+              >
                 Mark Won
               </Button>
             </div>
@@ -228,9 +256,13 @@ export function OpportunityDetailPage() {
                 value={markLostReason}
                 onChange={e => setMarkLostReason(e.target.value)}
                 placeholder="Reason for loss"
-                disabled={isLoading}
+                disabled={isLoading || isOpportunityClosed}
               />
-              <Button variant="destructive" onClick={() => void handleMarkLost()} disabled={!markLostReason.trim()}>
+              <Button
+                variant="destructive"
+                onClick={() => void handleMarkLost()}
+                disabled={!markLostReason.trim() || isOpportunityClosed}
+              >
                 Mark Lost
               </Button>
             </div>
@@ -248,6 +280,7 @@ export function OpportunityDetailPage() {
           expectedAmount: opportunity.expectedAmount,
           expectedCloseDate: opportunity.expectedCloseDate,
         }}
+        isClosed={isOpportunityClosed}
       />
 
       {isLineOpen && (

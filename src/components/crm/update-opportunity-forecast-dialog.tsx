@@ -27,6 +27,7 @@ interface UpdateOpportunityForecastDialogProps {
   readonly onOpenChange: (open: boolean) => void;
   readonly onSuccess: () => void;
   readonly opportunityId: string;
+  readonly isClosed?: boolean;
   readonly initialData?: {
     probability?: number;
     expectedAmount?: number;
@@ -39,6 +40,7 @@ export function UpdateOpportunityForecastDialog({
   onOpenChange,
   onSuccess,
   opportunityId,
+  isClosed = false,
   initialData,
 }: UpdateOpportunityForecastDialogProps) {
   const [formData, setFormData] = useState<UpdateOpportunityForecastFormData>({
@@ -65,6 +67,11 @@ export function UpdateOpportunityForecastDialog({
     e.preventDefault();
     setError(null);
     setFieldErrors({});
+
+    if (isClosed) {
+      setError("Opportunity is closed and cannot be modified.");
+      return;
+    }
 
     const validation = UpdateOpportunityForecastSchema.safeParse(formData);
     if (!validation.success) {
@@ -101,6 +108,14 @@ export function UpdateOpportunityForecastDialog({
               </Alert>
             )}
 
+            {isClosed && (
+              <Alert>
+                <AlertDescription>
+                  This opportunity is closed and forecast updates are disabled.
+                </AlertDescription>
+              </Alert>
+            )}
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="probability">Probability (0-1) *</Label>
@@ -117,7 +132,7 @@ export function UpdateOpportunityForecastDialog({
                       probability: Number.parseFloat(e.target.value) || 0,
                     }))
                   }
-                  disabled={isLoading}
+                  disabled={isLoading || isClosed}
                   className={fieldErrors.probability ? "border-red-500" : ""}
                 />
                 {fieldErrors.probability && (
@@ -140,7 +155,7 @@ export function UpdateOpportunityForecastDialog({
                       expectedAmount: raw === "" ? undefined : Number.parseFloat(raw),
                     }));
                   }}
-                  disabled={isLoading}
+                  disabled={isLoading || isClosed}
                   className={fieldErrors.expectedAmount ? "border-red-500" : ""}
                 />
                 {fieldErrors.expectedAmount && (
@@ -161,7 +176,7 @@ export function UpdateOpportunityForecastDialog({
                     expectedCloseDate: e.target.value || undefined,
                   }))
                 }
-                disabled={isLoading}
+                disabled={isLoading || isClosed}
                 className={fieldErrors.expectedCloseDate ? "border-red-500" : ""}
               />
               {fieldErrors.expectedCloseDate && (
@@ -179,7 +194,7 @@ export function UpdateOpportunityForecastDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading || isClosed}>
               {isLoading ? "Saving..." : "Save Forecast"}
             </Button>
           </DialogFooter>
