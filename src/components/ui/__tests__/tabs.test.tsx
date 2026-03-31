@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
 import { Tabs, TabsList, TabsTrigger } from "../tabs";
 
 describe("Tabs", () => {
@@ -16,7 +17,6 @@ describe("Tabs", () => {
     expect(screen.getByText("Tab 1")).toBeInTheDocument();
     expect(screen.getByText("Tab 2")).toBeInTheDocument();
     // Simulate tab switch if implemented
-    // fireEvent.click(screen.getByText("Tab 2"));
     // expect(...)
   });
 });
