@@ -42,6 +42,9 @@ export const PURCHASING_SERVICE_BASE = "/purchasing/api/purchasing";
 /** CRM service gateway upstream: /crm/api/crm/ → routes to /api/crm/ */
 export const CRM_SERVICE_BASE = "/crm/api/crm";
 
+/** Billing service gateway upstream: /billing/api/billing/ → routes to /api/ */
+export const BILLING_SERVICE_BASE = "/billing/api/billing";
+
 // ==================== AUTH MODULE ENDPOINTS ====================
 
 export const AUTH_ENDPOINTS = {
@@ -289,4 +292,31 @@ export const OPPORTUNITIES_ENDPOINTS = {
     `${CRM_SERVICE_BASE}/opportunities/${opportunityId}/lines`,
   LINE_BY_ID: (opportunityId: string, lineId: string) =>
     `${CRM_SERVICE_BASE}/opportunities/${opportunityId}/lines/${lineId}`,
+} as const;
+
+// ==================== BILLING MODULE ENDPOINTS ====================
+
+export const INVOICES_ENDPOINTS = {
+  BASE: `${BILLING_SERVICE_BASE}/Invoices`,
+  SEARCH: `${BILLING_SERVICE_BASE}/Invoices/search`,
+  BY_ID: (id: string) => `${BILLING_SERVICE_BASE}/Invoices/${id}`,
+  BY_CUSTOMER: (customerId: string) =>
+    `${BILLING_SERVICE_BASE}/Invoices/customer/${customerId}`,
+  BY_ORDER: (orderId: string) => `${BILLING_SERVICE_BASE}/Invoices/order/${orderId}`,
+  ISSUE: (id: string) => `${BILLING_SERVICE_BASE}/Invoices/${id}/issue`,
+  PAYMENTS: (id: string) => `${BILLING_SERVICE_BASE}/Invoices/${id}/payments`,
+  CANCEL: (id: string) => `${BILLING_SERVICE_BASE}/Invoices/${id}/cancel`,
+  CREDIT_NOTES: (id: string) => `${BILLING_SERVICE_BASE}/Invoices/${id}/credit-notes`,
+  EXPORT_XLSX: `${BILLING_SERVICE_BASE}/Invoices/export-xlsx`,
+  EXPORT_PDF: `${BILLING_SERVICE_BASE}/Invoices/export-pdf`,
+} as const;
+
+export const PAYMENTS_ENDPOINTS = {
+  BY_INVOICE: (invoiceId: string) =>
+    `${BILLING_SERVICE_BASE}/Payments/invoice/${invoiceId}`,
+} as const;
+
+export const CREDIT_NOTES_ENDPOINTS = {
+  BY_INVOICE: (invoiceId: string) =>
+    `${BILLING_SERVICE_BASE}/credit-notes/invoice/${invoiceId}`,
 } as const;

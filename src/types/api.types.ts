@@ -953,6 +953,113 @@ export interface MarkOpportunityWonRequest {
   quote?: ConvertOpportunityToQuoteDto;
 }
 
+// ==================== BILLING MODULE ====================
+
+export interface CreateInvoiceLineDto {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  taxRate: number;
+  discount?: number;
+}
+
+export interface CreateInvoiceDto {
+  invoiceNumber: string;
+  customerId: string;
+  orderId?: string | null;
+  currency: string;
+  lines: CreateInvoiceLineDto[];
+  paymentTermsDays?: number;
+}
+
+export type InvoiceStatus =
+  | "Draft"
+  | "Issued"
+  | "Sent"
+  | "Paid"
+  | "Cancelled"
+  | "WrittenOff";
+
+export interface InvoiceLineDto {
+  id: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  discount: number;
+  taxRate: number;
+  lineNet: number;
+  lineTax: number;
+  lineGross: number;
+}
+
+export interface InvoiceDto {
+  id: string;
+  invoiceNumber: string;
+  customerId: string;
+  orderId?: string | null;
+  currency: string;
+  status: InvoiceStatus;
+  issueDate: string;
+  dueDate: string;
+  totalNet: number;
+  totalTax: number;
+  totalGross: number;
+  outstandingAmount: number;
+  lines: InvoiceLineDto[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IssueInvoiceRequest {
+  invoiceNumber: string;
+  issueDate: string;
+}
+
+export interface CancelInvoiceRequest {
+  reason: string;
+}
+
+export interface RecordPaymentDto {
+  amount: number;
+  method: string;
+  paidAt: string;
+  externalPaymentId?: string | null;
+}
+
+export interface PaymentDto {
+  id: string;
+  invoiceId: string;
+  amount: number;
+  currency: string;
+  method: string;
+  status: string;
+  paidAt: string;
+}
+
+export interface CreditNoteLineDto {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  taxRate: number;
+  discount?: number;
+}
+
+export interface CreateCreditNoteDto {
+  lines: CreditNoteLineDto[];
+  reason: string;
+}
+
+export interface CreditNoteDto {
+  id: string;
+  originalInvoiceId: string;
+  reason: string;
+  status: string;
+  totalNet: number;
+  totalTax: number;
+  totalGross: number;
+  createdAt: string;
+}
+
 // ==================== ENUMS ====================
 
 export enum TransactionType {

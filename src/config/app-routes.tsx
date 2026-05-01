@@ -42,6 +42,8 @@ import { ContactsListPage } from "@/pages/crm/contacts-list";
 import { ContactDetailPage } from "@/pages/crm/contact-detail";
 import { ActivitiesListPage } from "@/pages/crm/activities-list";
 import { ActivityDetailPage } from "@/pages/crm/activity-detail";
+import { InvoicesListPage } from "@/pages/billing/invoices-list";
+import { InvoiceDetailPage } from "@/pages/billing/invoice-detail";
 
 export interface RouteDefinition {
   path?: string;
@@ -236,6 +238,22 @@ export const ROUTE_DEFINITIONS: RouteDefinition[] = [
         element: (
           <PermissionRoute path="/purchasing/orders/:id">
             <PurchaseOrderDetailPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/billing/invoices",
+        element: (
+          <PermissionRoute path="/billing/invoices">
+            <InvoicesListPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/billing/invoices/:id",
+        element: (
+          <PermissionRoute path="/billing/invoices/:id">
+            <InvoiceDetailPage />
           </PermissionRoute>
         ),
       },

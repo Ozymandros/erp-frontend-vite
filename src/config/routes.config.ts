@@ -68,6 +68,13 @@ export const ROUTE_PERMISSIONS: Record<string, RoutePermission> = {
   "/crm/contacts/:id": createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
   "/crm/activities": createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
   "/crm/activities/:id": createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
+
+  // Billing Management
+  "/billing/invoices": createPermission(PERMISSION_MODULES.BILLING, PERMISSION_ACTIONS.READ),
+  "/billing/invoices/:id": createPermission(
+    PERMISSION_MODULES.BILLING,
+    PERMISSION_ACTIONS.READ
+  ),
 };
 
 /**
@@ -189,6 +196,21 @@ export const NAV_ITEMS_CONFIG: NavItemConfig[] = [
         href: "/orders",
         icon: "ShoppingCart",
         permission: createPermission(PERMISSION_MODULES.ORDERS, PERMISSION_ACTIONS.READ),
+      },
+    ],
+  },
+  {
+    title: "Billing",
+    icon: "CreditCard",
+    children: [
+      {
+        title: "Invoices",
+        href: "/billing/invoices",
+        icon: "FileText",
+        permission: createPermission(
+          PERMISSION_MODULES.BILLING,
+          PERMISSION_ACTIONS.READ
+        ),
       },
     ],
   },

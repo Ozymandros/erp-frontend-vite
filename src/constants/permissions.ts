@@ -13,6 +13,7 @@ export const PERMISSION_MODULES = {
   SALES: "Sales",
   PURCHASING: "Purchasing",
   CRM: "CRM",
+  BILLING: "Billing",
 } as const;
 
 // Permission Actions
