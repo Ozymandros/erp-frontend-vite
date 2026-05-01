@@ -266,7 +266,7 @@ describe("InvoicesService", () => {
     const result = await invoicesService.getCreditNotesByInvoice("inv-1");
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      "/billing/api/billing/CreditNotes/invoice/inv-1"
+      "/billing/api/billing/credit-notes/invoice/inv-1"
     );
     expect(result).toEqual(creditNotes);
   });

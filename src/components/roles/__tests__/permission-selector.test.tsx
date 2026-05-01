@@ -196,6 +196,7 @@ describe('PermissionSelector interactions', () => {
   });
 
   it('selects all permissions in a module', async () => {
+    vi.mocked(rolesService.getRolePermissions).mockResolvedValue([]);
     vi.mocked(rolesService.addPermissionToRole).mockResolvedValue(undefined);
     render(
       <PermissionSelector
@@ -223,7 +224,8 @@ describe('PermissionSelector interactions', () => {
   });
 
   it('shows error message on API error', async () => {
-    vi.mocked(rolesService.addPermissionToRole).mockRejectedValue({ message: 'API error' });
+    vi.mocked(rolesService.getRolePermissions).mockResolvedValue([]);
+    vi.mocked(rolesService.addPermissionToRole).mockRejectedValue(new Error('API error'));
     render(
       <PermissionSelector
         roleId="role-1"
@@ -234,7 +236,7 @@ describe('PermissionSelector interactions', () => {
     await waitFor(() => expect(screen.getByText(/permission 1/i)).toBeInTheDocument());
     const assignBtn = screen.getAllByTitle(/assign permission/i)[0];
     await userEvent.click(assignBtn);
-    await waitFor(() => expect(screen.getByText(/failed to assign permission/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/api error/i)).toBeInTheDocument());
   });
 
   it('renders in readonly mode (no assign/unassign buttons)', async () => {
