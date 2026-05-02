@@ -71,5 +71,61 @@ describe("CrmContactsService", () => {
       "/crm/api/crm/contacts/c-1",
     );
   });
+
+  it("searchContacts should GET the contacts base endpoint with query params", async () => {
+    const querySpec = { page: 1, pageSize: 10, search: "john" };
+    const mockResponse = {
+      data: [{ id: "c-1", fullName: "John Doe" } as ContactDto],
+      total: 1,
+      page: 1,
+      pageSize: 10,
+    };
+    mockApiClient.get.mockResolvedValue(mockResponse);
+
+    const result = await crmContactsService.searchContacts(querySpec);
+
+    expect(mockApiClient.get).toHaveBeenCalledWith(
+      "/crm/api/crm/contacts",
+      { params: querySpec },
+    );
+    expect(result).toEqual(mockResponse);
+  });
+
+  it("getContactById should GET the contact by id endpoint", async () => {
+    const contact: ContactDto = { id: "c-1", fullName: "John Doe" } as ContactDto;
+    mockApiClient.get.mockResolvedValue(contact);
+
+    const result = await crmContactsService.getContactById("c-1");
+
+    expect(mockApiClient.get).toHaveBeenCalledWith(
+      "/crm/api/crm/contacts/c-1",
+    );
+    expect(result).toEqual(contact);
+  });
+
+  it("updateContact should PUT to the contact by id endpoint", async () => {
+    const updateData = { fullName: "John Smith" };
+    const updated: ContactDto = { id: "c-1", ...updateData } as ContactDto;
+    mockApiClient.put.mockResolvedValue(updated);
+
+    const result = await crmContactsService.updateContact("c-1", updateData);
+
+    expect(mockApiClient.put).toHaveBeenCalledWith(
+      "/crm/api/crm/contacts/c-1",
+      updateData,
+    );
+    expect(result).toEqual(updated);
+  });
+
+  it("setPrimaryContact should POST to set primary endpoint", async () => {
+    mockApiClient.post.mockResolvedValue(undefined);
+
+    await crmContactsService.setPrimaryContact("acc-1", { contactId: "c-1" });
+
+    expect(mockApiClient.post).toHaveBeenCalledWith(
+      "/crm/api/crm/accounts/acc-1/contacts/c-1/set-primary",
+      undefined,
+    );
+  });
 });
 

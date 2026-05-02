@@ -9,6 +9,7 @@ import type {
   CreateOpportunityLineDto,
   OpportunityLineDto,
   CreateOpportunityDto,
+  ForecastSummaryDto,
 } from "@/types/api.types";
 
 const mockApiClient = {
@@ -185,6 +186,68 @@ describe("CrmOpportunitiesService", () => {
       payload,
     );
     expect(result).toEqual(created);
+  });
+
+  it("getOpportunityById should GET the opportunity by id endpoint", async () => {
+    const opportunity: OpportunityDto = {
+      id: "opp-1",
+      name: "Test Opp",
+      stage: "Qualified",
+    } as OpportunityDto;
+    mockApiClient.get.mockResolvedValue(opportunity);
+
+    const result = await crmOpportunitiesService.getOpportunityById("opp-1");
+
+    expect(mockApiClient.get).toHaveBeenCalledWith(
+      "/crm/api/crm/opportunities/opp-1",
+    );
+    expect(result).toEqual(opportunity);
+  });
+
+  it("getForecastSummary should GET the forecast summary endpoint", async () => {
+    const params = { ownerUsername: "john", fromExpectedCloseDate: "2026-01-01", toExpectedCloseDate: "2026-12-31" };
+    const summary: ForecastSummaryDto = {
+      ownerUsername: "john",
+      totalCount: 5,
+      totalWeightedAmount: 10000,
+      byStage: [],
+    };
+    mockApiClient.get.mockResolvedValue(summary);
+
+    const result = await crmOpportunitiesService.getForecastSummary(params);
+
+    expect(mockApiClient.get).toHaveBeenCalledWith(
+      "/crm/api/crm/opportunities/forecast",
+      { params },
+    );
+    expect(result).toEqual(summary);
+  });
+
+  it("updateOpportunityLine should PUT to the line endpoint", async () => {
+    const line: OpportunityLineDto = { id: "line-1", quantity: 5 } as OpportunityLineDto;
+    mockApiClient.put.mockResolvedValue(line);
+
+    const result = await crmOpportunitiesService.updateOpportunityLine("opp-1", "line-1", {
+      description: "Updated service",
+      quantity: 5,
+      unitPrice: 100,
+    });
+
+    expect(mockApiClient.put).toHaveBeenCalledWith(
+      "/crm/api/crm/opportunities/opp-1/lines/line-1",
+      { description: "Updated service", quantity: 5, unitPrice: 100 },
+    );
+    expect(result).toEqual(line);
+  });
+
+  it("removeOpportunityLine should DELETE the line endpoint", async () => {
+    mockApiClient.delete.mockResolvedValue(undefined);
+
+    await crmOpportunitiesService.removeOpportunityLine("opp-1", "line-1");
+
+    expect(mockApiClient.delete).toHaveBeenCalledWith(
+      "/crm/api/crm/opportunities/opp-1/lines/line-1",
+    );
   });
 });
 
