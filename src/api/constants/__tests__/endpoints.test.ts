@@ -7,6 +7,9 @@ import {
   CUSTOMERS_ENDPOINTS,
   SALES_ORDERS_ENDPOINTS,
   PURCHASE_ORDERS_ENDPOINTS,
+  CRM_SERVICE_BASE,
+  LEADS_ENDPOINTS,
+  OPPORTUNITIES_ENDPOINTS,
 } from "@/api/constants/endpoints";
 
 describe("API Endpoints Constants", () => {
@@ -102,6 +105,29 @@ describe("API Endpoints Constants", () => {
     it("should generate correct BY_ID endpoint", () => {
       const id = "po-123";
       expect(PURCHASE_ORDERS_ENDPOINTS.BY_ID(id)).toBe(`/purchasing/api/purchasing/orders/${id}`);
+    });
+  });
+
+  describe("CRM endpoints", () => {
+    it("should have correct CRM service base", () => {
+      expect(CRM_SERVICE_BASE).toBe("/crm/api/crm");
+    });
+
+    it("should have correct leads base endpoint", () => {
+      expect(LEADS_ENDPOINTS.BASE).toBe("/crm/api/crm/leads");
+    });
+
+    it("should generate correct leads QUALIFY endpoint", () => {
+      const id = "lead-123";
+      expect(LEADS_ENDPOINTS.QUALIFY(id)).toBe(
+        `/crm/api/crm/leads/${id}/qualify`
+      );
+    });
+
+    it("should have correct opportunities forecast endpoint", () => {
+      expect(OPPORTUNITIES_ENDPOINTS.FORECAST).toBe(
+        "/crm/api/crm/opportunities/forecast"
+      );
     });
   });
 });

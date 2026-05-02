@@ -31,6 +31,20 @@ import { PurchaseOrderDetailPage } from "@/pages/purchasing/purchase-order-detai
 import { SuppliersListPage } from "@/pages/purchasing/suppliers-list";
 import { SupplierDetailPage } from "@/pages/purchasing/supplier-detail";
 
+// CRM module pages
+import { LeadsListPage } from "@/pages/crm/leads-list";
+import { LeadDetailPage } from "@/pages/crm/lead-detail";
+import { OpportunitiesListPage } from "@/pages/crm/opportunities-list";
+import { OpportunityDetailPage } from "@/pages/crm/opportunity-detail";
+import { AccountsListPage } from "@/pages/crm/accounts-list";
+import { AccountDetailPage } from "@/pages/crm/account-detail";
+import { ContactsListPage } from "@/pages/crm/contacts-list";
+import { ContactDetailPage } from "@/pages/crm/contact-detail";
+import { ActivitiesListPage } from "@/pages/crm/activities-list";
+import { ActivityDetailPage } from "@/pages/crm/activity-detail";
+import { InvoicesListPage } from "@/pages/billing/invoices-list";
+import { InvoiceDetailPage } from "@/pages/billing/invoice-detail";
+
 export interface RouteDefinition {
   path?: string;
   index?: boolean;
@@ -224,6 +238,102 @@ export const ROUTE_DEFINITIONS: RouteDefinition[] = [
         element: (
           <PermissionRoute path="/purchasing/orders/:id">
             <PurchaseOrderDetailPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/billing/invoices",
+        element: (
+          <PermissionRoute path="/billing/invoices">
+            <InvoicesListPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/billing/invoices/:id",
+        element: (
+          <PermissionRoute path="/billing/invoices/:id">
+            <InvoiceDetailPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/crm/leads",
+        element: (
+          <PermissionRoute path="/crm/leads">
+            <LeadsListPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/crm/leads/:id",
+        element: (
+          <PermissionRoute path="/crm/leads/:id">
+            <LeadDetailPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/crm/opportunities",
+        element: (
+          <PermissionRoute path="/crm/opportunities">
+            <OpportunitiesListPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/crm/opportunities/:id",
+        element: (
+          <PermissionRoute path="/crm/opportunities/:id">
+            <OpportunityDetailPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/crm/accounts",
+        element: (
+          <PermissionRoute path="/crm/accounts">
+            <AccountsListPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/crm/accounts/:id",
+        element: (
+          <PermissionRoute path="/crm/accounts/:id">
+            <AccountDetailPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/crm/contacts",
+        element: (
+          <PermissionRoute path="/crm/contacts">
+            <ContactsListPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/crm/contacts/:id",
+        element: (
+          <PermissionRoute path="/crm/contacts/:id">
+            <ContactDetailPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/crm/activities",
+        element: (
+          <PermissionRoute path="/crm/activities">
+            <ActivitiesListPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/crm/activities/:id",
+        element: (
+          <PermissionRoute path="/crm/activities/:id">
+            <ActivityDetailPage />
           </PermissionRoute>
         ),
       },

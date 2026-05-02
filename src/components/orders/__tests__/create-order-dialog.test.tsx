@@ -42,6 +42,24 @@ describe('CreateOrderDialog', () => {
     vi.mocked(productsService.getProducts).mockResolvedValue(mockProducts);
   });
 
+  const waitForCustomerOptions = async () => {
+    const customerSelect = screen.getByLabelText(/customer/i);
+    await waitFor(() => {
+      expect(
+        within(customerSelect).getByRole("option", { name: "Customer 1" })
+      ).toBeInTheDocument();
+    });
+  };
+
+  const waitForProductOptions = async () => {
+    const productSelect = screen.getByLabelText(/product/i);
+    await waitFor(() => {
+      expect(
+        within(productSelect).getByRole("option", { name: /Product 1/i })
+      ).toBeInTheDocument();
+    });
+  };
+
   it('renders dialog when open', async () => {
     render(
       <CreateOrderDialog
@@ -143,6 +161,7 @@ describe('CreateOrderDialog', () => {
     await waitFor(() => {
       expect(screen.getByLabelText(/product/i)).toBeInTheDocument();
     });
+    await waitForProductOptions();
 
     // Add an item to enable submit button
     await userEvent.selectOptions(screen.getByLabelText(/product/i), "1");
@@ -251,6 +270,7 @@ describe('CreateOrderDialog', () => {
     await waitFor(() => {
       expect(screen.getByLabelText(/product/i)).toBeInTheDocument();
     });
+    await waitForProductOptions();
 
     // Add Item
     await userEvent.selectOptions(screen.getByLabelText(/product/i), "1");
@@ -290,6 +310,7 @@ describe('CreateOrderDialog', () => {
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /add item/i })).toBeInTheDocument();
     });
+    await waitForProductOptions();
 
     const addButton = screen.getByRole("button", { name: /add item/i });
     
@@ -324,6 +345,8 @@ describe('CreateOrderDialog', () => {
     await waitFor(() => {
       expect(screen.getByLabelText(/customer/i)).toBeInTheDocument();
     });
+    await waitForCustomerOptions();
+    await waitForProductOptions();
 
     // Setup valid form
     await userEvent.selectOptions(screen.getByLabelText(/customer/i), "1");

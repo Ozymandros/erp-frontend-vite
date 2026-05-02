@@ -33,12 +33,21 @@ export default defineConfig({
         "dist/",
         "src/main.tsx",
         "src/vite-env.d.ts",
+        // Barrel re-exports only — no executable logic worth counting toward coverage gates.
+        "src/api/services/index.ts",
+        "src/api/constants/index.ts",
+        // Large generated-style DTO definitions; runtime behaviour is covered via services/pages.
+        "src/types/api.types.ts",
+        // Type-only interfaces (no runtime statements).
+        "src/contexts/toast.types.ts",
       ],
+      // Minimum gate for `pnpm test:coverage` (lines/statements/functions ≥80%).
+      // Branch coverage stays slightly lower: conditional UI paths are harder to exhaust in unit tests.
       thresholds: {
-        lines: 40,
-        functions: 40,
-        branches: 25,
-        statements: 40,
+        lines: 80,
+        statements: 80,
+        functions: 80,
+        branches: 65,
       },
     },
   },

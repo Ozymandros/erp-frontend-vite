@@ -717,6 +717,349 @@ export interface CreateUpdateSupplierDto {
   isActive: boolean;
 }
 
+// ==================== CRM MODULE ====================
+
+export class LeadDto extends AuditableGuidDto {
+  public title!: string;
+  public source?: string;
+  public contactName?: string;
+  public contactEmail?: string;
+  public contactPhone?: string;
+  public customerId?: string;
+  public status!: string;
+  public ownerUsername!: string;
+
+  constructor(data?: Partial<LeadDto>) {
+    super(data);
+    if (data) Object.assign(this, data);
+  }
+}
+
+export interface CreateLeadDto {
+  title: string;
+  ownerUsername: string;
+  source?: string;
+  contactName?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+}
+
+export interface UpdateLeadDto {
+  title: string;
+  source?: string;
+  contactName?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+}
+
+export interface QualifyLeadDto {
+  customerId: string;
+}
+
+export class AccountDto extends AuditableGuidDto {
+  public customerId!: string;
+  public name!: string;
+  public taxId?: string;
+  public billingAddress?: string;
+  public shippingAddress?: string;
+  public isActive!: boolean;
+  public ownerUsername?: string;
+  public lastSyncedAt!: string;
+
+  constructor(data?: Partial<AccountDto>) {
+    super(data);
+    if (data) Object.assign(this, data);
+  }
+}
+
+export interface UpsertAccountDto {
+  customerId: string;
+  name: string;
+  taxId?: string;
+  billingAddress?: string;
+  shippingAddress?: string;
+  syncedAt?: string;
+}
+
+export interface UpdateAccountOwnerDto {
+  ownerUsername: string;
+}
+
+export class ContactDto extends AuditableGuidDto {
+  public accountId!: string;
+  public fullName!: string;
+  public email?: string;
+  public phone?: string;
+  public title?: string;
+  public isPrimary!: boolean;
+  public isActive!: boolean;
+
+  constructor(data?: Partial<ContactDto>) {
+    super(data);
+    if (data) Object.assign(this, data);
+  }
+}
+
+export interface CreateContactDto {
+  accountId: string;
+  fullName: string;
+  email?: string;
+  phone?: string;
+  title?: string;
+  isPrimary?: boolean;
+}
+
+export interface UpdateContactDto {
+  fullName: string;
+  email?: string;
+  phone?: string;
+  title?: string;
+}
+
+export interface SetPrimaryContactDto {
+  contactId: string;
+}
+
+export class ActivityDto extends AuditableGuidDto {
+  public subject!: string;
+  public type!: string;
+  public status!: string;
+  public dueAt!: string;
+  public completedAt?: string;
+  public assignedToUsername!: string;
+  public leadId?: string;
+  public opportunityId?: string;
+  public customerId?: string;
+
+  constructor(data?: Partial<ActivityDto>) {
+    super(data);
+    if (data) Object.assign(this, data);
+  }
+}
+
+export interface CreateActivityDto {
+  subject: string;
+  type: string;
+  dueAt: string;
+  assignedToUsername: string;
+  leadId?: string;
+  opportunityId?: string;
+  customerId?: string;
+}
+
+export interface CompleteActivityDto {
+  note?: string;
+}
+
+export class OpportunityDto extends AuditableGuidDto {
+  public customerId!: string;
+  public leadId?: string;
+  public name!: string;
+  public stage!: string;
+  public probability!: number;
+  public expectedAmount?: number;
+  public expectedCloseDate?: string;
+  public convertedSalesQuoteId?: string;
+  public convertedSalesQuoteNumber?: string;
+  public ownerUsername!: string;
+
+  constructor(data?: Partial<OpportunityDto>) {
+    super(data);
+    if (data) Object.assign(this, data);
+  }
+}
+
+export interface CreateOpportunityDto {
+  customerId: string;
+  name: string;
+  ownerUsername: string;
+  leadId?: string;
+}
+
+export interface UpdateOpportunityForecastDto {
+  probability: number;
+  expectedAmount?: number;
+  expectedCloseDate?: string;
+}
+
+export interface MoveOpportunityStageDto {
+  stage: string;
+}
+
+export interface MarkOpportunityLostDto {
+  reason: string;
+}
+
+export class OpportunityLineDto extends AuditableGuidDto {
+  public opportunityId!: string;
+  public productId?: string;
+  public sku?: string;
+  public description!: string;
+  public quantity!: number;
+  public unitPrice!: number;
+  public discountPercent!: number;
+  public lineTotal!: number;
+
+  constructor(data?: Partial<OpportunityLineDto>) {
+    super(data);
+    if (data) Object.assign(this, data);
+  }
+}
+
+export interface CreateOpportunityLineDto {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  discountPercent?: number;
+  productId?: string;
+  sku?: string;
+}
+
+export interface UpdateOpportunityLineDto {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  discountPercent?: number;
+  productId?: string;
+  sku?: string;
+}
+
+export interface ForecastByStageDto {
+  stage: string;
+  count: number;
+  sumExpectedAmount?: number;
+  weightedAmount: number;
+}
+
+export interface ForecastSummaryDto {
+  ownerUsername: string;
+  fromExpectedCloseDate?: string;
+  toExpectedCloseDate?: string;
+  totalCount: number;
+  totalExpectedAmount?: number;
+  totalWeightedAmount: number;
+  byStage: ForecastByStageDto[];
+}
+
+export interface ConvertOpportunityToQuoteDto {
+  validityDays: number;
+  lines: unknown[];
+  orderDate?: string;
+}
+
+export interface MarkOpportunityWonRequest {
+  note?: string;
+  convertToQuote: boolean;
+  quote?: ConvertOpportunityToQuoteDto;
+}
+
+// ==================== BILLING MODULE ====================
+
+export interface CreateInvoiceLineDto {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  taxRate: number;
+  discount?: number;
+}
+
+export interface CreateInvoiceDto {
+  invoiceNumber: string;
+  customerId: string;
+  orderId?: string | null;
+  currency: string;
+  lines: CreateInvoiceLineDto[];
+  paymentTermsDays?: number;
+}
+
+export type InvoiceStatus =
+  | "Draft"
+  | "Issued"
+  | "Sent"
+  | "Paid"
+  | "Cancelled"
+  | "WrittenOff";
+
+export interface InvoiceLineDto {
+  id: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  discount: number;
+  taxRate: number;
+  lineNet: number;
+  lineTax: number;
+  lineGross: number;
+}
+
+export interface InvoiceDto {
+  id: string;
+  invoiceNumber: string;
+  customerId: string;
+  orderId?: string | null;
+  currency: string;
+  status: InvoiceStatus;
+  issueDate: string;
+  dueDate: string;
+  totalNet: number;
+  totalTax: number;
+  totalGross: number;
+  outstandingAmount: number;
+  lines: InvoiceLineDto[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IssueInvoiceRequest {
+  invoiceNumber: string;
+  issueDate: string;
+}
+
+export interface CancelInvoiceRequest {
+  reason: string;
+}
+
+export interface RecordPaymentDto {
+  amount: number;
+  method: string;
+  paidAt: string;
+  externalPaymentId?: string | null;
+}
+
+export interface PaymentDto {
+  id: string;
+  invoiceId: string;
+  amount: number;
+  currency: string;
+  method: string;
+  status: string;
+  paidAt: string;
+}
+
+export interface CreditNoteLineDto {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  taxRate: number;
+  discount?: number;
+}
+
+export interface CreateCreditNoteDto {
+  lines: CreditNoteLineDto[];
+  reason: string;
+}
+
+export interface CreditNoteDto {
+  id: string;
+  originalInvoiceId: string;
+  reason: string;
+  status: string;
+  totalNet: number;
+  totalTax: number;
+  totalGross: number;
+  createdAt: string;
+}
+
 // ==================== ENUMS ====================
 
 export enum TransactionType {

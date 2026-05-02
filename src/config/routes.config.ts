@@ -56,6 +56,25 @@ export const ROUTE_PERMISSIONS: Record<string, RoutePermission> = {
   "/purchasing/orders/:id": createPermission(PERMISSION_MODULES.PURCHASING, PERMISSION_ACTIONS.READ),
   "/purchasing/suppliers": createPermission(PERMISSION_MODULES.PURCHASING, PERMISSION_ACTIONS.READ),
   "/purchasing/suppliers/:id": createPermission(PERMISSION_MODULES.PURCHASING, PERMISSION_ACTIONS.READ),
+
+  // CRM Management
+  "/crm/leads": createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
+  "/crm/leads/:id": createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
+  "/crm/opportunities": createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
+  "/crm/opportunities/:id": createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
+  "/crm/accounts": createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
+  "/crm/accounts/:id": createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
+  "/crm/contacts": createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
+  "/crm/contacts/:id": createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
+  "/crm/activities": createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
+  "/crm/activities/:id": createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
+
+  // Billing Management
+  "/billing/invoices": createPermission(PERMISSION_MODULES.BILLING, PERMISSION_ACTIONS.READ),
+  "/billing/invoices/:id": createPermission(
+    PERMISSION_MODULES.BILLING,
+    PERMISSION_ACTIONS.READ
+  ),
 };
 
 /**
@@ -177,6 +196,57 @@ export const NAV_ITEMS_CONFIG: NavItemConfig[] = [
         href: "/orders",
         icon: "ShoppingCart",
         permission: createPermission(PERMISSION_MODULES.ORDERS, PERMISSION_ACTIONS.READ),
+      },
+    ],
+  },
+  {
+    title: "Billing",
+    icon: "CreditCard",
+    children: [
+      {
+        title: "Invoices",
+        href: "/billing/invoices",
+        icon: "FileText",
+        permission: createPermission(
+          PERMISSION_MODULES.BILLING,
+          PERMISSION_ACTIONS.READ
+        ),
+      },
+    ],
+  },
+  {
+    title: "CRM",
+    icon: "FileText",
+    children: [
+      {
+        title: "Leads",
+        href: "/crm/leads",
+        icon: "FileText",
+        permission: createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
+      },
+      {
+        title: "Opportunities",
+        href: "/crm/opportunities",
+        icon: "TrendingUp",
+        permission: createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
+      },
+      {
+        title: "Accounts",
+        href: "/crm/accounts",
+        icon: "Users",
+        permission: createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
+      },
+      {
+        title: "Contacts",
+        href: "/crm/contacts",
+        icon: "Users",
+        permission: createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
+      },
+      {
+        title: "Activities",
+        href: "/crm/activities",
+        icon: "FileText",
+        permission: createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
       },
     ],
   },

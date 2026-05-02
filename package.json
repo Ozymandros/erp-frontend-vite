@@ -17,7 +17,7 @@
     "test:e2e:headed": "pnpm exec playwright test --headed",
     "test:e2e:report": "pnpm exec playwright show-report",
     "test:coverage": "pnpm exec vitest run --coverage",
-    "test:coverage:playwright": "pnpm exec playwright test --coverage"
+    "check:all": "pnpm type-check & pnpm lint & pnpm test:coverage"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.11",

@@ -40,3 +40,5 @@ coverage
 playwright-report/index.html
 playwright-report/results.json
 .pnpm-store
+playwright-report
+tmp-gh-artifacts/
