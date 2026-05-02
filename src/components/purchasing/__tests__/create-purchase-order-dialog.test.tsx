@@ -43,6 +43,24 @@ describe('CreatePurchaseOrderDialog', () => {
     vi.mocked(productsService.getProducts).mockResolvedValue(mockProducts);
   });
 
+  const waitForSupplierOptions = async () => {
+    const supplierSelect = screen.getByLabelText(/supplier/i);
+    await waitFor(() => {
+      expect(
+        within(supplierSelect).getByRole("option", { name: "Supplier 1" })
+      ).toBeInTheDocument();
+    });
+  };
+
+  const waitForProductOptions = async () => {
+    const productSelect = screen.getByLabelText(/product/i);
+    await waitFor(() => {
+      expect(
+        within(productSelect).getByRole("option", { name: "Product 1" })
+      ).toBeInTheDocument();
+    });
+  };
+
   it('renders dialog when open', async () => {
     render(
       <CreatePurchaseOrderDialog
@@ -110,6 +128,7 @@ describe('CreatePurchaseOrderDialog', () => {
     await waitFor(() => {
       expect(screen.getByLabelText(/product/i)).toBeInTheDocument();
     });
+    await waitForProductOptions();
 
     // Add item
     await userEvent.selectOptions(screen.getByLabelText(/product/i), "1");
@@ -144,6 +163,7 @@ describe('CreatePurchaseOrderDialog', () => {
     await waitFor(() => {
       expect(screen.getByLabelText(/product/i)).toBeInTheDocument();
     });
+    await waitForProductOptions();
 
     // Add item 1
     await userEvent.selectOptions(screen.getByLabelText(/product/i), "1");
@@ -191,6 +211,8 @@ describe('CreatePurchaseOrderDialog', () => {
     await waitFor(() => {
       expect(screen.getByLabelText(/supplier/i)).toBeInTheDocument();
     });
+    await waitForSupplierOptions();
+    await waitForProductOptions();
 
     await userEvent.selectOptions(screen.getByLabelText(/supplier/i), "1");
     await userEvent.selectOptions(screen.getByLabelText(/product/i), "1");
@@ -217,6 +239,8 @@ describe('CreatePurchaseOrderDialog', () => {
     await waitFor(() => {
       expect(screen.getByLabelText(/supplier/i)).toBeInTheDocument();
     });
+    await waitForSupplierOptions();
+    await waitForProductOptions();
 
     await userEvent.selectOptions(screen.getByLabelText(/supplier/i), "1");
     await userEvent.selectOptions(screen.getByLabelText(/product/i), "1");
@@ -240,6 +264,7 @@ describe('CreatePurchaseOrderDialog', () => {
     await waitFor(() => {
       expect(screen.getByLabelText(/product/i)).toBeInTheDocument();
     });
+    await waitForProductOptions();
     
     // Should not add if no product
     await userEvent.click(screen.getByRole("button", { name: /add item/i }));
@@ -280,6 +305,8 @@ describe('CreatePurchaseOrderDialog', () => {
     await waitFor(() => {
       expect(screen.getByLabelText(/supplier/i)).toBeInTheDocument();
     });
+    await waitForSupplierOptions();
+    await waitForProductOptions();
 
     await userEvent.selectOptions(screen.getByLabelText(/supplier/i), "1");
     const deliveryDate = screen.getByLabelText(/expected delivery/i);
