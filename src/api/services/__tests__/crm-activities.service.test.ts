@@ -91,5 +91,27 @@ describe("CrmActivitiesService", () => {
       payload,
     );
   });
+
+  it("getActivityById should GET the activity by id endpoint", async () => {
+    const activityId = "act-1";
+    const activity: ActivityDto = {
+      id: activityId,
+      subject: "Intro call",
+      type: "Call",
+      status: "Open",
+      dueAt: "2026-03-30T10:00:00Z",
+      assignedToUsername: "owner",
+      leadId: "lead-1",
+    } as ActivityDto;
+
+    mockApiClient.get.mockResolvedValue(activity);
+
+    const result = await crmActivitiesService.getActivityById(activityId);
+
+    expect(mockApiClient.get).toHaveBeenCalledWith(
+      `/crm/api/crm/activities/${activityId}`,
+    );
+    expect(result).toEqual(activity);
+  });
 });
 

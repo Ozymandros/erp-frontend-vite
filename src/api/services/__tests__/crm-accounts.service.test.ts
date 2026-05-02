@@ -75,5 +75,26 @@ describe("CrmAccountsService", () => {
     );
     expect(result).toEqual(updated);
   });
+
+  it("getAccountById should GET the account by id endpoint", async () => {
+    const accountId = "acc-1";
+    const account: AccountDto = {
+      id: accountId,
+      customerId: "cust-1",
+      name: "ACME",
+      isActive: true,
+      lastSyncedAt: "2026-03-30T00:00:00Z",
+      ownerUsername: "owner",
+    } as AccountDto;
+
+    mockApiClient.get.mockResolvedValue(account);
+
+    const result = await crmAccountsService.getAccountById(accountId);
+
+    expect(mockApiClient.get).toHaveBeenCalledWith(
+      `/crm/api/crm/accounts/${accountId}`,
+    );
+    expect(result).toEqual(account);
+  });
 });
 

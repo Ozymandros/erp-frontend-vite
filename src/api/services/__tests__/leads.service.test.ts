@@ -112,5 +112,37 @@ describe("LeadsService", () => {
     );
     expect(result).toEqual(updated);
   });
+
+  it("getLeadById should GET the lead by id endpoint", async () => {
+    const id = "lead-123";
+    const lead: LeadDto = {
+      id,
+      title: "Test Lead",
+      status: "Open",
+      ownerUsername: "owner",
+      source: "web",
+    } as LeadDto;
+
+    mockApiClient.get.mockResolvedValue(lead);
+
+    const result = await leadsService.getLeadById(id);
+
+    expect(mockApiClient.get).toHaveBeenCalledWith(
+      `/crm/api/crm/leads/${id}`,
+    );
+    expect(result).toEqual(lead);
+  });
+
+  it("deleteLead should DELETE the lead by id endpoint", async () => {
+    const id = "lead-123";
+
+    mockApiClient.delete.mockResolvedValue(undefined);
+
+    await leadsService.deleteLead(id);
+
+    expect(mockApiClient.delete).toHaveBeenCalledWith(
+      `/crm/api/crm/leads/${id}`,
+    );
+  });
 });
 
