@@ -43,7 +43,7 @@ export const PURCHASING_SERVICE_BASE = "/purchasing/api/purchasing";
 export const CRM_SERVICE_BASE = "/crm/api/crm";
 
 /** Billing service gateway upstream: /billing/api/billing/ → routes to /api/ */
-export const BILLING_SERVICE_BASE = "/billing/api/billing";
+export const BILLING_SERVICE_BASE = "/api/billing";
 
 // ==================== AUTH MODULE ENDPOINTS ====================
 
@@ -297,26 +297,28 @@ export const OPPORTUNITIES_ENDPOINTS = {
 // ==================== BILLING MODULE ENDPOINTS ====================
 
 export const INVOICES_ENDPOINTS = {
-  BASE: `${BILLING_SERVICE_BASE}/Invoices`,
-  SEARCH: `${BILLING_SERVICE_BASE}/Invoices/search`,
-  BY_ID: (id: string) => `${BILLING_SERVICE_BASE}/Invoices/${id}`,
+  BASE: `${BILLING_SERVICE_BASE}/invoices`,
+  SEARCH: `${BILLING_SERVICE_BASE}/invoices`,
+  BY_ID: (id: string) => `${BILLING_SERVICE_BASE}/invoices/${id}`,
   BY_CUSTOMER: (customerId: string) =>
-    `${BILLING_SERVICE_BASE}/Invoices/customer/${customerId}`,
-  BY_ORDER: (orderId: string) => `${BILLING_SERVICE_BASE}/Invoices/order/${orderId}`,
-  ISSUE: (id: string) => `${BILLING_SERVICE_BASE}/Invoices/${id}/issue`,
-  PAYMENTS: (id: string) => `${BILLING_SERVICE_BASE}/Invoices/${id}/payments`,
-  CANCEL: (id: string) => `${BILLING_SERVICE_BASE}/Invoices/${id}/cancel`,
-  CREDIT_NOTES: (id: string) => `${BILLING_SERVICE_BASE}/Invoices/${id}/credit-notes`,
-  EXPORT_XLSX: `${BILLING_SERVICE_BASE}/Invoices/export-xlsx`,
-  EXPORT_PDF: `${BILLING_SERVICE_BASE}/Invoices/export-pdf`,
+    `${BILLING_SERVICE_BASE}/invoices/customer/${customerId}`,
+  BY_ORDER: (orderId: string) => `${BILLING_SERVICE_BASE}/invoices/order/${orderId}`,
+  ISSUE: (id: string) => `${BILLING_SERVICE_BASE}/invoices/${id}/issue`,
+  PAYMENTS: (id: string) => `${BILLING_SERVICE_BASE}/invoices/${id}/payments`,
+  CANCEL: (id: string) => `${BILLING_SERVICE_BASE}/invoices/${id}/cancel`,
+  CREDIT_NOTES: (id: string) => `${BILLING_SERVICE_BASE}/invoices/${id}/credit-notes`,
+  EXPORT_XLSX: `${BILLING_SERVICE_BASE}/invoices/export-xlsx`,
+  EXPORT_PDF: `${BILLING_SERVICE_BASE}/invoices/export-pdf`,
 } as const;
 
 export const PAYMENTS_ENDPOINTS = {
+  BASE: `${BILLING_SERVICE_BASE}/payments`,
   BY_INVOICE: (invoiceId: string) =>
-    `${BILLING_SERVICE_BASE}/Payments/invoice/${invoiceId}`,
+    `${BILLING_SERVICE_BASE}/payments/invoice/${invoiceId}`,
 } as const;
 
 export const CREDIT_NOTES_ENDPOINTS = {
+  BASE: `${BILLING_SERVICE_BASE}/credit-notes`,
   BY_INVOICE: (invoiceId: string) =>
     `${BILLING_SERVICE_BASE}/credit-notes/invoice/${invoiceId}`,
 } as const;

@@ -54,7 +54,7 @@ describe("InvoicesService", () => {
 
     const result = await invoicesService.getInvoices();
 
-    expect(mockApiClient.get).toHaveBeenCalledWith("/billing/api/billing/Invoices");
+    expect(mockApiClient.get).toHaveBeenCalledWith("/api/billing/invoices");
     expect(result).toEqual([baseInvoice]);
   });
 
@@ -82,7 +82,7 @@ describe("InvoicesService", () => {
     const result = await invoicesService.searchInvoices(querySpec);
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      "/billing/api/billing/Invoices/search",
+      "/api/billing/invoices",
       { params: querySpec }
     );
     expect(result).toEqual(response);
@@ -94,7 +94,7 @@ describe("InvoicesService", () => {
     const result = await invoicesService.getInvoiceById("inv-1");
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      "/billing/api/billing/Invoices/inv-1"
+      "/api/billing/invoices/inv-1"
     );
     expect(result).toEqual(baseInvoice);
   });
@@ -105,7 +105,7 @@ describe("InvoicesService", () => {
     await invoicesService.getInvoicesByCustomer("cust-1");
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      "/billing/api/billing/Invoices/customer/cust-1"
+      "/api/billing/invoices/customer/cust-1"
     );
   });
 
@@ -115,7 +115,7 @@ describe("InvoicesService", () => {
     await invoicesService.getInvoicesByOrder("ord-1");
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      "/billing/api/billing/Invoices/order/ord-1"
+      "/api/billing/invoices/order/ord-1"
     );
   });
 
@@ -141,7 +141,7 @@ describe("InvoicesService", () => {
     await invoicesService.createInvoice(payload);
 
     expect(mockApiClient.post).toHaveBeenCalledWith(
-      "/billing/api/billing/Invoices",
+      "/api/billing/invoices",
       payload
     );
   });
@@ -156,7 +156,7 @@ describe("InvoicesService", () => {
     await invoicesService.issueInvoice("inv-1", payload);
 
     expect(mockApiClient.post).toHaveBeenCalledWith(
-      "/billing/api/billing/Invoices/inv-1/issue",
+      "/api/billing/invoices/inv-1/issue",
       payload
     );
   });
@@ -176,7 +176,7 @@ describe("InvoicesService", () => {
     await invoicesService.recordPayment("inv-1", payload);
 
     expect(mockApiClient.post).toHaveBeenCalledWith(
-      "/billing/api/billing/Invoices/inv-1/payments",
+      "/api/billing/invoices/inv-1/payments",
       payload
     );
   });
@@ -188,7 +188,7 @@ describe("InvoicesService", () => {
     await invoicesService.cancelInvoice("inv-1", payload);
 
     expect(mockApiClient.post).toHaveBeenCalledWith(
-      "/billing/api/billing/Invoices/inv-1/cancel",
+      "/api/billing/invoices/inv-1/cancel",
       payload
     );
   });
@@ -221,7 +221,7 @@ describe("InvoicesService", () => {
     await invoicesService.createCreditNote("inv-1", payload);
 
     expect(mockApiClient.post).toHaveBeenCalledWith(
-      "/billing/api/billing/Invoices/inv-1/credit-notes",
+      "/api/billing/invoices/inv-1/credit-notes",
       payload
     );
   });
@@ -243,7 +243,7 @@ describe("InvoicesService", () => {
     const result = await invoicesService.getPaymentsByInvoice("inv-1");
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      "/billing/api/billing/Payments/invoice/inv-1"
+      "/api/billing/payments/invoice/inv-1"
     );
     expect(result).toEqual(payments);
   });
@@ -266,7 +266,7 @@ describe("InvoicesService", () => {
     const result = await invoicesService.getCreditNotesByInvoice("inv-1");
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      "/billing/api/billing/credit-notes/invoice/inv-1"
+      "/api/billing/credit-notes/invoice/inv-1"
     );
     expect(result).toEqual(creditNotes);
   });
@@ -280,7 +280,7 @@ describe("InvoicesService", () => {
     const result = await invoicesService.exportToXlsx();
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      "/billing/api/billing/Invoices/export-xlsx",
+      "/api/billing/invoices/export-xlsx",
       { responseType: "blob" }
     );
     expect(result).toBe(blob);
@@ -293,7 +293,7 @@ describe("InvoicesService", () => {
     const result = await invoicesService.exportToPdf();
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      "/billing/api/billing/Invoices/export-pdf",
+      "/api/billing/invoices/export-pdf",
       { responseType: "blob" }
     );
     expect(result).toBe(blob);
