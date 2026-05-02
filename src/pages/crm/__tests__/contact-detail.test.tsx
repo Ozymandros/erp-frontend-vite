@@ -76,7 +76,7 @@ describe("ContactDetailPage", () => {
 
   it("saves changes", async () => {
     vi.mocked(crmContactsService.getContactById).mockResolvedValue(mockContact);
-    vi.mocked(crmContactsService.updateContact).mockResolvedValue(undefined);
+    vi.mocked(crmContactsService.updateContact).mockResolvedValue(mockContact);
 
     renderWithProviders();
 

@@ -73,7 +73,7 @@ describe("ActivityDetailPage", () => {
 
   it("completes activity from dialog", async () => {
     vi.mocked(crmActivitiesService.getActivityById).mockResolvedValue(mockActivity);
-    vi.mocked(crmActivitiesService.completeActivity).mockResolvedValue(undefined);
+    vi.mocked(crmActivitiesService.completeActivity).mockResolvedValue(mockActivity);
 
     renderWithProviders();
 

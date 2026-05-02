@@ -84,7 +84,7 @@ describe("OpportunityDetailPage", () => {
 
   it("moves stage", async () => {
     vi.mocked(crmOpportunitiesService.getOpportunityById).mockResolvedValue(baseOpp);
-    vi.mocked(crmOpportunitiesService.moveOpportunityStage).mockResolvedValue(undefined);
+    vi.mocked(crmOpportunitiesService.moveOpportunityStage).mockResolvedValue(baseOpp);
 
     renderWithProviders();
 
@@ -105,7 +105,7 @@ describe("OpportunityDetailPage", () => {
 
   it("marks won", async () => {
     vi.mocked(crmOpportunitiesService.getOpportunityById).mockResolvedValue(baseOpp);
-    vi.mocked(crmOpportunitiesService.markOpportunityWon).mockResolvedValue(undefined);
+    vi.mocked(crmOpportunitiesService.markOpportunityWon).mockResolvedValue(baseOpp);
 
     renderWithProviders();
 
@@ -124,7 +124,7 @@ describe("OpportunityDetailPage", () => {
 
   it("marks lost with reason", async () => {
     vi.mocked(crmOpportunitiesService.getOpportunityById).mockResolvedValue(baseOpp);
-    vi.mocked(crmOpportunitiesService.markOpportunityLost).mockResolvedValue(undefined);
+    vi.mocked(crmOpportunitiesService.markOpportunityLost).mockResolvedValue(baseOpp);
 
     renderWithProviders();
 
