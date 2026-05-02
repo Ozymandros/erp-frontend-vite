@@ -312,13 +312,11 @@ export const INVOICES_ENDPOINTS = {
 } as const;
 
 export const PAYMENTS_ENDPOINTS = {
-  BASE: `${BILLING_SERVICE_BASE}/payments`,
   BY_INVOICE: (invoiceId: string) =>
     `${BILLING_SERVICE_BASE}/payments/invoice/${invoiceId}`,
 } as const;
 
 export const CREDIT_NOTES_ENDPOINTS = {
-  BASE: `${BILLING_SERVICE_BASE}/credit-notes`,
   BY_INVOICE: (invoiceId: string) =>
     `${BILLING_SERVICE_BASE}/credit-notes/invoice/${invoiceId}`,
 } as const;
