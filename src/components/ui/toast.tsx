@@ -27,7 +27,7 @@ export const ToastCard: React.FC<ToastCardProps> = ({ toast, onClose }) => {
 
   return (
     <ToastPrimitive.Root
-      className="group pointer-events-auto mb-2 w-full max-w-sm rounded-md bg-white/90 p-3 shadow-lg border border-gray-100"
+      className="group pointer-events-auto mb-2 w-full max-w-sm rounded-md border border-border bg-card/95 p-3 text-card-foreground shadow-lg"
       defaultOpen
       duration={toast.duration ?? 5000}
       onOpenChange={(open) => {
@@ -39,7 +39,9 @@ export const ToastCard: React.FC<ToastCardProps> = ({ toast, onClose }) => {
         <div className="flex-1">
           {title && <ToastPrimitive.Title className="font-medium text-sm">{title}</ToastPrimitive.Title>}
           {description && (
-            <ToastPrimitive.Description className="text-xs text-gray-600">{description}</ToastPrimitive.Description>
+            <ToastPrimitive.Description className="text-xs text-muted-foreground">
+              {description}
+            </ToastPrimitive.Description>
           )}
         </div>
         <ToastPrimitive.Close asChild>
