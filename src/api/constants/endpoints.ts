@@ -45,6 +45,9 @@ export const CRM_SERVICE_BASE = "/crm/api/crm";
 /** Billing service gateway upstream: /billing/api/billing/ → routes to /api/ */
 export const BILLING_SERVICE_BASE = "/api/billing";
 
+/** Audit service gateway upstream: /audit/api/audit/ → routes to /api/audit/ */
+export const AUDIT_SERVICE_BASE = "/audit/api/audit";
+
 // ==================== AUTH MODULE ENDPOINTS ====================
 
 export const AUTH_ENDPOINTS = {
@@ -319,4 +322,13 @@ export const PAYMENTS_ENDPOINTS = {
 export const CREDIT_NOTES_ENDPOINTS = {
   BY_INVOICE: (invoiceId: string) =>
     `${BILLING_SERVICE_BASE}/credit-notes/invoice/${invoiceId}`,
+} as const;
+
+// ==================== AUDIT MODULE ENDPOINTS ====================
+
+export const AUDIT_ENDPOINTS = {
+  ENTITY_CHANGES: `${AUDIT_SERVICE_BASE}/entity-changes`,
+  BY_ID: (id: string) => `${AUDIT_SERVICE_BASE}/entity-changes/${id}`,
+  BY_ENTITY: (entityName: string, entityId: string) =>
+    `${AUDIT_SERVICE_BASE}/entity-changes/by-entity/${encodeURIComponent(entityName)}/${entityId}`,
 } as const;

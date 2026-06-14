@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useMemo, useState } from "react";
 import type React from "react";
 import { crmAccountsService } from "@/api/services/crm-accounts.service";

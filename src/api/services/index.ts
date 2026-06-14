@@ -30,3 +30,6 @@ export * from './crm-accounts.service'
 export * from './crm-contacts.service'
 export * from './crm-activities.service'
 export * from './crm-opportunities.service'
+
+// Audit module
+export * from './audit-entity-changes.service'

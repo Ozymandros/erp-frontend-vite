@@ -1,5 +1,3 @@
-"use client";
-
 import { useMemo } from "react";
 import type { LeadDto, QuerySpec } from "@/types/api.types";
 import { leadsService } from "@/api/services/leads.service";

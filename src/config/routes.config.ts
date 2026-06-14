@@ -75,6 +75,16 @@ export const ROUTE_PERMISSIONS: Record<string, RoutePermission> = {
     PERMISSION_MODULES.BILLING,
     PERMISSION_ACTIONS.READ
   ),
+
+  // Audit
+  "/audit/entity-changes": createPermission(
+    PERMISSION_MODULES.AUDIT,
+    PERMISSION_ACTIONS.READ
+  ),
+  "/audit/entity-changes/:id": createPermission(
+    PERMISSION_MODULES.AUDIT,
+    PERMISSION_ACTIONS.READ
+  ),
 };
 
 /**
@@ -112,6 +122,18 @@ export const NAV_ITEMS_CONFIG: NavItemConfig[] = [
         href: "/permissions",
         icon: "Key",
         permission: createPermission(PERMISSION_MODULES.PERMISSIONS, PERMISSION_ACTIONS.READ),
+      },
+    ],
+  },
+  {
+    title: "Audit",
+    icon: "ScrollText",
+    children: [
+      {
+        title: "Audit Log",
+        href: "/audit/entity-changes",
+        icon: "ScrollText",
+        permission: createPermission(PERMISSION_MODULES.AUDIT, PERMISSION_ACTIONS.READ),
       },
     ],
   },
