@@ -7,6 +7,7 @@ import {
   CUSTOMERS_ENDPOINTS,
   SALES_ORDERS_ENDPOINTS,
   PURCHASE_ORDERS_ENDPOINTS,
+  SUPPLIER_INVOICES_ENDPOINTS,
   CRM_SERVICE_BASE,
   LEADS_ENDPOINTS,
   OPPORTUNITIES_ENDPOINTS,
@@ -95,6 +96,12 @@ describe("API Endpoints Constants", () => {
     it("should have correct QUOTES endpoint", () => {
       expect(SALES_ORDERS_ENDPOINTS.QUOTES).toBe("/sales/api/sales/orders/quotes");
     });
+
+    it("should generate CREATE_RETURN endpoint", () => {
+      expect(SALES_ORDERS_ENDPOINTS.CREATE_RETURN("so-1")).toBe(
+        "/sales/api/sales/orders/so-1/returns"
+      );
+    });
   });
 
   describe("PURCHASE_ORDERS_ENDPOINTS", () => {
@@ -105,6 +112,26 @@ describe("API Endpoints Constants", () => {
     it("should generate correct BY_ID endpoint", () => {
       const id = "po-123";
       expect(PURCHASE_ORDERS_ENDPOINTS.BY_ID(id)).toBe(`/purchasing/api/purchasing/orders/${id}`);
+    });
+
+    it("should generate MATCH endpoint", () => {
+      expect(PURCHASE_ORDERS_ENDPOINTS.MATCH("po-123")).toBe(
+        "/purchasing/api/purchasing/orders/po-123/match"
+      );
+    });
+  });
+
+  describe("SUPPLIER_INVOICES_ENDPOINTS", () => {
+    it("should have correct base endpoint", () => {
+      expect(SUPPLIER_INVOICES_ENDPOINTS.BASE).toBe(
+        "/api/billing/supplier-invoices"
+      );
+    });
+
+    it("should generate BY_PO endpoint", () => {
+      expect(SUPPLIER_INVOICES_ENDPOINTS.BY_PO("po-1")).toBe(
+        "/api/billing/supplier-invoices/purchase-order/po-1"
+      );
     });
   });
 

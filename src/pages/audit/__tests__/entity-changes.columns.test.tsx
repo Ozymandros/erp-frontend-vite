@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import type { ReactNode } from "react";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import type { EntityChangeDto } from "@/types/api.types";
@@ -64,7 +65,7 @@ describe("entity-changes.columns", () => {
                 typeof column.header === "string"
                   ? column.header
                   : column.sortField ?? "col";
-              return <div key={key}>{content}</div>;
+              return <div key={key}>{content as ReactNode}</div>;
             })}
           </>
         </MemoryRouter>,

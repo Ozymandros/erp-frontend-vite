@@ -3,6 +3,7 @@ import type {
   SalesOrderDto,
   SalesOrderLineDto,
   CreateUpdateSalesOrderDto,
+  CreateSalesReturnDto,
   CreateQuoteDto,
   ConfirmQuoteDto,
   ConfirmQuoteResponseDto,
@@ -319,6 +320,39 @@ describe("SalesOrdersService", () => {
       await salesOrdersService.deleteSalesOrder("1");
 
       expect(mockApiClient.delete).toHaveBeenCalledWith("/sales/api/sales/orders/1");
+    });
+  });
+
+  describe("createReturn", () => {
+    it("should create a sales return", async () => {
+      const returnData: CreateSalesReturnDto = {
+        warehouseId: "wh-1",
+        lines: [{ productId: "prod-1", quantity: 2 }],
+      };
+      const mockOrder: SalesOrderDto = {
+        id: "so-1",
+        orderNumber: "SO-001",
+        customerId: "customer-1",
+        status: SalesOrderStatus.Shipped,
+        orderDate: "2024-01-01",
+        totalAmount: 100,
+        orderLines: [],
+        createdAt: "2024-01-01",
+        updatedAt: "2024-01-01",
+        createdBy: "user1",
+        updatedBy: "user1",
+        isQuote: false,
+        returnOrderId: "so-return-1",
+      };
+      mockApiClient.post.mockResolvedValue(mockOrder);
+
+      const result = await salesOrdersService.createReturn("so-1", returnData);
+
+      expect(mockApiClient.post).toHaveBeenCalledWith(
+        "/sales/api/sales/orders/so-1/returns",
+        returnData
+      );
+      expect(result).toEqual(mockOrder);
     });
   });
 

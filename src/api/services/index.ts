@@ -24,6 +24,9 @@ export * from './customers.service'
 export * from './purchase-orders.service'
 export * from './suppliers.service'
 
+// Billing module
+export * from './supplier-invoices.service'
+
 // CRM module
 export * from './leads.service'
 export * from './crm-accounts.service'

@@ -35,3 +35,17 @@ export type CreateSalesOrderFormData = z.infer<typeof CreateSalesOrderSchema>;
 export type UpdateSalesOrderFormData = z.infer<typeof UpdateSalesOrderSchema>;
 export type CreateQuoteFormData = z.infer<typeof CreateQuoteSchema>;
 export type ConfirmQuoteFormData = z.infer<typeof ConfirmQuoteSchema>;
+
+export const CreateSalesReturnLineSchema = z.object({
+  productId: z.string().min(1, "Product is required"),
+  quantity: z.number().int().min(1, "Quantity must be at least 1"),
+});
+
+export const CreateSalesReturnSchema = z.object({
+  warehouseId: z.string().min(1, "Warehouse is required"),
+  lines: z
+    .array(CreateSalesReturnLineSchema)
+    .min(1, "At least one return line is required"),
+});
+
+export type CreateSalesReturnFormData = z.infer<typeof CreateSalesReturnSchema>;

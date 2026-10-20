@@ -159,7 +159,17 @@ export function InvoiceDetailPage() {
               <strong>Customer ID:</strong> {invoice.customerId}
             </p>
             <p>
-              <strong>Order ID:</strong> {invoice.orderId ?? "-"}
+              <strong>Sales Order:</strong>{" "}
+              {invoice.orderId ? (
+                <Link
+                  to={`/sales/orders/${invoice.orderId}`}
+                  className="text-primary underline-offset-4 hover:underline"
+                >
+                  {invoice.orderId}
+                </Link>
+              ) : (
+                "-"
+              )}
             </p>
             <p>
               <strong>Issue Date:</strong> {formatDateTime(invoice.issueDate)}

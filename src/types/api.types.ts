@@ -527,6 +527,7 @@ export class SalesOrderDto extends AuditableGuidDto {
   public isQuote: boolean = false;
   public quoteExpiryDate?: string;
   public convertedToOrderId?: string;
+  public returnOrderId?: string | null;
   // Navigation properties
   public customer?: CustomerDto;
 
@@ -586,6 +587,16 @@ export interface ConfirmQuoteResponseDto {
   salesOrder: SalesOrderDto;
 }
 
+export interface CreateSalesReturnLineDto {
+  productId: string;
+  quantity: number;
+}
+
+export interface CreateSalesReturnDto {
+  warehouseId: string;
+  lines: CreateSalesReturnLineDto[];
+}
+
 export interface StockAvailabilityCheckDto {
   productId: string;
   requestedQuantity: number;
@@ -629,6 +640,8 @@ export class PurchaseOrderDto extends AuditableGuidDto {
   public expectedDeliveryDate?: string;
   public totalAmount!: number;
   public orderLines: PurchaseOrderLineDto[] = [];
+  public matchStatus?: PurchaseOrderMatchStatus;
+  public matchedAt?: string;
   // Navigation properties
   public supplier?: SupplierDto;
 
@@ -688,6 +701,20 @@ export interface ReceivePurchaseOrderLineDto {
   purchaseOrderLineId: string;
   receivedQuantity: number;
   notes?: string;
+}
+
+export enum PurchaseOrderMatchStatus {
+  Unmatched = "Unmatched",
+  Partial = "Partial",
+  Matched = "Matched",
+  Overbilled = "Overbilled",
+}
+
+export interface PurchaseOrderMatchResultDto {
+  purchaseOrderId: string;
+  matchStatus: PurchaseOrderMatchStatus;
+  matchedAt?: string;
+  summary: string;
 }
 
 export class SupplierDto extends AuditableGuidDto {
@@ -1019,6 +1046,42 @@ export interface CancelInvoiceRequest {
   reason: string;
 }
 
+export interface CreateSupplierInvoiceLineDto {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+}
+
+export interface CreateSupplierInvoiceDto {
+  purchaseOrderId: string;
+  supplierId: string;
+  invoiceNumber: string;
+  invoiceDate: string;
+  currency: string;
+  lines: CreateSupplierInvoiceLineDto[];
+}
+
+export interface SupplierInvoiceLineDto {
+  id: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+}
+
+export interface SupplierInvoiceDto {
+  id: string;
+  purchaseOrderId: string;
+  supplierId: string;
+  invoiceNumber: string;
+  invoiceDate: string;
+  currency: string;
+  totalAmount: number;
+  lines: SupplierInvoiceLineDto[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface RecordPaymentDto {
   amount: number;
   method: string;
@@ -1108,6 +1171,7 @@ export enum SalesOrderStatus {
   Draft = "Draft",
   Quote = "Quote",
   Confirmed = "Confirmed",
+  Invoiced = "Invoiced",
   Processing = "Processing",
   Shipped = "Shipped",
   Delivered = "Delivered",

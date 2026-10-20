@@ -97,7 +97,8 @@ describe("EntityChangesListPage", () => {
   });
 
   it("applies entity name and change type filters", async () => {
-    const user = userEvent.setup();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const user = userEvent.setup() as any;
     vi.mocked(auditEntityChangesService.searchEntityChanges).mockResolvedValue(
       mockResponse,
     );
@@ -122,14 +123,16 @@ describe("EntityChangesListPage", () => {
       expect(auditEntityChangesService.searchEntityChanges).toHaveBeenCalled();
     });
 
-    const lastCall = vi.mocked(auditEntityChangesService.searchEntityChanges).mock
-      .calls.at(-1)?.[0];
+    const calls = vi.mocked(auditEntityChangesService.searchEntityChanges).mock
+      .calls;
+    const lastCall = calls[calls.length - 1]?.[0];
     expect(lastCall?.filters?.entityName).toBe("Product");
     expect(lastCall?.filters?.changeType).toBe("Deleted");
   });
 
   it("ignores search terms shorter than three characters", async () => {
-    const user = userEvent.setup();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const user = userEvent.setup() as any;
     vi.mocked(auditEntityChangesService.searchEntityChanges).mockResolvedValue(
       mockResponse,
     );
@@ -155,7 +158,8 @@ describe("EntityChangesListPage", () => {
   });
 
   it("clears filters and search term", async () => {
-    const user = userEvent.setup();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const user = userEvent.setup() as any;
     vi.mocked(auditEntityChangesService.searchEntityChanges).mockResolvedValue(
       mockResponse,
     );
@@ -174,8 +178,9 @@ describe("EntityChangesListPage", () => {
     await user.click(screen.getByRole("button", { name: "Clear all filters" }));
 
     await waitFor(() => {
-      const lastCall = vi.mocked(auditEntityChangesService.searchEntityChanges)
-        .mock.calls.at(-1)?.[0];
+      const calls = vi.mocked(auditEntityChangesService.searchEntityChanges)
+        .mock.calls;
+      const lastCall = calls[calls.length - 1]?.[0];
       expect(lastCall?.filters).toEqual({});
       expect(lastCall?.searchTerm).toBe("");
     });

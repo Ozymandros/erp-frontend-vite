@@ -1,4 +1,4 @@
-# Dependencies (reinstalled in container)
+# Dependencies (reinstalled in the image)
 node_modules
 .pnpm-store
 
@@ -7,7 +7,7 @@ dist
 dist-ssr
 *.local
 
-# Coverage and test artifacts
+# Coverage and test artifacts (not needed to build)
 coverage
 junit.xml
 playwright-report
@@ -17,11 +17,25 @@ test-results
 # Version control
 .git
 .gitignore
+.gitattributes
 
-# Environment and secrets
+# Environment and secrets — never bake into the image
 .env
 .env.*
 !.env.example
+
+# CI, agents, and local dev tooling
+.github
+.devcontainer
+.cursor
+.agents
+.agent
+.husky
+
+# Documentation (not required for production build)
+docs
+*.md
+!README.md
 
 # IDE and editor
 .idea
@@ -43,3 +57,12 @@ npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Playwright browsers and E2E-only config (src/test/e2e stays for tsc)
+playwright.config.ts
+playwright/.cache
+
+# Docker build context (avoid recursive copy)
+Dockerfile*
+docker-compose*.yml
+docker-compose*.yaml
