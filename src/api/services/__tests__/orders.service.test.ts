@@ -65,7 +65,7 @@ describe("OrdersService", () => {
       const newOrder: CreateUpdateOrderDto = {
         customerId: "cust1",
         orderDate: "2024-01-01",
-        orderLines: [],
+        lines: [],
       };
 
       const mockOrder: OrderDto = {
@@ -90,7 +90,7 @@ describe("OrdersService", () => {
       const updateData: CreateUpdateOrderDto = {
         customerId: "cust2",
         orderDate: "2024-01-02",
-        orderLines: [],
+        lines: [],
       };
 
       mockApiClient.put.mockResolvedValue(undefined);
@@ -119,7 +119,7 @@ describe("OrdersService", () => {
       const data: CreateOrderWithReservationDto = {
         customerId: "cust1",
         orderDate: "2024-01-01",
-        orderLines: [],
+        lines: [],
       } as CreateOrderWithReservationDto;
 
       const mockOrder: OrderDto = {

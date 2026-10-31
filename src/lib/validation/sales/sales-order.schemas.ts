@@ -10,7 +10,7 @@ export const SalesOrderLineSchema = z.object({
 export const CreateSalesOrderSchema = z.object({
   customerId: z.string().min(1, "Customer is required"),
   orderDate: z.string().min(1, "Order date is required"),
-  orderLines: z
+  lines: z
     .array(SalesOrderLineSchema)
     .min(1, "At least one order line is required"),
 });
@@ -19,7 +19,7 @@ export const UpdateSalesOrderSchema = CreateSalesOrderSchema;
 
 export const CreateQuoteSchema = z.object({
   customerId: z.string().min(1, "Customer is required"),
-  orderLines: z
+  lines: z
     .array(SalesOrderLineSchema)
     .min(1, "At least one order line is required"),
   validUntil: z.string().min(1, "Valid until date is required"),

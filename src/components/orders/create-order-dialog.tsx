@@ -44,7 +44,7 @@ export function CreateOrderDialog({
   const [formData, setFormData] = useState<CreateOrderFormData>({
     customerId: "",
     orderDate: getDefaultDateTimeLocal(),
-    orderLines: [],
+    lines: [],
   });
   const [customers, setCustomers] = useState<CustomerDto[]>([]);
   const [products, setProducts] = useState<ProductDto[]>([]);
@@ -66,7 +66,7 @@ export function CreateOrderDialog({
       setFormData({
         customerId: "",
         orderDate: getDefaultDateTimeLocal(),
-        orderLines: [],
+        lines: [],
       });
       setNewLine({ productId: "", quantity: 1, unitPrice: 0 });
       setError(null);
@@ -118,7 +118,7 @@ export function CreateOrderDialog({
 
     setFormData((prev) => ({
       ...prev,
-      orderLines: [...prev.orderLines, lineDto],
+      lines: [...prev.lines, lineDto],
     }));
 
     // Reset new line, keep unitPrice 0 until product selected
@@ -128,7 +128,7 @@ export function CreateOrderDialog({
   const removeLine = (id: string) => {
     setFormData((prev) => ({
       ...prev,
-      orderLines: prev.orderLines.filter((line) => line.id !== id),
+      lines: prev.lines.filter((line) => line.id !== id),
     }));
   };
 
@@ -163,7 +163,7 @@ export function CreateOrderDialog({
   };
 
   const getTotal = () => {
-    return formData.orderLines.reduce(
+    return formData.lines.reduce(
       (sum, line) => sum + line.quantity * line.unitPrice,
       0
     );
@@ -334,7 +334,7 @@ export function CreateOrderDialog({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {formData.orderLines.length === 0 ? (
+                    {formData.lines.length === 0 ? (
                       <TableRow>
                         <TableCell
                           colSpan={5}
@@ -344,7 +344,7 @@ export function CreateOrderDialog({
                         </TableCell>
                       </TableRow>
                     ) : (
-                      formData.orderLines?.map((line) => {
+                      formData.lines?.map((line) => {
                         const product = products.find(
                           (p) => p.id === line.productId
                         );
@@ -385,9 +385,9 @@ export function CreateOrderDialog({
                 <span>Total:</span>
                 <span>{formatCurrency(getTotal())}</span>
               </div>
-              {fieldErrors.orderLines && (
+              {fieldErrors.lines && (
                 <p className="text-sm text-red-500 text-right">
-                  {fieldErrors.orderLines}
+                  {fieldErrors.lines}
                 </p>
               )}
             </div>
@@ -403,7 +403,7 @@ export function CreateOrderDialog({
             </Button>
             <Button
               type="submit"
-              disabled={isLoading || formData.orderLines.length === 0}
+              disabled={isLoading || formData.lines.length === 0}
             >
               {isLoading ? "Creating…" : "Create Order"}
             </Button>

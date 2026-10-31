@@ -25,7 +25,7 @@ const mockOrder: PurchaseOrderDto = {
   status: PurchaseOrderStatus.Approved,
   orderDate: "2024-01-01",
   totalAmount: 200,
-  orderLines: [
+  lines: [
     {
       id: "line-1",
       purchaseOrderId: "po-1",

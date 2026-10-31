@@ -23,7 +23,7 @@ export const CreatePurchaseOrderSchema = z.object({
   supplierId: z.string().min(1, "Supplier is required"),
   orderDate: z.string().min(1, "Order date is required"),
   expectedDeliveryDate: optionalString(100, "Expected delivery date must be less than 100 characters"),
-  orderLines: z.array(PurchaseOrderLineSchema).min(1, "At least one order line is required"),
+  lines: z.array(PurchaseOrderLineSchema).min(1, "At least one order line is required"),
 });
 
 export const UpdatePurchaseOrderSchema = CreatePurchaseOrderSchema;

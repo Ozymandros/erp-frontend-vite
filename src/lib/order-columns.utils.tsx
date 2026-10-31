@@ -59,10 +59,10 @@ export function getOrderDateColumn<T extends { orderDate: string }>(): Column<T>
   };
 }
 
-export function getItemsCountColumn<T extends { orderLines?: readonly unknown[] }>(): Column<T> {
+export function getItemsCountColumn<T extends { lines?: readonly unknown[] }>(): Column<T> {
   return {
     header: "Items",
-    accessor: (order) => `${order.orderLines?.length || 0} items`,
+    accessor: (order) => `${order.lines?.length || 0} items`,
   };
 }
 

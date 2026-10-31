@@ -44,7 +44,7 @@ export function CreateSalesOrderDialog({
   const [formData, setFormData] = useState<CreateSalesOrderFormData>({
     customerId: "",
     orderDate: getDefaultDateTimeLocal(),
-    orderLines: [],
+    lines: [],
   });
   const [customers, setCustomers] = useState<CustomerDto[]>([]);
   const [products, setProducts] = useState<ProductDto[]>([]);
@@ -66,7 +66,7 @@ export function CreateSalesOrderDialog({
       setFormData({
         customerId: "",
         orderDate: getDefaultDateTimeLocal(),
-        orderLines: [],
+        lines: [],
       });
       setNewLine({ productId: "", quantity: 1, unitPrice: 0 });
       setError(null);
@@ -118,8 +118,8 @@ export function CreateSalesOrderDialog({
 
     setFormData(prev => ({
       ...prev,
-      orderLines: [
-        ...prev.orderLines, 
+      lines: [
+        ...prev.lines, 
         lineDto
       ],
     }));
@@ -131,7 +131,7 @@ export function CreateSalesOrderDialog({
   const removeLine = (id: string) => {
     setFormData(prev => ({
       ...prev,
-      orderLines: prev.orderLines.filter((line) => line.id !== id),
+      lines: prev.lines.filter((line) => line.id !== id),
     }));
   };
 
@@ -170,7 +170,7 @@ export function CreateSalesOrderDialog({
   };
 
   const getTotal = () => {
-    return formData.orderLines.reduce((sum, line) => sum + (line.quantity * line.unitPrice), 0);
+    return formData.lines.reduce((sum, line) => sum + (line.quantity * line.unitPrice), 0);
   };
 
   return (
@@ -299,14 +299,14 @@ export function CreateSalesOrderDialog({
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {formData.orderLines.length === 0 ? (
+                            {formData.lines.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={5} className="text-center text-muted-foreground">
                                         No items added. Add items above.
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                formData.orderLines?.map((line) => {
+                                formData.lines?.map((line) => {
                                     const product = products.find(p => p.id === line.productId);
                                     return (
                                         <TableRow key={line.id}>
@@ -337,8 +337,8 @@ export function CreateSalesOrderDialog({
                     <span>Total:</span>
                     <span>{formatCurrency(getTotal())}</span>
                 </div>
-                {fieldErrors.orderLines && (
-                    <p className="text-sm text-red-500 text-right">{fieldErrors.orderLines}</p>
+                {fieldErrors.lines && (
+                    <p className="text-sm text-red-500 text-right">{fieldErrors.lines}</p>
                 )}
             </div>
 
@@ -352,7 +352,7 @@ export function CreateSalesOrderDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading || formData.orderLines.length === 0}>
+            <Button type="submit" disabled={isLoading || formData.lines.length === 0}>
               {isLoading ? "Creating…" : "Create Sales Order"}
             </Button>
           </DialogFooter>

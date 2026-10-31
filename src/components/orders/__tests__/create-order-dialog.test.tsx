@@ -399,7 +399,7 @@ describe('CreateOrderDialog', () => {
     await waitFor(() => {
       expect(ordersService.createOrder).toHaveBeenCalledWith(expect.objectContaining({
         customerId: "1",
-        orderLines: expect.arrayContaining([
+        lines: expect.arrayContaining([
           expect.objectContaining({ productId: "1", quantity: 1 }),
         ]),
       }));

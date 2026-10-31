@@ -26,7 +26,7 @@ const mockOrder: SalesOrderDto = {
   orderDate: "2024-01-01",
   totalAmount: 100,
   isQuote: false,
-  orderLines: [
+  lines: [
     {
       id: "line-1",
       salesOrderId: "so-1",

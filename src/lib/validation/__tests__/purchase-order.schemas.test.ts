@@ -37,7 +37,7 @@ describe("Purchase Order Validation Schemas", () => {
         supplierId: "supplier-123",
         orderDate: "2024-01-01T00:00:00Z",
         expectedDeliveryDate: "2024-01-15T00:00:00Z",
-        orderLines: [
+        lines: [
           {
             productId: "product-123",
             quantity: 10,
@@ -54,7 +54,7 @@ describe("Purchase Order Validation Schemas", () => {
       const validData = {
         supplierId: "supplier-123",
         orderDate: "2024-01-01T00:00:00Z",
-        orderLines: [
+        lines: [
           {
             productId: "product-123",
             quantity: 10,
@@ -71,7 +71,7 @@ describe("Purchase Order Validation Schemas", () => {
       const invalidData = {
         supplierId: "supplier-123",
         orderDate: "2024-01-01T00:00:00Z",
-        orderLines: [],
+        lines: [],
       };
 
       const result = CreatePurchaseOrderSchema.safeParse(invalidData);

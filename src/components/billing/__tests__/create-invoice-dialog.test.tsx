@@ -35,7 +35,7 @@ vi.mock("@/api/services/orders.service", () => ({
         status: "Pending",
         orderDate: "2026-01-01",
         totalAmount: 100,
-        orderLines: [],
+        lines: [],
         createdAt: "",
         createdBy: "",
         updatedAt: "",

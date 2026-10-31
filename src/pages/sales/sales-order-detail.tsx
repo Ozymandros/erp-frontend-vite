@@ -247,7 +247,7 @@ export function SalesOrderDetailPage() {
         <CardHeader>
           <CardTitle>Order Items</CardTitle>
           <CardDescription>
-            {order.orderLines?.length || 0} items in this order
+            {order.lines?.length || 0} items in this order
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -262,7 +262,7 @@ export function SalesOrderDetailPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {order.orderLines?.map((line) => (
+                {order.lines?.map((line) => (
                   <TableRow key={line.id}>
                     <TableCell className="font-medium">{line.productId}</TableCell>
                     <TableCell className="text-right">{line.quantity}</TableCell>

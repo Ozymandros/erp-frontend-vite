@@ -45,7 +45,7 @@ const mockSalesOrder: SalesOrderDto = {
   status: SalesOrderStatus.Processing,
   totalAmount: 3000.0,
   isQuote: false,
-  orderLines: [
+  lines: [
     {
       id: "line-1",
       salesOrderId: "so-1",

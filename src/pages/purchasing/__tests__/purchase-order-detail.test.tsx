@@ -51,7 +51,7 @@ const mockPurchaseOrder: PurchaseOrderDto = {
   orderDate: "2024-01-01T00:00:00Z",
   status: PurchaseOrderStatus.Pending,
   totalAmount: 2500.0,
-  orderLines: [
+  lines: [
     {
       id: "line-1",
       purchaseOrderId: "po-1",

@@ -62,7 +62,7 @@ function linesFromPurchaseOrder(
   order: PurchaseOrderDto,
   productsById: Map<string, ProductDto>
 ): SupplierInvoiceLineFormData[] {
-  return (order.orderLines ?? []).map((line) => ({
+  return (order.lines ?? []).map((line) => ({
     description: productLineDescription(line, productsById),
     quantity: line.quantity,
     unitPrice: line.unitPrice,

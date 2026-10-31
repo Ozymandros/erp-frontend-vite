@@ -199,7 +199,7 @@ if (!validation.success) {
 
 **Duplication:**
 - `getDefaultDate()` – identical implementation
-- Form state: `orderDate`, `orderLines`, `newLine` for adding items
+- Form state: `orderDate`, `lines`, `newLine` for adding items
 - Validation → `validation.error.issues.forEach` → field errors
 - Order lines table (add/remove rows, quantity, unitPrice)
 - Error handling and loading states

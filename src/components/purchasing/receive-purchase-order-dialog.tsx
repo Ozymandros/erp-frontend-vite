@@ -49,7 +49,7 @@ function buildInitialForm(order: PurchaseOrderDto): ReceivePurchaseOrderApiFormD
     warehouseId: "",
     receivedDate: today,
     notes: "",
-    lines: (order.orderLines ?? []).map((line) => ({
+    lines: (order.lines ?? []).map((line) => ({
       purchaseOrderLineId: line.id,
       receivedQuantity: line.quantity,
     })),
@@ -209,7 +209,7 @@ export function ReceivePurchaseOrderDialog({
                 </TableHeader>
                 <TableBody>
                   {formData.lines.map((line) => {
-                    const orderLine = order.orderLines?.find(
+                    const orderLine = order.lines?.find(
                       (item) => item.id === line.purchaseOrderLineId
                     );
                     return (

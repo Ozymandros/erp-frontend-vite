@@ -26,7 +26,7 @@ const baseMockOrder: PurchaseOrderDto = {
   status: PurchaseOrderStatus.Draft,
   orderDate: "2024-01-01",
   totalAmount: 499.9,
-  orderLines: [],
+  lines: [],
   createdAt: "2024-01-01",
   updatedAt: "2024-01-01",
   createdBy: "user1",
@@ -125,7 +125,7 @@ describe("PurchaseOrdersService", () => {
       const newOrder: CreateUpdatePurchaseOrderDto = {
         supplierId: "supplier-1",
         orderDate: "2024-01-15",
-        orderLines: [{ productId: "p1", quantity: 10, unitPrice: 99.99 }],
+        lines: [{ productId: "p1", quantity: 10, unitPrice: 99.99 }],
       };
       const createdOrder = { ...baseMockOrder, ...newOrder } as PurchaseOrderDto;
       mockApiClient.post.mockResolvedValue(createdOrder);
@@ -145,7 +145,7 @@ describe("PurchaseOrdersService", () => {
       const updateData: CreateUpdatePurchaseOrderDto = {
         supplierId: "supplier-1",
         orderDate: "2024-01-20",
-        orderLines: [],
+        lines: [],
       };
       const updatedOrder = { ...baseMockOrder, ...updateData } as PurchaseOrderDto;
       mockApiClient.put.mockResolvedValue(updatedOrder);

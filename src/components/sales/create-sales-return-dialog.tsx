@@ -43,7 +43,7 @@ interface CreateSalesReturnDialogProps {
 }
 
 function buildInitialLines(order: SalesOrderDto): CreateSalesReturnFormData["lines"] {
-  return (order.orderLines ?? []).map((line) => ({
+  return (order.lines ?? []).map((line) => ({
     productId: line.productId,
     quantity: line.quantity,
   }));
