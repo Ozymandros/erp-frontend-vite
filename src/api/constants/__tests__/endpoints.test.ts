@@ -130,7 +130,7 @@ describe("API Endpoints Constants", () => {
 
     it("should generate BY_PO endpoint", () => {
       expect(SUPPLIER_INVOICES_ENDPOINTS.BY_PO("po-1")).toBe(
-        "/api/billing/supplier-invoices/purchase-order/po-1"
+        "/api/billing/supplier-invoices/by-purchase-order/po-1"
       );
     });
   });

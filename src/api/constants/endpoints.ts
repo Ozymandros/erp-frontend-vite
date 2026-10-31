@@ -43,7 +43,7 @@ export const PURCHASING_SERVICE_BASE = "/purchasing/api/purchasing";
 export const CRM_SERVICE_BASE = "/crm/api/crm";
 
 /** Billing service gateway upstream: /billing/api/billing/ → routes to /api/ */
-export const BILLING_SERVICE_BASE = "/api/billing";
+export const BILLING_SERVICE_BASE = "/billing/api/billing";
 
 /** Audit service gateway upstream: /audit/api/audit/ → routes to /api/audit/ */
 export const AUDIT_SERVICE_BASE = "/audit/api/audit";
@@ -330,7 +330,7 @@ export const SUPPLIER_INVOICES_ENDPOINTS = {
   BASE: `${BILLING_SERVICE_BASE}/supplier-invoices`,
   BY_ID: (id: string) => `${BILLING_SERVICE_BASE}/supplier-invoices/${id}`,
   BY_PO: (purchaseOrderId: string) =>
-    `${BILLING_SERVICE_BASE}/supplier-invoices/purchase-order/${purchaseOrderId}`,
+    `${BILLING_SERVICE_BASE}/supplier-invoices/by-purchase-order/${purchaseOrderId}`,
 } as const;
 
 // ==================== AUDIT MODULE ENDPOINTS ====================

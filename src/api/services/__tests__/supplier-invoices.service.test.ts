@@ -64,7 +64,7 @@ describe("SupplierInvoicesService", () => {
       await supplierInvoicesService.getSupplierInvoicesByPurchaseOrder("po-1");
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      "/api/billing/supplier-invoices/purchase-order/po-1"
+      "/api/billing/supplier-invoices/by-purchase-order/po-1"
     );
     expect(result).toEqual([baseInvoice]);
   });
