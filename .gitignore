@@ -14,7 +14,7 @@ dist-ssr
 *.txt
 
 # Editor directories and files
-playwright-report
+playwright-report/
 test-results
 .playwright-output
 .vscode/*
