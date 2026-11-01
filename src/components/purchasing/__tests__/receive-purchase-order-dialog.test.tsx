@@ -52,6 +52,7 @@ describe("ReceivePurchaseOrderDialog", () => {
       {
         id: "wh-1",
         name: "Main Warehouse",
+        location: "Building A",
         createdAt: "2024-01-01",
         createdBy: "admin",
       },

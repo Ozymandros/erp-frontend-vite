@@ -124,13 +124,13 @@ describe("API Endpoints Constants", () => {
   describe("SUPPLIER_INVOICES_ENDPOINTS", () => {
     it("should have correct base endpoint", () => {
       expect(SUPPLIER_INVOICES_ENDPOINTS.BASE).toBe(
-        "/api/billing/supplier-invoices"
+        "/billing/api/billing/supplier-invoices"
       );
     });
 
     it("should generate BY_PO endpoint", () => {
       expect(SUPPLIER_INVOICES_ENDPOINTS.BY_PO("po-1")).toBe(
-        "/api/billing/supplier-invoices/by-purchase-order/po-1"
+        "/billing/api/billing/supplier-invoices/by-purchase-order/po-1"
       );
     });
   });

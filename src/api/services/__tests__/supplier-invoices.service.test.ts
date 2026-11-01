@@ -41,7 +41,7 @@ describe("SupplierInvoicesService", () => {
     const result = await supplierInvoicesService.getSupplierInvoices();
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      "/api/billing/supplier-invoices"
+      "/billing/api/billing/supplier-invoices"
     );
     expect(result).toEqual([baseInvoice]);
   });
@@ -52,7 +52,7 @@ describe("SupplierInvoicesService", () => {
     const result = await supplierInvoicesService.getSupplierInvoiceById("si-1");
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      "/api/billing/supplier-invoices/si-1"
+      "/billing/api/billing/supplier-invoices/si-1"
     );
     expect(result).toEqual(baseInvoice);
   });
@@ -64,7 +64,7 @@ describe("SupplierInvoicesService", () => {
       await supplierInvoicesService.getSupplierInvoicesByPurchaseOrder("po-1");
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      "/api/billing/supplier-invoices/by-purchase-order/po-1"
+      "/billing/api/billing/supplier-invoices/by-purchase-order/po-1"
     );
     expect(result).toEqual([baseInvoice]);
   });
@@ -83,7 +83,7 @@ describe("SupplierInvoicesService", () => {
     const result = await supplierInvoicesService.createSupplierInvoice(payload);
 
     expect(mockApiClient.post).toHaveBeenCalledWith(
-      "/api/billing/supplier-invoices",
+      "/billing/api/billing/supplier-invoices",
       payload
     );
     expect(result).toEqual(baseInvoice);
