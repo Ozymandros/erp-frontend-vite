@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { CreateInvoiceDialog } from "../create-invoice-dialog";
 import { invoicesService } from "@/api/services/invoices.service";
 
@@ -48,10 +48,21 @@ vi.mock("@/api/services/orders.service", () => ({
 describe("CreateInvoiceDialog", () => {
   const onOpenChange = vi.fn();
   const onSuccess = vi.fn();
+  const customerId = "11111111-1111-4111-8111-111111111111";
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
+
+  const waitForCustomerOptions = async () => {
+    const customerSelect = await screen.findByLabelText(/customer/i);
+    await waitFor(() => {
+      expect(
+        within(customerSelect).getByRole("option", { name: /Customer One/i })
+      ).toBeInTheDocument();
+    });
+    return customerSelect;
+  };
 
   it("renders dialog content when open", async () => {
     render(
@@ -93,8 +104,9 @@ describe("CreateInvoiceDialog", () => {
       />
     );
 
-    fireEvent.change(await screen.findByLabelText(/customer/i), {
-      target: { value: "11111111-1111-4111-8111-111111111111" },
+    const customerSelect = await waitForCustomerOptions();
+    fireEvent.change(customerSelect, {
+      target: { value: customerId },
     });
     fireEvent.change(screen.getByLabelText(/invoice number/i), {
       target: { value: "INV-2026-100" },
@@ -112,7 +124,7 @@ describe("CreateInvoiceDialog", () => {
       expect(invoicesService.createInvoice).toHaveBeenCalledWith(
         expect.objectContaining({
           invoiceNumber: "INV-2026-100",
-          customerId: "11111111-1111-4111-8111-111111111111",
+          customerId,
           currency: "EUR",
         })
       );
@@ -129,8 +141,9 @@ describe("CreateInvoiceDialog", () => {
       />
     );
 
-    fireEvent.change(await screen.findByLabelText(/customer/i), {
-      target: { value: "11111111-1111-4111-8111-111111111111" },
+    const customerSelect = await waitForCustomerOptions();
+    fireEvent.change(customerSelect, {
+      target: { value: customerId },
     });
     fireEvent.change(screen.getByLabelText(/description/i), {
       target: { value: "Invoice line" },
