@@ -7,24 +7,15 @@ import {
   getItemsCountColumn,
   getTotalAmountColumn,
   getActionsColumn,
+  SALES_ORDER_STATUS_MAP,
 } from "@/lib/order-columns.utils";
 
 interface SalesOrderColumnsProps {
   readonly getCustomerName: (id: string) => string;
 }
 
-const salesStatusMap = {
-  Draft: { label: "Draft", variant: "secondary" as const },
-  Quote: { label: "Quote", variant: "outline" as const },
-  Confirmed: { label: "Confirmed", variant: "default" as const },
-  Processing: { label: "Processing", variant: "default" as const },
-  Shipped: { label: "Shipped", variant: "default" as const },
-  Delivered: { label: "Delivered", variant: "default" as const },
-  Cancelled: { label: "Cancelled", variant: "destructive" as const },
-};
-
 export function getSalesOrderStatusBadge(status: string) {
-  return getStatusBadge(status, salesStatusMap);
+  return getStatusBadge(status, SALES_ORDER_STATUS_MAP);
 }
 
 export function getSalesOrderColumns({ getCustomerName }: SalesOrderColumnsProps): Column<SalesOrderDto>[] {

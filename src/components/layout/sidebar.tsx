@@ -1,5 +1,3 @@
-"use client";
-
 import type React from "react";
 
 import { useState, useMemo, useCallback } from "react";
@@ -20,6 +18,7 @@ import {
   ShoppingBag,
   ChevronDown,
   ChevronRight,
+  ScrollText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth.context";
@@ -37,6 +36,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   TrendingUp,
   FileText,
   ShoppingBag,
+  ScrollText,
 };
 
 const STORAGE_KEY = "sidebar-open-groups";

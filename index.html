@@ -8,6 +8,34 @@
     <meta name="theme-color" content="#3b82f6" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1e40af" media="(prefers-color-scheme: dark)" />
     <title>ERP Admin Portal</title>
+    <script>
+      (function () {
+        try {
+          var storageKey = "vite-ui-theme";
+          var theme = "system";
+          try {
+            theme = localStorage.getItem(storageKey) || "system";
+          } catch (storageError) {
+            theme = "system";
+          }
+          var root = document.documentElement;
+          var prefersDark = false;
+          try {
+            prefersDark = window
+              .matchMedia("(prefers-color-scheme: dark)")
+              .matches;
+          } catch (mediaError) {
+            prefersDark = false;
+          }
+          var isDark =
+            theme === "dark" || (theme === "system" && prefersDark);
+          root.classList.remove("light", "dark");
+          root.classList.add(isDark ? "dark" : "light");
+        } catch (error) {
+          document.documentElement.classList.add("light");
+        }
+      })();
+    </script>
   </head>
   <body>
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md">Skip to main content</a>

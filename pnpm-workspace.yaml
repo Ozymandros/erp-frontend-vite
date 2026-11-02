@@ -4,3 +4,6 @@ packages:
 
 overrides:
   lodash@>=4.0.0 <=4.17.22: '>=4.17.23'
+  postcss-selector-parser@<7.1.6: '>=7.1.6'
+  # Do not force react-router >=7 here: react-router-dom@6 needs matching react-router@6.
+  uuid@<11.1.1: '>=11.1.1'

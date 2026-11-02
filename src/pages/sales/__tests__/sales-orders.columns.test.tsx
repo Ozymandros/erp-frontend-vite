@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import { getSalesOrderColumns, getSalesOrderStatusBadge } from '../sales-orders.columns';
 
 describe('Sales Orders Columns', () => {
@@ -34,5 +35,10 @@ describe('Sales Orders Columns', () => {
   it('should return correct status badge', () => {
     const badge = getSalesOrderStatusBadge('Draft');
     expect(badge).toBeDefined();
+  });
+
+  it('should render Invoiced status badge label', () => {
+    render(<>{getSalesOrderStatusBadge('Invoiced')}</>);
+    expect(screen.getByText('Invoiced')).toBeInTheDocument();
   });
 });

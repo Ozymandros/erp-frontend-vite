@@ -47,7 +47,7 @@ describe("Sales Order Validation Schemas", () => {
       const validData = {
         customerId: "customer-123",
         orderDate: "2024-01-01T00:00:00Z",
-        orderLines: [
+        lines: [
           {
             productId: "product-123",
             quantity: 5,
@@ -64,7 +64,7 @@ describe("Sales Order Validation Schemas", () => {
       const invalidData = {
         customerId: "customer-123",
         orderDate: "2024-01-01T00:00:00Z",
-        orderLines: [],
+        lines: [],
       };
 
       const result = CreateSalesOrderSchema.safeParse(invalidData);
@@ -79,7 +79,7 @@ describe("Sales Order Validation Schemas", () => {
     it("should validate correct quote data", () => {
       const validData = {
         customerId: "customer-123",
-        orderLines: [
+        lines: [
           {
             productId: "product-123",
             quantity: 5,
@@ -96,7 +96,7 @@ describe("Sales Order Validation Schemas", () => {
     it("should reject missing validUntil", () => {
       const invalidData = {
         customerId: "customer-123",
-        orderLines: [
+        lines: [
           {
             productId: "product-123",
             quantity: 5,

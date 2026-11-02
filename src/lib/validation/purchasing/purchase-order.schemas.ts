@@ -23,7 +23,7 @@ export const CreatePurchaseOrderSchema = z.object({
   supplierId: z.string().min(1, "Supplier is required"),
   orderDate: z.string().min(1, "Order date is required"),
   expectedDeliveryDate: optionalString(100, "Expected delivery date must be less than 100 characters"),
-  orderLines: z.array(PurchaseOrderLineSchema).min(1, "At least one order line is required"),
+  lines: z.array(PurchaseOrderLineSchema).min(1, "At least one order line is required"),
 });
 
 export const UpdatePurchaseOrderSchema = CreatePurchaseOrderSchema;
@@ -52,3 +52,35 @@ export type CreatePurchaseOrderFormData = z.infer<typeof CreatePurchaseOrderSche
 export type UpdatePurchaseOrderFormData = z.infer<typeof UpdatePurchaseOrderSchema>;
 export type ApprovePurchaseOrderFormData = z.infer<typeof ApprovePurchaseOrderSchema>;
 export type ReceivePurchaseOrderFormData = z.infer<typeof ReceivePurchaseOrderSchema>;
+
+export const ApprovePurchaseOrderNotesSchema = z.object({
+  notes: z
+    .string()
+    .max(500, "Notes must be less than 500 characters")
+    .optional(),
+});
+
+export const ReceivePurchaseOrderApiSchema = z.object({
+  warehouseId: z.string().min(1, "Warehouse is required"),
+  receivedDate: z.string().min(1, "Received date is required"),
+  notes: z.string().max(500).optional(),
+  lines: z
+    .array(
+      z.object({
+        purchaseOrderLineId: z.string().min(1, "Line is required"),
+        receivedQuantity: z
+          .number()
+          .int()
+          .min(1, "Received quantity must be at least 1"),
+        notes: z.string().max(500).optional(),
+      })
+    )
+    .min(1, "At least one line is required"),
+});
+
+export type ApprovePurchaseOrderNotesFormData = z.infer<
+  typeof ApprovePurchaseOrderNotesSchema
+>;
+export type ReceivePurchaseOrderApiFormData = z.infer<
+  typeof ReceivePurchaseOrderApiSchema
+>;

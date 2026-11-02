@@ -1,5 +1,3 @@
-"use client";
-
 import { useMemo } from "react";
 import { invoicesService } from "@/api/services/invoices.service";
 import type { InvoiceDto, InvoiceStatus, QuerySpec } from "@/types/api.types";

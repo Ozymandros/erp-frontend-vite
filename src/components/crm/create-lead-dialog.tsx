@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import type React from "react";
 import { leadsService } from "@/api/services/leads.service";

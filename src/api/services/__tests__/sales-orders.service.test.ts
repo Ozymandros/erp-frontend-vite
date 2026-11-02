@@ -3,6 +3,7 @@ import type {
   SalesOrderDto,
   SalesOrderLineDto,
   CreateUpdateSalesOrderDto,
+  CreateSalesReturnDto,
   CreateQuoteDto,
   ConfirmQuoteDto,
   ConfirmQuoteResponseDto,
@@ -41,7 +42,7 @@ describe("SalesOrdersService", () => {
           status: SalesOrderStatus.Draft,
           orderDate: "2024-01-01",
           totalAmount: 499.95,
-          orderLines: [],
+          lines: [],
           createdAt: "2024-01-01",
           updatedAt: "2024-01-01",
           createdBy: "user1",
@@ -64,7 +65,7 @@ describe("SalesOrdersService", () => {
       const newOrder: CreateUpdateSalesOrderDto = {
         customerId: "customer-1",
         orderDate: "2024-01-01",
-        orderLines: [
+        lines: [
           {
             productId: "product-1",
             quantity: 5,
@@ -79,7 +80,7 @@ describe("SalesOrdersService", () => {
         ...newOrder,
         status: SalesOrderStatus.Draft,
         totalAmount: 499.95,
-        orderLines: newOrder.orderLines?.map(line => ({
+        lines: newOrder.lines?.map(line => ({
           ...line,
           id: `line-${line.productId}`,
           salesOrderId: "1",
@@ -112,7 +113,7 @@ describe("SalesOrdersService", () => {
       const quoteData: CreateQuoteDto = {
         customerId: "customer-1",
         orderDate: "2024-01-01",
-        orderLines: [
+        lines: [
           {
             productId: "product-1",
             quantity: 5,
@@ -129,7 +130,7 @@ describe("SalesOrdersService", () => {
         status: SalesOrderStatus.Quote,
         orderDate: "2024-01-01",
         totalAmount: 499.95,
-        orderLines: [],
+        lines: [],
         createdAt: "2024-01-01",
         updatedAt: "2024-01-01",
         createdBy: "user1",
@@ -165,7 +166,7 @@ describe("SalesOrdersService", () => {
           status: SalesOrderStatus.Confirmed,
           orderDate: "2024-01-01",
           totalAmount: 499.95,
-          orderLines: [],
+          lines: [],
           createdAt: "2024-01-01",
           updatedAt: "2024-01-01",
           createdBy: "user1",
@@ -188,7 +189,7 @@ describe("SalesOrdersService", () => {
 
   describe("checkStockAvailability", () => {
     it("should check stock availability for order lines", async () => {
-      const orderLines = [
+      const lines = [
         {
           productId: "product-1",
           quantity: 5,
@@ -214,11 +215,11 @@ describe("SalesOrdersService", () => {
 
       mockApiClient.post.mockResolvedValue(mockAvailability);
 
-      const result = await salesOrdersService.checkStockAvailability(orderLines);
+      const result = await salesOrdersService.checkStockAvailability(lines);
 
       expect(mockApiClient.post).toHaveBeenCalledWith(
         "/sales/api/sales/orders/quotes/check-availability",
-        orderLines
+        lines
       );
       expect(result).toEqual(mockAvailability);
     });
@@ -262,7 +263,7 @@ describe("SalesOrdersService", () => {
         status: SalesOrderStatus.Draft,
         orderDate: "2024-01-01",
         totalAmount: 499.95,
-        orderLines: [],
+        lines: [],
         createdAt: "2024-01-01",
         updatedAt: "2024-01-01",
         createdBy: "user1",
@@ -284,7 +285,7 @@ describe("SalesOrdersService", () => {
       const updateData: CreateUpdateSalesOrderDto = {
         customerId: "customer-2",
         orderDate: "2024-01-02",
-        orderLines: [],
+        lines: [],
       };
       const mockOrder: SalesOrderDto = {
         id: "1",
@@ -292,7 +293,7 @@ describe("SalesOrdersService", () => {
         orderNumber: "SO-001",
         status: SalesOrderStatus.Draft,
         totalAmount: 0,
-        orderLines: [] as SalesOrderLineDto[],
+        lines: [] as SalesOrderLineDto[],
         createdAt: "2024-01-01",
         updatedAt: "2024-01-01",
         createdBy: "user1",
@@ -319,6 +320,39 @@ describe("SalesOrdersService", () => {
       await salesOrdersService.deleteSalesOrder("1");
 
       expect(mockApiClient.delete).toHaveBeenCalledWith("/sales/api/sales/orders/1");
+    });
+  });
+
+  describe("createReturn", () => {
+    it("should create a sales return", async () => {
+      const returnData: CreateSalesReturnDto = {
+        warehouseId: "wh-1",
+        lines: [{ productId: "prod-1", quantity: 2 }],
+      };
+      const mockOrder: SalesOrderDto = {
+        id: "so-1",
+        orderNumber: "SO-001",
+        customerId: "customer-1",
+        status: SalesOrderStatus.Shipped,
+        orderDate: "2024-01-01",
+        totalAmount: 100,
+        lines: [],
+        createdAt: "2024-01-01",
+        updatedAt: "2024-01-01",
+        createdBy: "user1",
+        updatedBy: "user1",
+        isQuote: false,
+        returnOrderId: "so-return-1",
+      };
+      mockApiClient.post.mockResolvedValue(mockOrder);
+
+      const result = await salesOrdersService.createReturn("so-1", returnData);
+
+      expect(mockApiClient.post).toHaveBeenCalledWith(
+        "/sales/api/sales/orders/so-1/returns",
+        returnData
+      );
+      expect(result).toEqual(mockOrder);
     });
   });
 

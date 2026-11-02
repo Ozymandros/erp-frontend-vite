@@ -8,6 +8,10 @@ vi.mock("@/api/clients", () => ({
   getApiClient: vi.fn(() => null),
 }));
 
+vi.mock("../toast.service", () => ({
+  registerToastApi: vi.fn(),
+}));
+
 function TestConsumer() {
   const toast = useToast();
   return (
@@ -174,9 +178,8 @@ describe("ToastContext", () => {
   });
 
   it("should cleanup registerToastApi on unmount", async () => {
-    vi.mock("../toast.service", () => ({
-      registerToastApi: vi.fn(),
-    }));
+    const { registerToastApi } = await import("../toast.service");
+    vi.mocked(registerToastApi).mockClear();
 
     const { unmount } = render(
       <ToastContextProvider>
@@ -184,10 +187,9 @@ describe("ToastContext", () => {
       </ToastContextProvider>
     );
 
-    const { registerToastApi: mockedRegister } = await import("../toast.service");
-    expect(mockedRegister).toHaveBeenCalledWith(expect.anything());
+    expect(registerToastApi).toHaveBeenCalledWith(expect.anything());
 
     unmount();
-    expect(mockedRegister).toHaveBeenLastCalledWith(null);
+    expect(registerToastApi).toHaveBeenLastCalledWith(null);
   });
 });

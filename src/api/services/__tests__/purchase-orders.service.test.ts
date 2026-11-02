@@ -2,8 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import type {
   PurchaseOrderDto,
   CreateUpdatePurchaseOrderDto,
-  ApprovePurchaseOrderDto,
-  ReceivePurchaseOrderDto,
   PaginatedResponse,
   QuerySpec,
 } from "@/types/api.types";
@@ -28,7 +26,7 @@ const baseMockOrder: PurchaseOrderDto = {
   status: PurchaseOrderStatus.Draft,
   orderDate: "2024-01-01",
   totalAmount: 499.9,
-  orderLines: [],
+  lines: [],
   createdAt: "2024-01-01",
   updatedAt: "2024-01-01",
   createdBy: "user1",
@@ -127,7 +125,7 @@ describe("PurchaseOrdersService", () => {
       const newOrder: CreateUpdatePurchaseOrderDto = {
         supplierId: "supplier-1",
         orderDate: "2024-01-15",
-        orderLines: [{ productId: "p1", quantity: 10, unitPrice: 99.99 }],
+        lines: [{ productId: "p1", quantity: 10, unitPrice: 99.99 }],
       };
       const createdOrder = { ...baseMockOrder, ...newOrder } as PurchaseOrderDto;
       mockApiClient.post.mockResolvedValue(createdOrder);
@@ -147,7 +145,7 @@ describe("PurchaseOrdersService", () => {
       const updateData: CreateUpdatePurchaseOrderDto = {
         supplierId: "supplier-1",
         orderDate: "2024-01-20",
-        orderLines: [],
+        lines: [],
       };
       const updatedOrder = { ...baseMockOrder, ...updateData } as PurchaseOrderDto;
       mockApiClient.put.mockResolvedValue(updatedOrder);
@@ -193,18 +191,16 @@ describe("PurchaseOrdersService", () => {
 
   describe("approvePurchaseOrder", () => {
     it("should approve a purchase order", async () => {
-      const approvalData: ApprovePurchaseOrderDto = {
-        purchaseOrderId: "po-1",
-        notes: "Approved",
-      };
       const mockOrder: PurchaseOrderDto = { ...baseMockOrder, id: "po-1", status: PurchaseOrderStatus.Approved };
       mockApiClient.post.mockResolvedValue(mockOrder);
 
-      const result = await purchaseOrdersService.approvePurchaseOrder("po-1", approvalData);
+      const result = await purchaseOrdersService.approvePurchaseOrder("po-1", {
+        notes: "Approved",
+      });
 
       expect(mockApiClient.post).toHaveBeenCalledWith(
         "/purchasing/api/purchasing/orders/po-1/approve",
-        approvalData
+        { purchaseOrderId: "po-1", notes: "Approved" }
       );
       expect(result).toEqual(mockOrder);
     });
@@ -212,8 +208,7 @@ describe("PurchaseOrdersService", () => {
 
   describe("receivePurchaseOrder", () => {
     it("should receive a purchase order", async () => {
-      const receiveData: ReceivePurchaseOrderDto = {
-        purchaseOrderId: "po-1",
+      const receiveBody = {
         warehouseId: "warehouse-1",
         receivedDate: "2024-01-15",
         lines: [{ purchaseOrderLineId: "line-1", receivedQuantity: 10 }],
@@ -226,13 +221,33 @@ describe("PurchaseOrdersService", () => {
       };
       mockApiClient.post.mockResolvedValue(mockOrder);
 
-      const result = await purchaseOrdersService.receivePurchaseOrder("po-1", receiveData);
+      const result = await purchaseOrdersService.receivePurchaseOrder("po-1", receiveBody);
 
       expect(mockApiClient.post).toHaveBeenCalledWith(
         "/purchasing/api/purchasing/orders/po-1/receive",
-        receiveData
+        { ...receiveBody, purchaseOrderId: "po-1" }
       );
       expect(result).toEqual(mockOrder);
+    });
+  });
+
+  describe("matchPurchaseOrder", () => {
+    it("should run three-way match for a purchase order", async () => {
+      const matchResult = {
+        purchaseOrderId: "po-1",
+        matchStatus: "Matched",
+        matchedAt: "2024-01-20",
+        summary: "PO, receipt, and supplier invoice amounts match.",
+      };
+      mockApiClient.post.mockResolvedValue(matchResult);
+
+      const result = await purchaseOrdersService.matchPurchaseOrder("po-1");
+
+      expect(mockApiClient.post).toHaveBeenCalledWith(
+        "/purchasing/api/purchasing/orders/po-1/match",
+        {}
+      );
+      expect(result).toEqual(matchResult);
     });
   });
 

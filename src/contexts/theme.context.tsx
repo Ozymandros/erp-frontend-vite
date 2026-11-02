@@ -1,5 +1,5 @@
 import { ThemeProvider as NextThemesProvider, useTheme as useNextTheme } from "next-themes";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 
 type ThemeProviderProps = {
   children: ReactNode;
@@ -31,9 +31,37 @@ export function ThemeProvider({
       enableSystem
       disableTransitionOnChange={false}
     >
+      <ThemeColorMeta />
       {children}
     </NextThemesProvider>
   );
+}
+
+/**
+ * Syncs browser theme-color meta with --primary CSS variable.
+ */
+function ThemeColorMeta() {
+  const { resolvedTheme } = useNextTheme();
+
+  useEffect(() => {
+    if (!resolvedTheme) return;
+
+    const primary = getComputedStyle(document.documentElement)
+      .getPropertyValue("--primary")
+      .trim();
+    if (!primary) return;
+
+    const content = `hsl(${primary})`;
+    let meta = document.querySelector('meta[name="theme-color"]:not([media])');
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.setAttribute("name", "theme-color");
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute("content", content);
+  }, [resolvedTheme]);
+
+  return null;
 }
 
 /**

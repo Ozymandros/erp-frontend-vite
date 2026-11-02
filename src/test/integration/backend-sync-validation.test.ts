@@ -92,7 +92,7 @@ describe('Backend Synchronization Validation', () => {
         status: 'Pending' as any,
         orderDate: '2024-01-01T00:00:00Z',
         customerId: 'cust-1',
-        orderLines: [],
+        lines: [],
         totalAmount: 100,
         createdAt: '2024-01-01T00:00:00Z',
         createdBy: 'system',

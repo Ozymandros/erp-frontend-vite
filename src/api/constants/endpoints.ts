@@ -43,7 +43,10 @@ export const PURCHASING_SERVICE_BASE = "/purchasing/api/purchasing";
 export const CRM_SERVICE_BASE = "/crm/api/crm";
 
 /** Billing service gateway upstream: /billing/api/billing/ → routes to /api/ */
-export const BILLING_SERVICE_BASE = "/api/billing";
+export const BILLING_SERVICE_BASE = "/billing/api/billing";
+
+/** Audit service gateway upstream: /audit/api/audit/ → routes to /api/audit/ */
+export const AUDIT_SERVICE_BASE = "/audit/api/audit";
 
 // ==================== AUTH MODULE ENDPOINTS ====================
 
@@ -196,6 +199,7 @@ export const SALES_ORDERS_ENDPOINTS = {
   CHECK_AVAILABILITY: `${SALES_SERVICE_BASE}/orders/quotes/check-availability`,
   EXPORT_XLSX: `${SALES_SERVICE_BASE}/orders/export-xlsx`,
   EXPORT_PDF: `${SALES_SERVICE_BASE}/orders/export-pdf`,
+  CREATE_RETURN: (id: string) => `${SALES_SERVICE_BASE}/orders/${id}/returns`,
 } as const;
 
 export const CUSTOMERS_ENDPOINTS = {
@@ -222,6 +226,7 @@ export const PURCHASE_ORDERS_ENDPOINTS = {
     `${PURCHASING_SERVICE_BASE}/orders/${id}/status/${status}`,
   APPROVE: (id: string) => `${PURCHASING_SERVICE_BASE}/orders/${id}/approve`,
   RECEIVE: (id: string) => `${PURCHASING_SERVICE_BASE}/orders/${id}/receive`,
+  MATCH: (id: string) => `${PURCHASING_SERVICE_BASE}/orders/${id}/match`,
   EXPORT_XLSX: `${PURCHASING_SERVICE_BASE}/orders/export-xlsx`,
   EXPORT_PDF: `${PURCHASING_SERVICE_BASE}/orders/export-pdf`,
 } as const;
@@ -319,4 +324,20 @@ export const PAYMENTS_ENDPOINTS = {
 export const CREDIT_NOTES_ENDPOINTS = {
   BY_INVOICE: (invoiceId: string) =>
     `${BILLING_SERVICE_BASE}/credit-notes/invoice/${invoiceId}`,
+} as const;
+
+export const SUPPLIER_INVOICES_ENDPOINTS = {
+  BASE: `${BILLING_SERVICE_BASE}/supplier-invoices`,
+  BY_ID: (id: string) => `${BILLING_SERVICE_BASE}/supplier-invoices/${id}`,
+  BY_PO: (purchaseOrderId: string) =>
+    `${BILLING_SERVICE_BASE}/supplier-invoices/by-purchase-order/${purchaseOrderId}`,
+} as const;
+
+// ==================== AUDIT MODULE ENDPOINTS ====================
+
+export const AUDIT_ENDPOINTS = {
+  ENTITY_CHANGES: `${AUDIT_SERVICE_BASE}/entity-changes`,
+  BY_ID: (id: string) => `${AUDIT_SERVICE_BASE}/entity-changes/${id}`,
+  BY_ENTITY: (entityName: string, entityId: string) =>
+    `${AUDIT_SERVICE_BASE}/entity-changes/by-entity/${encodeURIComponent(entityName)}/${entityId}`,
 } as const;

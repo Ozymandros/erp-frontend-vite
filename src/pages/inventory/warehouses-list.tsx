@@ -1,5 +1,3 @@
-"use client";
-
 import { warehousesService } from "@/api/services/warehouses.service";
 import type { WarehouseDto, QuerySpec } from "@/types/api.types";
 import { CreateWarehouseDialog } from "@/components/inventory/create-warehouse-dialog";

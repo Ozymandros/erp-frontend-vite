@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { warehousesService } from "@/api/services/warehouses.service";
 import type { WarehouseDto } from "@/types/api.types";

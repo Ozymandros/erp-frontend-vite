@@ -5,6 +5,7 @@ import type {
   CreateUpdatePurchaseOrderDto,
   ApprovePurchaseOrderDto,
   ReceivePurchaseOrderDto,
+  PurchaseOrderMatchResultDto,
   PaginatedResponse,
   QuerySpec,
   PurchaseOrderStatus,
@@ -84,21 +85,28 @@ class PurchaseOrdersService {
 
   async approvePurchaseOrder(
     id: string,
-    data: ApprovePurchaseOrderDto
+    data: Pick<ApprovePurchaseOrderDto, "notes">
   ): Promise<PurchaseOrderDto> {
     return this.apiClient.post<PurchaseOrderDto>(
       PURCHASE_ORDERS_ENDPOINTS.APPROVE(id),
-      data
+      { purchaseOrderId: id, notes: data.notes }
     );
   }
 
   async receivePurchaseOrder(
     id: string,
-    data: ReceivePurchaseOrderDto
+    data: Omit<ReceivePurchaseOrderDto, "purchaseOrderId">
   ): Promise<PurchaseOrderDto> {
     return this.apiClient.post<PurchaseOrderDto>(
       PURCHASE_ORDERS_ENDPOINTS.RECEIVE(id),
-      data
+      { ...data, purchaseOrderId: id }
+    );
+  }
+
+  async matchPurchaseOrder(id: string): Promise<PurchaseOrderMatchResultDto> {
+    return this.apiClient.post<PurchaseOrderMatchResultDto>(
+      PURCHASE_ORDERS_ENDPOINTS.MATCH(id),
+      {}
     );
   }
 

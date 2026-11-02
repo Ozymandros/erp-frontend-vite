@@ -8,6 +8,7 @@ import type {
   ConfirmQuoteResponseDto,
   StockAvailabilityCheckDto,
   CreateUpdateSalesOrderLineDto,
+  CreateSalesReturnDto,
   PaginatedResponse,
   QuerySpec,
 } from "@/types/api.types";
@@ -77,6 +78,16 @@ class SalesOrdersService {
     return this.apiClient.post<StockAvailabilityCheckDto[]>(
       SALES_ORDERS_ENDPOINTS.CHECK_AVAILABILITY,
       lines
+    );
+  }
+
+  async createReturn(
+    id: string,
+    data: CreateSalesReturnDto
+  ): Promise<SalesOrderDto> {
+    return this.apiClient.post<SalesOrderDto>(
+      SALES_ORDERS_ENDPOINTS.CREATE_RETURN(id),
+      data
     );
   }
 

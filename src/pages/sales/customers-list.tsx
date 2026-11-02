@@ -1,5 +1,3 @@
-"use client";
-
 import { customersService } from "@/api/services/customers.service";
 import type { CustomerDto, QuerySpec } from "@/types/api.types";
 import { CreateCustomerDialog } from "@/components/sales/create-customer-dialog";
