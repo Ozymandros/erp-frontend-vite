@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 *.txt
+*.xml
 
 # Editor directories and files
 playwright-report/
@@ -42,3 +43,4 @@ playwright-report/results.json
 .pnpm-store
 playwright-report
 tmp-gh-artifacts/
+junit.xml

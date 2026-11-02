@@ -66,3 +66,5 @@ playwright/.cache
 Dockerfile*
 docker-compose*.yml
 docker-compose*.yaml
+
+*.xml
