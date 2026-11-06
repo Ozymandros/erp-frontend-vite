@@ -47,6 +47,15 @@ import { InvoiceDetailPage } from "@/pages/billing/invoice-detail";
 import { EntityChangesListPage } from "@/pages/audit/entity-changes-list";
 import { EntityChangeDetailPage } from "@/pages/audit/entity-change-detail";
 
+import { ProjectsListPage } from "@/pages/projects/projects-list";
+import { ProjectDetailPage } from "@/pages/projects/project-detail";
+import { ResourcesListPage } from "@/pages/projects/resources-list";
+import { ResourceDetailPage } from "@/pages/projects/resource-detail";
+import { ResourceGroupsListPage } from "@/pages/projects/resource-groups-list";
+import { ResourceGroupDetailPage } from "@/pages/projects/resource-group-detail";
+import { CurrenciesListPage } from "@/pages/projects/currencies-list";
+import { CurrencyDetailPage } from "@/pages/projects/currency-detail";
+
 export interface RouteDefinition {
   path?: string;
   index?: boolean;
@@ -352,6 +361,70 @@ export const ROUTE_DEFINITIONS: RouteDefinition[] = [
         element: (
           <PermissionRoute path="/crm/activities/:id">
             <ActivityDetailPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/projects",
+        element: (
+          <PermissionRoute path="/projects">
+            <ProjectsListPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/projects/resources",
+        element: (
+          <PermissionRoute path="/projects/resources">
+            <ResourcesListPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/projects/resources/:id",
+        element: (
+          <PermissionRoute path="/projects/resources/:id">
+            <ResourceDetailPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/projects/resource-groups",
+        element: (
+          <PermissionRoute path="/projects/resource-groups">
+            <ResourceGroupsListPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/projects/resource-groups/:id",
+        element: (
+          <PermissionRoute path="/projects/resource-groups/:id">
+            <ResourceGroupDetailPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/projects/currencies",
+        element: (
+          <PermissionRoute path="/projects/currencies">
+            <CurrenciesListPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/projects/currencies/:code",
+        element: (
+          <PermissionRoute path="/projects/currencies/:code">
+            <CurrencyDetailPage />
+          </PermissionRoute>
+        ),
+      },
+      {
+        path: "/projects/:id",
+        element: (
+          <PermissionRoute path="/projects/:id">
+            <ProjectDetailPage />
           </PermissionRoute>
         ),
       },

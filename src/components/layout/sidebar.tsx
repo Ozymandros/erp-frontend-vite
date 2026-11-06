@@ -19,6 +19,7 @@ import {
   ChevronDown,
   ChevronRight,
   ScrollText,
+  FolderKanban,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth.context";
@@ -37,6 +38,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   FileText,
   ShoppingBag,
   ScrollText,
+  FolderKanban,
 };
 
 const STORAGE_KEY = "sidebar-open-groups";

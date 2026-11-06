@@ -75,6 +75,7 @@ describe("AxiosApiClient", () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.spyOn(console, "debug").mockImplementation(() => {})
+    vi.spyOn(console, "error").mockImplementation(() => {})
     requestFulfilled = null
     responseFulfilled = null
     responseRejected = null
@@ -147,6 +148,20 @@ describe("AxiosApiClient", () => {
       await client.delete("/test/1")
 
       expect(adapterDelete).toHaveBeenCalledWith("/test/1", undefined)
+    })
+
+    it("should return undefined for DELETE with 204 or empty body", async () => {
+      adapterDelete.mockResolvedValueOnce({ status: 204, data: undefined })
+      expect(await client.delete("/gone")).toBeUndefined()
+
+      adapterDelete.mockResolvedValueOnce({ status: 200, data: "" })
+      expect(await client.delete("/gone2")).toBeUndefined()
+    })
+
+    it("should propagate errors from DELETE", async () => {
+      const boom = new Error("delete failed")
+      adapterDelete.mockRejectedValue(boom)
+      await expect(client.delete("/x")).rejects.toThrow(ApiClientError)
     })
   })
 

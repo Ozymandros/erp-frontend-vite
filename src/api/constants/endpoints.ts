@@ -48,6 +48,9 @@ export const BILLING_SERVICE_BASE = "/billing/api/billing";
 /** Audit service gateway upstream: /audit/api/audit/ → routes to /api/audit/ */
 export const AUDIT_SERVICE_BASE = "/audit/api/audit";
 
+/** Projects service gateway upstream: /projects/api/projects/ → routes to /api/projects/ */
+export const PROJECTS_SERVICE_BASE = "/projects/api/projects";
+
 // ==================== AUTH MODULE ENDPOINTS ====================
 
 export const AUTH_ENDPOINTS = {
@@ -340,4 +343,77 @@ export const AUDIT_ENDPOINTS = {
   BY_ID: (id: string) => `${AUDIT_SERVICE_BASE}/entity-changes/${id}`,
   BY_ENTITY: (entityName: string, entityId: string) =>
     `${AUDIT_SERVICE_BASE}/entity-changes/by-entity/${encodeURIComponent(entityName)}/${entityId}`,
+} as const;
+
+// ==================== PROJECTS MODULE ENDPOINTS ====================
+
+export const PROJECTS_ENDPOINTS = {
+  BASE: `${PROJECTS_SERVICE_BASE}`,
+  BY_ID: (id: string) => `${PROJECTS_SERVICE_BASE}/${id}`,
+  BY_NUMBER: (projectNumber: string) =>
+    `${PROJECTS_SERVICE_BASE}/number/${encodeURIComponent(projectNumber)}`,
+  STATUS: (id: string) => `${PROJECTS_SERVICE_BASE}/${id}/status`,
+  COPY: (id: string) => `${PROJECTS_SERVICE_BASE}/${id}/copy`,
+  STATISTICS: (id: string) => `${PROJECTS_SERVICE_BASE}/${id}/statistics`,
+  EXPORT_XLSX: `${PROJECTS_SERVICE_BASE}/export-xlsx`,
+  EXPORT_PDF: `${PROJECTS_SERVICE_BASE}/export-pdf`,
+} as const;
+
+export const projectTasksEndpoints = (projectId: string) =>
+  ({
+    BASE: `${PROJECTS_SERVICE_BASE}/${projectId}/tasks`,
+    TREE: `${PROJECTS_SERVICE_BASE}/${projectId}/tasks/tree`,
+    BY_ID: (taskId: string) =>
+      `${PROJECTS_SERVICE_BASE}/${projectId}/tasks/${taskId}`,
+    MOVE: (taskId: string) =>
+      `${PROJECTS_SERVICE_BASE}/${projectId}/tasks/${taskId}/move`,
+    EXPORT_XLSX: `${PROJECTS_SERVICE_BASE}/${projectId}/tasks/export-xlsx`,
+    EXPORT_PDF: `${PROJECTS_SERVICE_BASE}/${projectId}/tasks/export-pdf`,
+  }) as const;
+
+export const projectPlanningLinesEndpoints = (projectId: string) =>
+  ({
+    BASE: `${PROJECTS_SERVICE_BASE}/${projectId}/planning-lines`,
+    BY_ID: (lineId: string) =>
+      `${PROJECTS_SERVICE_BASE}/${projectId}/planning-lines/${lineId}`,
+    EXPORT_XLSX: `${PROJECTS_SERVICE_BASE}/${projectId}/planning-lines/export-xlsx`,
+    EXPORT_PDF: `${PROJECTS_SERVICE_BASE}/${projectId}/planning-lines/export-pdf`,
+  }) as const;
+
+export const projectPostingEndpoints = (projectId: string) =>
+  ({
+    LEDGER: `${PROJECTS_SERVICE_BASE}/${projectId}/ledger-entries`,
+    LEDGER_EXPORT_XLSX: `${PROJECTS_SERVICE_BASE}/${projectId}/ledger-entries/export-xlsx`,
+    LEDGER_EXPORT_PDF: `${PROJECTS_SERVICE_BASE}/${projectId}/ledger-entries/export-pdf`,
+    USAGE: `${PROJECTS_SERVICE_BASE}/${projectId}/usage`,
+    ITEM_CONSUMPTION: `${PROJECTS_SERVICE_BASE}/${projectId}/item-consumption`,
+    INVOICE_REQUESTS: `${PROJECTS_SERVICE_BASE}/${projectId}/invoice-requests`,
+  }) as const;
+
+export const PROJECT_RESOURCES_ENDPOINTS = {
+  BASE: `${PROJECTS_SERVICE_BASE}/resources`,
+  BY_ID: (id: string) => `${PROJECTS_SERVICE_BASE}/resources/${id}`,
+  EXPORT_XLSX: `${PROJECTS_SERVICE_BASE}/resources/export-xlsx`,
+  EXPORT_PDF: `${PROJECTS_SERVICE_BASE}/resources/export-pdf`,
+} as const;
+
+export const PROJECT_RESOURCE_GROUPS_ENDPOINTS = {
+  BASE: `${PROJECTS_SERVICE_BASE}/resource-groups`,
+  BY_ID: (id: string) => `${PROJECTS_SERVICE_BASE}/resource-groups/${id}`,
+  EXPORT_XLSX: `${PROJECTS_SERVICE_BASE}/resource-groups/export-xlsx`,
+  EXPORT_PDF: `${PROJECTS_SERVICE_BASE}/resource-groups/export-pdf`,
+} as const;
+
+export const PROJECT_CURRENCIES_ENDPOINTS = {
+  BASE: `${PROJECTS_SERVICE_BASE}/currencies`,
+  BY_CODE: (code: string) =>
+    `${PROJECTS_SERVICE_BASE}/currencies/${encodeURIComponent(code)}`,
+  RATE: (code: string) =>
+    `${PROJECTS_SERVICE_BASE}/currencies/${encodeURIComponent(code)}/rate`,
+  EXCHANGE_RATES: (code: string) =>
+    `${PROJECTS_SERVICE_BASE}/currencies/${encodeURIComponent(code)}/exchange-rates`,
+  EXCHANGE_RATE_BY_ID: (code: string, rateId: string) =>
+    `${PROJECTS_SERVICE_BASE}/currencies/${encodeURIComponent(code)}/exchange-rates/${rateId}`,
+  EXPORT_XLSX: `${PROJECTS_SERVICE_BASE}/currencies/export-xlsx`,
+  EXPORT_PDF: `${PROJECTS_SERVICE_BASE}/currencies/export-pdf`,
 } as const;
