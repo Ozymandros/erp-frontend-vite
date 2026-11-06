@@ -100,4 +100,19 @@ describe("ThemeContext", () => {
       expect(document.documentElement.classList.contains("dark")).toBe(true);
     });
   });
+
+  it("syncs theme-color meta from --primary when theme resolves", async () => {
+    document.documentElement.style.setProperty("--primary", "220 14% 96%");
+    render(
+      <ThemeProvider>
+        <TestConsumer />
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      const meta = document.querySelector('meta[name="theme-color"]:not([media])');
+      expect(meta).not.toBeNull();
+      expect(meta?.getAttribute("content")).toMatch(/^hsl\(/);
+    });
+  });
 });

@@ -15,6 +15,7 @@ export const PERMISSION_MODULES = {
   CRM: "CRM",
   BILLING: "Billing",
   AUDIT: "Audit",
+  PROJECTS: "Projects",
 } as const;
 
 // Permission Actions
@@ -24,6 +25,7 @@ export const PERMISSION_ACTIONS = {
   UPDATE: "Update",
   DELETE: "Delete",
   EXPORT: "Export",
+  EXECUTE: "Execute",
 } as const;
 
 // Type helpers for type safety

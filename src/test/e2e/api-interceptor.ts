@@ -90,6 +90,22 @@ export async function setupApiMocks(page: Page) {
     },
   ];
 
+  let mockProjects = [
+    {
+      id: "proj-1",
+      projectNumber: "PRJ-001",
+      description: "E2E Project",
+      customerId: "cust-1",
+      status: "Planning",
+      blocked: "None",
+      currencyCode: "EUR",
+      createdAt: "2024-01-01T00:00:00Z",
+      updatedAt: "2024-01-01T00:00:00Z",
+      createdBy: "system",
+      updatedBy: "system",
+    },
+  ];
+
   let mockOpportunities = [
     {
       id: "opp-1",
@@ -107,7 +123,7 @@ export async function setupApiMocks(page: Page) {
     },
   ];
 
-  await page.route(/\/auth\/api\/|\/inventory\/api\/|\/sales\/api\/|\/purchasing\/api\/|\/orders\/api\/|\/crm\/api\/crm\//, async (route) => {
+  await page.route(/\/auth\/api\/|\/inventory\/api\/|\/sales\/api\/|\/purchasing\/api\/|\/orders\/api\/|\/crm\/api\/crm\/|\/projects\/api\/projects\//, async (route) => {
     const request = route.request();
     const url = request.url();
     const method = request.method();
@@ -1296,6 +1312,187 @@ export async function setupApiMocks(page: Page) {
         }
       }
       
+      // Projects endpoints - /projects/api/projects/*
+      if (urlPath.includes("/projects/api/projects")) {
+        if (
+          method === "GET" &&
+          urlPath.endsWith("/projects/api/projects")
+        ) {
+          await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify(createPaginatedResponse(mockProjects, 1, 10)),
+          });
+          return;
+        }
+
+        if (
+          method === "GET" &&
+          urlPath.match(/\/projects\/api\/projects\/[^/]+$/) &&
+          !urlPath.includes("/resources") &&
+          !urlPath.includes("/resource-groups") &&
+          !urlPath.includes("/currencies")
+        ) {
+          const id = urlPath.split("/").pop();
+          const project = mockProjects.find((p) => p.id === id);
+          await route.fulfill({
+            status: project ? 200 : 404,
+            contentType: "application/json",
+            body: JSON.stringify(
+              project ?? { message: "Not found" }
+            ),
+          });
+          return;
+        }
+
+        if (
+          method === "POST" &&
+          urlPath.endsWith("/projects/api/projects")
+        ) {
+          const body = request.postDataJSON() as { description?: string };
+          const created = {
+            id: `proj-${mockProjects.length + 1}`,
+            projectNumber: `PRJ-00${mockProjects.length + 1}`,
+            description: body.description ?? "New project",
+            customerId: "cust-1",
+            status: "Planning",
+            blocked: "None",
+            currencyCode: "EUR",
+            createdAt: "2024-01-01T00:00:00Z",
+            updatedAt: "2024-01-01T00:00:00Z",
+            createdBy: "system",
+            updatedBy: "system",
+          };
+          mockProjects = [created, ...mockProjects];
+          await route.fulfill({
+            status: 201,
+            contentType: "application/json",
+            body: JSON.stringify(created),
+          });
+          return;
+        }
+
+        if (
+          method === "GET" &&
+          urlPath.match(/\/projects\/api\/projects\/[^/]+\/statistics$/)
+        ) {
+          await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({
+              projectId: "proj-1",
+              currencyCode: "EUR",
+              localCurrency: "EUR",
+              totals: {
+                budgetCostLcy: 0,
+                budgetPrice: 0,
+                billablePrice: 0,
+                usageCostLcy: 0,
+                usagePrice: 0,
+                invoicedPrice: 0,
+                invoicedPriceLcy: 0,
+              },
+              tasks: [],
+            }),
+          });
+          return;
+        }
+
+        if (
+          method === "GET" &&
+          urlPath.match(/\/projects\/api\/projects\/[^/]+\/tasks\/tree$/)
+        ) {
+          await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify([]),
+          });
+          return;
+        }
+
+        if (
+          method === "GET" &&
+          urlPath.match(/\/projects\/api\/projects\/[^/]+\/tasks$/)
+        ) {
+          await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify([]),
+          });
+          return;
+        }
+
+        if (
+          method === "GET" &&
+          urlPath.match(/\/projects\/api\/projects\/[^/]+\/planning-lines$/)
+        ) {
+          await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify([]),
+          });
+          return;
+        }
+
+        if (
+          method === "GET" &&
+          urlPath.match(/\/projects\/api\/projects\/[^/]+\/ledger-entries$/)
+        ) {
+          await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify([]),
+          });
+          return;
+        }
+
+        if (
+          method === "GET" &&
+          urlPath.match(/\/projects\/api\/projects\/[^/]+\/item-consumption$/)
+        ) {
+          await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify([]),
+          });
+          return;
+        }
+
+        if (
+          method === "GET" &&
+          urlPath.match(/\/projects\/api\/projects\/[^/]+\/invoice-requests$/)
+        ) {
+          await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify([]),
+          });
+          return;
+        }
+
+        if (
+          method === "GET" &&
+          urlPath.endsWith("/projects/api/projects/currencies")
+        ) {
+          await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify([
+              {
+                id: "cur-1",
+                code: "EUR",
+                description: "Euro",
+                isLocalCurrency: true,
+                exchangeRates: [],
+                createdAt: "2024-01-01T00:00:00Z",
+                createdBy: "system",
+              },
+            ]),
+          });
+          return;
+        }
+      }
+
       // Unmatched API request - NEVER hit real backend; return 404
       console.warn('[E2E] Unmatched API request (no mock):', method, url);
       await route.fulfill({

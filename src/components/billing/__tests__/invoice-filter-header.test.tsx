@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { InvoiceFilterHeader } from "../invoice-filter-header";
 
 describe("InvoiceFilterHeader", () => {
@@ -36,5 +37,16 @@ describe("InvoiceFilterHeader", () => {
     render(<InvoiceFilterHeader status="Cancelled" onStatusChange={onStatusChange} />);
 
     expect(screen.getByText("Cancelled")).toBeDefined();
+  });
+
+  it("calls onStatusChange with undefined when All statuses is selected", async () => {
+    const user = userEvent.setup();
+    const onStatusChange = vi.fn();
+    render(<InvoiceFilterHeader status="Issued" onStatusChange={onStatusChange} />);
+
+    await user.click(screen.getByLabelText("Filter by invoice status"));
+    await user.click(await screen.findByRole("option", { name: /all statuses/i }));
+
+    expect(onStatusChange).toHaveBeenCalledWith(undefined);
   });
 });
