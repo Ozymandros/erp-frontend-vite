@@ -59,6 +59,10 @@ interface PaginatedResponse<T> {
   hasNextPage: boolean;
 }
 
+/** Valid UUIDs — Create Project form validates customerId with z.string().uuid() */
+const E2E_CUSTOMER_1_ID = "a0000001-0000-4000-8000-000000000001";
+const E2E_CUSTOMER_2_ID = "a0000002-0000-4000-8000-000000000002";
+
 const createPaginatedResponse = <T>(items: T[], page = 1, pageSize = 10): PaginatedResponse<T> => ({
   items,
   page,
@@ -95,7 +99,7 @@ export async function setupApiMocks(page: Page) {
       id: "proj-1",
       projectNumber: "PRJ-001",
       description: "E2E Project",
-      customerId: "cust-1",
+      customerId: E2E_CUSTOMER_1_ID,
       status: "Planning",
       blocked: "None",
       currencyCode: "EUR",
@@ -123,7 +127,9 @@ export async function setupApiMocks(page: Page) {
     },
   ];
 
-  await page.route(/\/auth\/api\/|\/inventory\/api\/|\/sales\/api\/|\/purchasing\/api\/|\/orders\/api\/|\/crm\/api\/crm\/|\/projects\/api\/projects\//, async (route) => {
+  await page.route(
+    /\/auth\/api\/|\/inventory\/api\/|\/sales\/api\/|\/purchasing\/api\/|\/orders\/api\/|\/crm\/api\/crm\/|\/projects\/api\/projects(?:\/|\?|$)/,
+    async (route) => {
     const request = route.request();
     const url = request.url();
     const method = request.method();
@@ -817,8 +823,8 @@ export async function setupApiMocks(page: Page) {
           // Search customers: GET /sales/api/sales/customers/search
           if (url.includes('/customers/search') && method === 'GET') {
             const mockCustomers = [
-              { id: '1', name: 'Customer 1', email: 'customer1@example.com', creditLimit: 50000, createdAt: '2024-01-01T00:00:00Z', createdBy: 'system' },
-              { id: '2', name: 'Customer 2', email: 'customer2@example.com', creditLimit: 100000, createdAt: '2024-01-01T00:00:00Z', createdBy: 'system' },
+              { id: E2E_CUSTOMER_1_ID, name: 'Customer 1', email: 'customer1@example.com', creditLimit: 50000, createdAt: '2024-01-01T00:00:00Z', createdBy: 'system' },
+              { id: E2E_CUSTOMER_2_ID, name: 'Customer 2', email: 'customer2@example.com', creditLimit: 100000, createdAt: '2024-01-01T00:00:00Z', createdBy: 'system' },
             ];
             await route.fulfill({
               status: 200,
@@ -831,8 +837,8 @@ export async function setupApiMocks(page: Page) {
           // Get all customers: GET /sales/api/sales/customers
           if (method === 'GET' && !url.includes('/search')) {
             const mockCustomers = [
-              { id: '1', name: 'Customer 1', email: 'customer1@example.com', creditLimit: 50000, createdAt: '2024-01-01T00:00:00Z', createdBy: 'system' },
-              { id: '2', name: 'Customer 2', email: 'customer2@example.com', creditLimit: 100000, createdAt: '2024-01-01T00:00:00Z', createdBy: 'system' },
+              { id: E2E_CUSTOMER_1_ID, name: 'Customer 1', email: 'customer1@example.com', creditLimit: 50000, createdAt: '2024-01-01T00:00:00Z', createdBy: 'system' },
+              { id: E2E_CUSTOMER_2_ID, name: 'Customer 2', email: 'customer2@example.com', creditLimit: 100000, createdAt: '2024-01-01T00:00:00Z', createdBy: 'system' },
             ];
             await route.fulfill({
               status: 200,
@@ -1354,7 +1360,7 @@ export async function setupApiMocks(page: Page) {
             id: `proj-${mockProjects.length + 1}`,
             projectNumber: `PRJ-00${mockProjects.length + 1}`,
             description: body.description ?? "New project",
-            customerId: "cust-1",
+            customerId: E2E_CUSTOMER_1_ID,
             status: "Planning",
             blocked: "None",
             currencyCode: "EUR",
