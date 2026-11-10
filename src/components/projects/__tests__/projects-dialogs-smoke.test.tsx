@@ -32,7 +32,6 @@ import { customersService } from "@/api/services/customers.service";
 import { warehousesService } from "@/api/services/warehouses.service";
 import {
   CustomerDto,
-  ProjectStatus,
   WarehouseDto,
   type PlanningLineDto,
   type ProjectDto,
@@ -242,7 +241,6 @@ describe("projects dialogs smoke", () => {
   });
 
   it("CreateExchangeRateDialog submits", async () => {
-    const user = userEvent.setup();
     const onSuccess = vi.fn();
     render(
       <CreateExchangeRateDialog
@@ -444,7 +442,6 @@ describe("projects dialogs smoke", () => {
   });
 
   it("CreateItemConsumptionDialog consumes when open", async () => {
-    const user = userEvent.setup();
     render(
       <CreateItemConsumptionDialog
         projectId={projectId}

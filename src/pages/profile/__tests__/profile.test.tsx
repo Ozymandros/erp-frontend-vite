@@ -127,7 +127,7 @@ describe('ProfilePage', () => {
         {
           id: '1',
           name: 'Auditor',
-          description: null,
+          description: undefined,
           permissions: [
             new PermissionDto({
               id: 'p1',
