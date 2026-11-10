@@ -89,4 +89,42 @@ describe("ThemeToggle", () => {
     const lightOption = await screen.findByRole("menuitem", { name: /light/i });
     expect(lightOption).toHaveAttribute("aria-current", "true");
   });
+
+  it("should set light theme when Light is chosen", async () => {
+    const user = userEvent.setup();
+    render(
+      <ThemeProvider>
+        <ThemeToggle />
+      </ThemeProvider>,
+    );
+
+    const button = await screen.findByRole("button", { name: /toggle theme/i });
+    await user.click(button);
+
+    const lightOption = await screen.findByRole("menuitem", { name: /^light$/i });
+    await user.click(lightOption);
+
+    await waitFor(() => {
+      expect(localStorageMock.getItem("vite-ui-theme")).toBe("light");
+    });
+  });
+
+  it("should set system theme when System is chosen", async () => {
+    const user = userEvent.setup();
+    render(
+      <ThemeProvider>
+        <ThemeToggle />
+      </ThemeProvider>,
+    );
+
+    const button = await screen.findByRole("button", { name: /toggle theme/i });
+    await user.click(button);
+
+    const systemOption = await screen.findByRole("menuitem", { name: /^system$/i });
+    await user.click(systemOption);
+
+    await waitFor(() => {
+      expect(localStorageMock.getItem("vite-ui-theme")).toBe("system");
+    });
+  });
 });

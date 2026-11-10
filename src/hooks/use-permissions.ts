@@ -61,6 +61,7 @@ export function useModulePermissions(module: string) {
         canUpdate: false,
         canDelete: false,
         canExport: false,
+        canExecute: false,
       };
     }
 
@@ -72,6 +73,7 @@ export function useModulePermissions(module: string) {
         canUpdate: true,
         canDelete: true,
         canExport: true,
+        canExecute: true,
       };
     }
 
@@ -89,7 +91,8 @@ export function useModulePermissions(module: string) {
       canRead: true, // Default to true as per user preference (usually covered by route guard)
       canUpdate: hasPerm(PERMISSION_ACTIONS.UPDATE),
       canDelete: hasPerm(PERMISSION_ACTIONS.DELETE),
-      canExport: true, // Default to true as per user preference
+      canExport: hasPerm(PERMISSION_ACTIONS.EXPORT),
+      canExecute: hasPerm(PERMISSION_ACTIONS.EXECUTE),
     };
   }, [user, module]);
 

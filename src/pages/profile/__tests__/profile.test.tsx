@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { ProfilePage } from '../profile';
 import * as authContext from '@/contexts/auth.context';
 import type { AuthContextType } from '@/contexts/auth.context-object';
+import { PermissionDto } from '@/types/api.types';
 
 // Mock the auth context
 vi.mock('@/contexts/auth.context', () => ({
@@ -112,5 +113,60 @@ describe('ProfilePage', () => {
     
     expect(screen.getByText('Admin')).toBeInTheDocument();
     expect(screen.getByText('Editor')).toBeInTheDocument();
+  });
+
+  it('renders permission badges when roles include permissions', () => {
+    const mockUser = {
+      id: '1',
+      username: 'permuser',
+      email: 'p@example.com',
+      firstName: 'P',
+      lastName: 'U',
+      isActive: true,
+      roles: [
+        {
+          id: '1',
+          name: 'Auditor',
+          description: undefined,
+          permissions: [
+            new PermissionDto({
+              id: 'p1',
+              module: 'audit',
+              action: 'read',
+              createdAt: '2024-01-01T00:00:00Z',
+              createdBy: 'system',
+            }),
+          ],
+          createdAt: '2024-01-01T00:00:00Z',
+          createdBy: 'system',
+        },
+      ],
+      permissions: [],
+      createdAt: '2024-01-01T00:00:00Z',
+      updatedAt: '2024-01-02T00:00:00Z',
+      emailConfirmed: true,
+      isExternalLogin: false,
+      isAdmin: false,
+      createdBy: 'system',
+    };
+
+    const mockAuthContext: AuthContextType = {
+      user: mockUser,
+      permissions: [],
+      login: vi.fn(),
+      logout: vi.fn(),
+      register: vi.fn(),
+      isAuthenticated: true,
+      isLoading: false,
+      hasPermission: vi.fn(),
+      checkApiPermission: vi.fn(),
+      refreshUserData: vi.fn(),
+    };
+
+    vi.spyOn(authContext, 'useAuth').mockReturnValue(mockAuthContext);
+
+    render(<ProfilePage />);
+
+    expect(screen.getByText('audit:read')).toBeInTheDocument();
   });
 });

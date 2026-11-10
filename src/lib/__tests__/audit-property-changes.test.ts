@@ -32,6 +32,18 @@ describe("audit-property-changes", () => {
       expect(normalizePropertyChanges(null)).toEqual([]);
       expect(normalizePropertyChanges([{ invalid: true }])).toEqual([]);
     });
+
+    it("stringifies object and number values in normalized rows", () => {
+      const rows = normalizePropertyChanges([
+        {
+          propertyName: "meta",
+          originalValue: { a: 1 },
+          newValue: 42,
+        },
+      ]);
+      expect(rows[0]?.originalValue).toBe(JSON.stringify({ a: 1 }));
+      expect(rows[0]?.newValue).toBe("42");
+    });
   });
 
   describe("resolvePropertyChanges", () => {
@@ -133,6 +145,55 @@ describe("audit-property-changes", () => {
         originalValue: "gone@example.com",
         newValue: null,
       });
+    });
+
+    it("handles Added and Removed change types for snapshot derivation", () => {
+      const added: EntityChangeDto = {
+        id: "ec-add",
+        entityName: "Item",
+        entityId: "1",
+        changeType: "Added",
+        originalValue: null,
+        newValue: JSON.stringify({ name: "x" }),
+        createdAt: "2025-01-15T10:00:00Z",
+        createdBy: "admin",
+        updatedAt: "2025-01-15T10:00:00Z",
+        updatedBy: null,
+        propertyChanges: [],
+      };
+      expect(resolvePropertyChanges(added).length).toBeGreaterThan(0);
+
+      const removed: EntityChangeDto = {
+        id: "ec-rem",
+        entityName: "Item",
+        entityId: "1",
+        changeType: "Removed",
+        originalValue: JSON.stringify({ name: "x" }),
+        newValue: null,
+        createdAt: "2025-01-15T10:00:00Z",
+        createdBy: "admin",
+        updatedAt: "2025-01-15T10:00:00Z",
+        updatedBy: null,
+        propertyChanges: [],
+      };
+      expect(resolvePropertyChanges(removed).length).toBeGreaterThan(0);
+    });
+
+    it("treats snapshot JSON arrays as unparsable for diffing", () => {
+      const change: EntityChangeDto = {
+        id: "ec-arr",
+        entityName: "User",
+        entityId: "1",
+        changeType: "Updated",
+        originalValue: "[1,2]",
+        newValue: "[1,2,3]",
+        createdAt: "2025-01-15T10:00:00Z",
+        createdBy: "admin",
+        updatedAt: "2025-01-15T10:00:00Z",
+        updatedBy: null,
+        propertyChanges: [],
+      };
+      expect(resolvePropertyChanges(change)).toEqual([]);
     });
 
     it("returns empty array when snapshots cannot be parsed", () => {
