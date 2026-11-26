@@ -43,6 +43,24 @@ describe('CreateSalesOrderDialog', () => {
     vi.mocked(productsService.getProducts).mockResolvedValue(mockProducts);
   });
 
+  const waitForCustomerOptions = async () => {
+    const customerSelect = screen.getByLabelText(/customer/i);
+    await waitFor(() => {
+      expect(
+        within(customerSelect).getByRole("option", { name: /Customer 1/i })
+      ).toBeInTheDocument();
+    });
+  };
+
+  const waitForProductOptions = async () => {
+    const productSelect = screen.getByLabelText(/product/i);
+    await waitFor(() => {
+      expect(
+        within(productSelect).getByRole("option", { name: /Product 1/i })
+      ).toBeInTheDocument();
+    });
+  };
+
   it('renders dialog when open', async () => {
     render(
       <CreateSalesOrderDialog
@@ -112,6 +130,7 @@ describe('CreateSalesOrderDialog', () => {
     await waitFor(() => {
       expect(screen.getByLabelText(/product/i)).toBeInTheDocument();
     });
+    await waitForProductOptions();
 
     // Add item
     await userEvent.selectOptions(screen.getByLabelText(/product/i), "1");
@@ -145,6 +164,7 @@ describe('CreateSalesOrderDialog', () => {
     await waitFor(() => {
       expect(screen.getByLabelText(/product/i)).toBeInTheDocument();
     });
+    await waitForProductOptions();
 
     // Add item 1 (Qty 1, Price 100)
     await userEvent.selectOptions(screen.getByLabelText(/product/i), "1");
@@ -174,6 +194,8 @@ describe('CreateSalesOrderDialog', () => {
     await waitFor(() => {
       expect(screen.getByLabelText(/customer/i)).toBeInTheDocument();
     });
+    await waitForCustomerOptions();
+    await waitForProductOptions();
 
     await userEvent.selectOptions(screen.getByLabelText(/customer/i), "1");
     await userEvent.selectOptions(screen.getByLabelText(/product/i), "1");
@@ -197,10 +219,8 @@ describe('CreateSalesOrderDialog', () => {
       />
     );
 
-    await waitFor(() => {
-      expect(screen.getByRole('option', { name: /Customer 1/i })).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: /Product 1/i })).toBeInTheDocument();
-    });
+    await waitForCustomerOptions();
+    await waitForProductOptions();
 
     await userEvent.selectOptions(screen.getByLabelText(/customer/i), "1");
     await userEvent.selectOptions(screen.getByLabelText(/product/i), "1");
@@ -227,6 +247,7 @@ describe('CreateSalesOrderDialog', () => {
     await waitFor(() => {
       expect(screen.getByLabelText(/customer/i)).toBeInTheDocument();
     });
+    await waitForProductOptions();
 
     // Add a line first so submit becomes enabled
     await userEvent.selectOptions(screen.getByLabelText(/customer/i), ""); // Ensure empty
@@ -278,7 +299,8 @@ describe('CreateSalesOrderDialog', () => {
     await waitFor(() => {
       expect(screen.getByLabelText(/product/i)).toBeInTheDocument();
     });
-    
+    await waitForProductOptions();
+
     // Should not add if no product
     await userEvent.click(screen.getByRole("button", { name: /add item/i }));
     expect(within(screen.getByRole('table')).queryByText(/Product 1/i)).toBeNull();

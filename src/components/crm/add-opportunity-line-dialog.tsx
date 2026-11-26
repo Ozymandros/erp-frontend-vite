@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import type React from "react";
 import { productsService } from "@/api/services/products.service";

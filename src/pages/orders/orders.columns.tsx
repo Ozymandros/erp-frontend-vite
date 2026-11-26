@@ -52,7 +52,7 @@ export function getOrderColumns({ getCustomerName }: OrderColumnsProps): Column<
     },
     {
       header: "Items",
-      accessor: (order) => <span className="tabular-nums">{`${order.orderLines?.length || 0} items`}</span>,
+      accessor: (order) => <span className="tabular-nums">{`${order.lines?.length || 0} items`}</span>,
     },
     {
       header: "Total Amount",

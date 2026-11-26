@@ -22,7 +22,7 @@ describe('ReserveStockForm', () => {
     status: 'Pending' as OrderDto['status'],
     orderDate: '2024-01-01T00:00:00Z', 
     customerId: 'cust-1', 
-    orderLines: [], 
+    lines: [], 
     totalAmount: 0, 
     createdAt: '2024-01-01T00:00:00Z', 
     createdBy: 'test-user' 

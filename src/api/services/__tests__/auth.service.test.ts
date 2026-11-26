@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type {
   LoginRequest,
   RegisterRequest,
@@ -19,7 +19,8 @@ vi.mock("@/api/clients", () => ({
 }));
 
 // Import after mocking - services will be instantiated with mocked client
-const { authService } = await import("@/api/services/auth.service");
+let authService: typeof import("@/api/services/auth.service").authService;
+authService = (await import("@/api/services/auth.service")).authService;
 
 describe("AuthService", () => {
   beforeEach(() => {
@@ -165,6 +166,53 @@ describe("AuthService", () => {
         { params: { module, action } }
       );
       expect(result).toEqual(mockResponse);
+    });
+  });
+
+  describe("analytics hook in login", () => {
+    const prevVitest = process.env.VITEST;
+    const prevCi = process.env.CI;
+
+    beforeEach(() => {
+      vi.resetModules();
+      delete process.env.VITEST;
+      delete process.env.CI;
+      vi.stubEnv("VITE_ANALYTICS_ENDPOINT", "https://analytics.example.com/collect");
+      vi.stubEnv("MODE", "development");
+      vi.stubEnv("CI", "");
+    });
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+      if (prevVitest !== undefined) process.env.VITEST = prevVitest;
+      else delete process.env.VITEST;
+      if (prevCi !== undefined) process.env.CI = prevCi;
+      else delete process.env.CI;
+    });
+
+    it("swallows fetch errors from silent analytics", async () => {
+      const fetchSpy = vi.fn().mockRejectedValue(new Error("network"));
+      global.fetch = fetchSpy as unknown as typeof fetch;
+
+      vi.doMock("@/api/clients", () => ({
+        getApiClient: () => mockApiClient,
+      }));
+
+      mockApiClient.post.mockResolvedValue({
+        accessToken: "a",
+        refreshToken: "r",
+        expiresIn: 1,
+        tokenType: "Bearer",
+        user: { id: "1", email: "e", username: "u" } as User,
+      });
+
+      const { authService: svc } = await import("@/api/services/auth.service");
+
+      await expect(
+        svc.login({ email: "e@x.com", password: "p" }),
+      ).resolves.toMatchObject({ accessToken: "a" });
+
+      expect(fetchSpy).toHaveBeenCalled();
     });
   });
 });

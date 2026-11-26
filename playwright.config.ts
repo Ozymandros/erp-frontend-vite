@@ -117,8 +117,8 @@ export default defineConfig({
     /* Action timeout */
     actionTimeout: 15_000,
 
-    /* Collect trace when retrying the failed test */
-    trace: "on-first-retry",
+    /* Record a full browser trace; keep it only when the test fails (CI/local) */
+    trace: "retain-on-failure",
 
     /* Screenshot on failure */
     screenshot: "only-on-failure",

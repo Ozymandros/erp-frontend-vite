@@ -103,6 +103,10 @@ describe("InvoiceDetailPage", () => {
     expect(screen.getByRole("button", { name: /record payment/i })).toBeDisabled();
     expect(screen.getByRole("button", { name: /create credit note/i })).toBeDisabled();
     expect(screen.getByRole("button", { name: /cancel invoice/i })).toBeEnabled();
+    expect(screen.getByRole("link", { name: "o-1" })).toHaveAttribute(
+      "href",
+      "/sales/orders/o-1"
+    );
   });
 
   it("shows retry action when loading fails", async () => {

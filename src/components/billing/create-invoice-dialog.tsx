@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState, type FormEvent } from "react";
 import { customersService } from "@/api/services/customers.service";
 import { invoicesService } from "@/api/services/invoices.service";

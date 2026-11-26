@@ -1,5 +1,3 @@
-"use client"
-
 import { permissionsService } from "@/api/services/permissions.service"
 import type { Permission, QuerySpec } from "@/types/api.types"
 import { CreatePermissionDialog } from "@/components/permissions/create-permission-dialog"

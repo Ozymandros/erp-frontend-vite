@@ -7,10 +7,28 @@ import { formatDateTime, formatCurrency } from "@/lib/utils";
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 
-interface StatusConfig {
+export interface StatusConfig {
   readonly label: string;
   readonly variant: BadgeVariant;
 }
+
+export const SALES_ORDER_STATUS_MAP: Record<string, StatusConfig> = {
+  Draft: { label: "Draft", variant: "secondary" },
+  Quote: { label: "Quote", variant: "outline" },
+  Confirmed: { label: "Confirmed", variant: "default" },
+  Invoiced: { label: "Invoiced", variant: "default" },
+  Processing: { label: "Processing", variant: "default" },
+  Shipped: { label: "Shipped", variant: "default" },
+  Delivered: { label: "Delivered", variant: "default" },
+  Cancelled: { label: "Cancelled", variant: "destructive" },
+};
+
+export const PURCHASE_ORDER_MATCH_STATUS_MAP: Record<string, StatusConfig> = {
+  Unmatched: { label: "Unmatched", variant: "secondary" },
+  Partial: { label: "Partial", variant: "outline" },
+  Matched: { label: "Matched", variant: "default" },
+  Overbilled: { label: "Overbilled", variant: "destructive" },
+};
 
 /**
  * Generic status badge renderer
@@ -41,10 +59,10 @@ export function getOrderDateColumn<T extends { orderDate: string }>(): Column<T>
   };
 }
 
-export function getItemsCountColumn<T extends { orderLines?: readonly unknown[] }>(): Column<T> {
+export function getItemsCountColumn<T extends { lines?: readonly unknown[] }>(): Column<T> {
   return {
     header: "Items",
-    accessor: (order) => `${order.orderLines?.length || 0} items`,
+    accessor: (order) => `${order.lines?.length || 0} items`,
   };
 }
 

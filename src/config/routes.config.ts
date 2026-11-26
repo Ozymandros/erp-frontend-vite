@@ -75,6 +75,38 @@ export const ROUTE_PERMISSIONS: Record<string, RoutePermission> = {
     PERMISSION_MODULES.BILLING,
     PERMISSION_ACTIONS.READ
   ),
+
+  // Projects Management
+  "/projects": createPermission(PERMISSION_MODULES.PROJECTS, PERMISSION_ACTIONS.READ),
+  "/projects/:id": createPermission(PERMISSION_MODULES.PROJECTS, PERMISSION_ACTIONS.READ),
+  "/projects/resources": createPermission(PERMISSION_MODULES.PROJECTS, PERMISSION_ACTIONS.READ),
+  "/projects/resources/:id": createPermission(
+    PERMISSION_MODULES.PROJECTS,
+    PERMISSION_ACTIONS.READ
+  ),
+  "/projects/resource-groups": createPermission(
+    PERMISSION_MODULES.PROJECTS,
+    PERMISSION_ACTIONS.READ
+  ),
+  "/projects/resource-groups/:id": createPermission(
+    PERMISSION_MODULES.PROJECTS,
+    PERMISSION_ACTIONS.READ
+  ),
+  "/projects/currencies": createPermission(PERMISSION_MODULES.PROJECTS, PERMISSION_ACTIONS.READ),
+  "/projects/currencies/:code": createPermission(
+    PERMISSION_MODULES.PROJECTS,
+    PERMISSION_ACTIONS.READ
+  ),
+
+  // Audit
+  "/audit/entity-changes": createPermission(
+    PERMISSION_MODULES.AUDIT,
+    PERMISSION_ACTIONS.READ
+  ),
+  "/audit/entity-changes/:id": createPermission(
+    PERMISSION_MODULES.AUDIT,
+    PERMISSION_ACTIONS.READ
+  ),
 };
 
 /**
@@ -112,6 +144,18 @@ export const NAV_ITEMS_CONFIG: NavItemConfig[] = [
         href: "/permissions",
         icon: "Key",
         permission: createPermission(PERMISSION_MODULES.PERMISSIONS, PERMISSION_ACTIONS.READ),
+      },
+    ],
+  },
+  {
+    title: "Audit",
+    icon: "ScrollText",
+    children: [
+      {
+        title: "Audit Log",
+        href: "/audit/entity-changes",
+        icon: "ScrollText",
+        permission: createPermission(PERMISSION_MODULES.AUDIT, PERMISSION_ACTIONS.READ),
       },
     ],
   },
@@ -247,6 +291,36 @@ export const NAV_ITEMS_CONFIG: NavItemConfig[] = [
         href: "/crm/activities",
         icon: "FileText",
         permission: createPermission(PERMISSION_MODULES.CRM, PERMISSION_ACTIONS.READ),
+      },
+    ],
+  },
+  {
+    title: "Projects",
+    icon: "FolderKanban",
+    children: [
+      {
+        title: "Projects",
+        href: "/projects",
+        icon: "FolderKanban",
+        permission: createPermission(PERMISSION_MODULES.PROJECTS, PERMISSION_ACTIONS.READ),
+      },
+      {
+        title: "Resources",
+        href: "/projects/resources",
+        icon: "Users",
+        permission: createPermission(PERMISSION_MODULES.PROJECTS, PERMISSION_ACTIONS.READ),
+      },
+      {
+        title: "Resource Groups",
+        href: "/projects/resource-groups",
+        icon: "Package",
+        permission: createPermission(PERMISSION_MODULES.PROJECTS, PERMISSION_ACTIONS.READ),
+      },
+      {
+        title: "Currencies",
+        href: "/projects/currencies",
+        icon: "DollarSign",
+        permission: createPermission(PERMISSION_MODULES.PROJECTS, PERMISSION_ACTIONS.READ),
       },
     ],
   },

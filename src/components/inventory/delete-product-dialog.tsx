@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { productsService } from "@/api/services/products.service";
 import type { ProductDto } from "@/types/api.types";

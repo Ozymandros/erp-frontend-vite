@@ -1,5 +1,3 @@
-"use client"
-
 import { rolesService } from "@/api/services/roles.service"
 import type { Role, QuerySpec } from "@/types/api.types"
 import { CreateRoleDialog } from "@/components/roles/create-role-dialog"

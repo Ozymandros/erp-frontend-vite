@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { usersService } from "@/api/services/users.service"
 import type { User } from "@/types/api.types"

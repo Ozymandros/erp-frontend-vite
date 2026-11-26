@@ -24,9 +24,24 @@ export * from './customers.service'
 export * from './purchase-orders.service'
 export * from './suppliers.service'
 
+// Billing module
+export * from './supplier-invoices.service'
+
 // CRM module
 export * from './leads.service'
 export * from './crm-accounts.service'
 export * from './crm-contacts.service'
 export * from './crm-activities.service'
 export * from './crm-opportunities.service'
+
+// Audit module
+export * from './audit-entity-changes.service'
+
+// Projects module
+export * from './projects.service'
+export * from './project-tasks.service'
+export * from './project-planning-lines.service'
+export * from './project-posting.service'
+export * from './project-resources.service'
+export * from './project-resource-groups.service'
+export * from './project-currencies.service'

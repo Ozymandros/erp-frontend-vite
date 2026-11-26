@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Theme tokens (CSS custom properties)
+ * ------------------------------------
+ * Light: :root, .light, .light-theme
+ * Dark:  .dark, .dark-theme (applied by next-themes on <html class="...">)
+ *
+ * Use semantic Tailwind classes (bg-background, text-foreground) or
+ * hsl(var(--token)) in custom CSS — avoid hardcoded grays/whites.
+ */
+
 @layer base {
   :root,
   .light,
@@ -57,10 +67,11 @@
     @apply border-border;
   }
   
-  html {
+  html,
+  html.light {
     color-scheme: light;
   }
-  
+
   html.dark {
     color-scheme: dark;
   }

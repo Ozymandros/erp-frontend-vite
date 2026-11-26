@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect, useMemo, useRef } from "react"
 import { usersService } from "@/api/services/users.service"
 import { rolesService } from "@/api/services/roles.service"

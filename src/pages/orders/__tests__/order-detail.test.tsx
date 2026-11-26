@@ -30,7 +30,7 @@ const mockOrder: OrderDto = {
   orderDate: "2024-01-01T00:00:00Z",
   status: "Processing" as OrderStatus,
   totalAmount: 1500.00,
-  orderLines: [
+  lines: [
     {
       id: "line-1",
       productId: "product-1",

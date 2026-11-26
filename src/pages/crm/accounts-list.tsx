@@ -1,5 +1,3 @@
-"use client";
-
 import { useMemo } from "react";
 import type { AccountDto, QuerySpec } from "@/types/api.types";
 import { crmAccountsService } from "@/api/services/crm-accounts.service";

@@ -43,7 +43,13 @@ export const PURCHASING_SERVICE_BASE = "/purchasing/api/purchasing";
 export const CRM_SERVICE_BASE = "/crm/api/crm";
 
 /** Billing service gateway upstream: /billing/api/billing/ → routes to /api/ */
-export const BILLING_SERVICE_BASE = "/api/billing";
+export const BILLING_SERVICE_BASE = "/billing/api/billing";
+
+/** Audit service gateway upstream: /audit/api/audit/ → routes to /api/audit/ */
+export const AUDIT_SERVICE_BASE = "/audit/api/audit";
+
+/** Projects service gateway upstream: /projects/api/projects/ → routes to /api/projects/ */
+export const PROJECTS_SERVICE_BASE = "/projects/api/projects";
 
 // ==================== AUTH MODULE ENDPOINTS ====================
 
@@ -196,6 +202,7 @@ export const SALES_ORDERS_ENDPOINTS = {
   CHECK_AVAILABILITY: `${SALES_SERVICE_BASE}/orders/quotes/check-availability`,
   EXPORT_XLSX: `${SALES_SERVICE_BASE}/orders/export-xlsx`,
   EXPORT_PDF: `${SALES_SERVICE_BASE}/orders/export-pdf`,
+  CREATE_RETURN: (id: string) => `${SALES_SERVICE_BASE}/orders/${id}/returns`,
 } as const;
 
 export const CUSTOMERS_ENDPOINTS = {
@@ -222,6 +229,7 @@ export const PURCHASE_ORDERS_ENDPOINTS = {
     `${PURCHASING_SERVICE_BASE}/orders/${id}/status/${status}`,
   APPROVE: (id: string) => `${PURCHASING_SERVICE_BASE}/orders/${id}/approve`,
   RECEIVE: (id: string) => `${PURCHASING_SERVICE_BASE}/orders/${id}/receive`,
+  MATCH: (id: string) => `${PURCHASING_SERVICE_BASE}/orders/${id}/match`,
   EXPORT_XLSX: `${PURCHASING_SERVICE_BASE}/orders/export-xlsx`,
   EXPORT_PDF: `${PURCHASING_SERVICE_BASE}/orders/export-pdf`,
 } as const;
@@ -319,4 +327,93 @@ export const PAYMENTS_ENDPOINTS = {
 export const CREDIT_NOTES_ENDPOINTS = {
   BY_INVOICE: (invoiceId: string) =>
     `${BILLING_SERVICE_BASE}/credit-notes/invoice/${invoiceId}`,
+} as const;
+
+export const SUPPLIER_INVOICES_ENDPOINTS = {
+  BASE: `${BILLING_SERVICE_BASE}/supplier-invoices`,
+  BY_ID: (id: string) => `${BILLING_SERVICE_BASE}/supplier-invoices/${id}`,
+  BY_PO: (purchaseOrderId: string) =>
+    `${BILLING_SERVICE_BASE}/supplier-invoices/by-purchase-order/${purchaseOrderId}`,
+} as const;
+
+// ==================== AUDIT MODULE ENDPOINTS ====================
+
+export const AUDIT_ENDPOINTS = {
+  ENTITY_CHANGES: `${AUDIT_SERVICE_BASE}/entity-changes`,
+  BY_ID: (id: string) => `${AUDIT_SERVICE_BASE}/entity-changes/${id}`,
+  BY_ENTITY: (entityName: string, entityId: string) =>
+    `${AUDIT_SERVICE_BASE}/entity-changes/by-entity/${encodeURIComponent(entityName)}/${entityId}`,
+} as const;
+
+// ==================== PROJECTS MODULE ENDPOINTS ====================
+
+export const PROJECTS_ENDPOINTS = {
+  BASE: `${PROJECTS_SERVICE_BASE}`,
+  BY_ID: (id: string) => `${PROJECTS_SERVICE_BASE}/${id}`,
+  BY_NUMBER: (projectNumber: string) =>
+    `${PROJECTS_SERVICE_BASE}/number/${encodeURIComponent(projectNumber)}`,
+  STATUS: (id: string) => `${PROJECTS_SERVICE_BASE}/${id}/status`,
+  COPY: (id: string) => `${PROJECTS_SERVICE_BASE}/${id}/copy`,
+  STATISTICS: (id: string) => `${PROJECTS_SERVICE_BASE}/${id}/statistics`,
+  EXPORT_XLSX: `${PROJECTS_SERVICE_BASE}/export-xlsx`,
+  EXPORT_PDF: `${PROJECTS_SERVICE_BASE}/export-pdf`,
+} as const;
+
+export const projectTasksEndpoints = (projectId: string) =>
+  ({
+    BASE: `${PROJECTS_SERVICE_BASE}/${projectId}/tasks`,
+    TREE: `${PROJECTS_SERVICE_BASE}/${projectId}/tasks/tree`,
+    BY_ID: (taskId: string) =>
+      `${PROJECTS_SERVICE_BASE}/${projectId}/tasks/${taskId}`,
+    MOVE: (taskId: string) =>
+      `${PROJECTS_SERVICE_BASE}/${projectId}/tasks/${taskId}/move`,
+    EXPORT_XLSX: `${PROJECTS_SERVICE_BASE}/${projectId}/tasks/export-xlsx`,
+    EXPORT_PDF: `${PROJECTS_SERVICE_BASE}/${projectId}/tasks/export-pdf`,
+  }) as const;
+
+export const projectPlanningLinesEndpoints = (projectId: string) =>
+  ({
+    BASE: `${PROJECTS_SERVICE_BASE}/${projectId}/planning-lines`,
+    BY_ID: (lineId: string) =>
+      `${PROJECTS_SERVICE_BASE}/${projectId}/planning-lines/${lineId}`,
+    EXPORT_XLSX: `${PROJECTS_SERVICE_BASE}/${projectId}/planning-lines/export-xlsx`,
+    EXPORT_PDF: `${PROJECTS_SERVICE_BASE}/${projectId}/planning-lines/export-pdf`,
+  }) as const;
+
+export const projectPostingEndpoints = (projectId: string) =>
+  ({
+    LEDGER: `${PROJECTS_SERVICE_BASE}/${projectId}/ledger-entries`,
+    LEDGER_EXPORT_XLSX: `${PROJECTS_SERVICE_BASE}/${projectId}/ledger-entries/export-xlsx`,
+    LEDGER_EXPORT_PDF: `${PROJECTS_SERVICE_BASE}/${projectId}/ledger-entries/export-pdf`,
+    USAGE: `${PROJECTS_SERVICE_BASE}/${projectId}/usage`,
+    ITEM_CONSUMPTION: `${PROJECTS_SERVICE_BASE}/${projectId}/item-consumption`,
+    INVOICE_REQUESTS: `${PROJECTS_SERVICE_BASE}/${projectId}/invoice-requests`,
+  }) as const;
+
+export const PROJECT_RESOURCES_ENDPOINTS = {
+  BASE: `${PROJECTS_SERVICE_BASE}/resources`,
+  BY_ID: (id: string) => `${PROJECTS_SERVICE_BASE}/resources/${id}`,
+  EXPORT_XLSX: `${PROJECTS_SERVICE_BASE}/resources/export-xlsx`,
+  EXPORT_PDF: `${PROJECTS_SERVICE_BASE}/resources/export-pdf`,
+} as const;
+
+export const PROJECT_RESOURCE_GROUPS_ENDPOINTS = {
+  BASE: `${PROJECTS_SERVICE_BASE}/resource-groups`,
+  BY_ID: (id: string) => `${PROJECTS_SERVICE_BASE}/resource-groups/${id}`,
+  EXPORT_XLSX: `${PROJECTS_SERVICE_BASE}/resource-groups/export-xlsx`,
+  EXPORT_PDF: `${PROJECTS_SERVICE_BASE}/resource-groups/export-pdf`,
+} as const;
+
+export const PROJECT_CURRENCIES_ENDPOINTS = {
+  BASE: `${PROJECTS_SERVICE_BASE}/currencies`,
+  BY_CODE: (code: string) =>
+    `${PROJECTS_SERVICE_BASE}/currencies/${encodeURIComponent(code)}`,
+  RATE: (code: string) =>
+    `${PROJECTS_SERVICE_BASE}/currencies/${encodeURIComponent(code)}/rate`,
+  EXCHANGE_RATES: (code: string) =>
+    `${PROJECTS_SERVICE_BASE}/currencies/${encodeURIComponent(code)}/exchange-rates`,
+  EXCHANGE_RATE_BY_ID: (code: string, rateId: string) =>
+    `${PROJECTS_SERVICE_BASE}/currencies/${encodeURIComponent(code)}/exchange-rates/${rateId}`,
+  EXPORT_XLSX: `${PROJECTS_SERVICE_BASE}/currencies/export-xlsx`,
+  EXPORT_PDF: `${PROJECTS_SERVICE_BASE}/currencies/export-pdf`,
 } as const;

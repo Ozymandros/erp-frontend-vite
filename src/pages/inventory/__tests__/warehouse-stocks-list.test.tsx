@@ -95,7 +95,8 @@ describe("WarehouseStocksListPage", () => {
       </MemoryRouter>
     );
 
-    const productSelect = await screen.findByLabelText("Filter by product");
+    await screen.findByRole("option", { name: "Laptop" });
+    const productSelect = screen.getByLabelText("Filter by product");
     await userEvent.selectOptions(productSelect, "prod-1");
 
     await waitFor(() => {
@@ -113,7 +114,8 @@ describe("WarehouseStocksListPage", () => {
       </MemoryRouter>
     );
 
-    const warehouseSelect = await screen.findByLabelText("Filter by warehouse");
+    await screen.findByRole("option", { name: "Main Warehouse" });
+    const warehouseSelect = screen.getByLabelText("Filter by warehouse");
     await userEvent.selectOptions(warehouseSelect, "wh-1");
 
     await waitFor(() => {

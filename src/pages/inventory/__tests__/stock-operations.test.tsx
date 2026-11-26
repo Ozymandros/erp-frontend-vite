@@ -33,7 +33,7 @@ const mockWarehouses = [
   { id: "w1", name: "Warehouse 1", location: "Loc A", createdAt: "2024-01-01T00:00:00Z", createdBy: "admin" },
 ];
 const mockOrders = [
-  { id: "o1", orderNumber: "ORD-001", status: OrderStatus.Pending, orderDate: "2024-01-01", customerId: "c1", orderLines: [], totalAmount: 0, createdAt: "2024-01-01T00:00:00Z", createdBy: "admin" },
+  { id: "o1", orderNumber: "ORD-001", status: OrderStatus.Pending, orderDate: "2024-01-01", customerId: "c1", lines: [], totalAmount: 0, createdAt: "2024-01-01T00:00:00Z", createdBy: "admin" },
 ];
 
 describe("StockOperationsPage", () => {

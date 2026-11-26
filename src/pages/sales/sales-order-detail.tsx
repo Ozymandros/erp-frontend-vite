@@ -1,9 +1,10 @@
-"use client";
-
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { salesOrdersService } from "@/api/services/sales-orders.service";
-import type { SalesOrderDto } from "@/types/api.types";
+import { invoicesService } from "@/api/services/invoices.service";
+import type { InvoiceDto, SalesOrderDto } from "@/types/api.types";
+import { SalesOrderStatus } from "@/types/api.types";
+import { CreateSalesReturnDialog } from "@/components/sales/create-sales-return-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,7 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -24,12 +24,20 @@ import {
 import { ArrowLeft, Calendar, User, FileText, CreditCard } from "lucide-react";
 import { formatDateTime, formatCurrency } from "@/lib/utils";
 import { handleApiError, getErrorMessage } from "@/lib/error-handling";
+import {
+  getStatusBadge,
+  SALES_ORDER_STATUS_MAP,
+} from "@/lib/order-columns.utils";
+import { useModulePermissions } from "@/hooks/use-permissions";
 
 export function SalesOrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [order, setOrder] = useState<SalesOrderDto | null>(null);
+  const [linkedInvoices, setLinkedInvoices] = useState<InvoiceDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isReturnOpen, setIsReturnOpen] = useState(false);
+  const { canCreate, canUpdate } = useModulePermissions("sales");
 
   const fetchOrder = useCallback(async () => {
     if (!id) return;
@@ -37,10 +45,14 @@ export function SalesOrderDetailPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await salesOrdersService.getSalesOrderById(id);
-      setOrder(data);
-    } catch (error: unknown) {
-      const apiError = handleApiError(error);
+      const [orderData, invoicesData] = await Promise.all([
+        salesOrdersService.getSalesOrderById(id),
+        invoicesService.getInvoicesByOrder(id),
+      ]);
+      setOrder(orderData);
+      setLinkedInvoices(invoicesData);
+    } catch (loadError: unknown) {
+      const apiError = handleApiError(loadError);
       setError(getErrorMessage(apiError, "Failed to fetch sales order details"));
     } finally {
       setIsLoading(false);
@@ -48,25 +60,8 @@ export function SalesOrderDetailPage() {
   }, [id]);
 
   useEffect(() => {
-    fetchOrder();
+    void fetchOrder();
   }, [fetchOrder]);
-
-  const getStatusBadge = (status: string) => {
-    const statusMap: Record<
-      string,
-      { label: string; variant: "default" | "secondary" | "destructive" | "outline" }
-    > = {
-      Draft: { label: "Draft", variant: "secondary" },
-      Quote: { label: "Quote", variant: "outline" },
-      Confirmed: { label: "Confirmed", variant: "default" },
-      Processing: { label: "Processing", variant: "default" },
-      Shipped: { label: "Shipped", variant: "default" },
-      Delivered: { label: "Delivered", variant: "default" },
-      Cancelled: { label: "Cancelled", variant: "destructive" },
-    };
-    const statusInfo = statusMap[status] || { label: status, variant: "secondary" };
-    return <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>;
-  };
 
   if (isLoading) {
     return (
@@ -80,7 +75,7 @@ export function SalesOrderDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center space-y-4 py-8">
         <p className="text-red-500">{error}</p>
-        <Button variant="outline" onClick={fetchOrder}>
+        <Button variant="outline" onClick={() => void fetchOrder()}>
           Try Again
         </Button>
         <Link to="/sales/orders">
@@ -102,6 +97,11 @@ export function SalesOrderDetailPage() {
   }
 
   const customerName = order.customer?.name || "Unknown Customer";
+  const canCreateReturn =
+    (canCreate || canUpdate) &&
+    !order.returnOrderId &&
+    (order.status === SalesOrderStatus.Shipped ||
+      order.status === SalesOrderStatus.Invoiced);
 
   return (
     <div className="space-y-6">
@@ -114,7 +114,16 @@ export function SalesOrderDetailPage() {
         <h1 className="text-2xl font-bold tracking-tight">
           Sales Order {order.orderNumber}
         </h1>
-        {getStatusBadge(order.status)}
+        {getStatusBadge(order.status, SALES_ORDER_STATUS_MAP)}
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        <Button
+          onClick={() => setIsReturnOpen(true)}
+          disabled={!canCreateReturn}
+        >
+          Create Return
+        </Button>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
@@ -147,6 +156,17 @@ export function SalesOrderDetailPage() {
                   <p>{order.quoteExpiryDate ? formatDateTime(order.quoteExpiryDate) : "-"}</p>
                 </div>
               )}
+              {order.returnOrderId ? (
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Return Order</p>
+                  <Link
+                    to={`/sales/orders/${order.returnOrderId}`}
+                    className="text-primary underline-offset-4 hover:underline"
+                  >
+                    {order.returnOrderId}
+                  </Link>
+                </div>
+              ) : null}
             </div>
           </CardContent>
         </Card>
@@ -169,7 +189,7 @@ export function SalesOrderDetailPage() {
                 <p>{order.customer.email}</p>
               </div>
             )}
-             {order.customer?.phoneNumber && (
+            {order.customer?.phoneNumber && (
               <div className="space-y-1">
                 <p className="text-sm font-medium text-muted-foreground">Phone</p>
                 <p>{order.customer.phoneNumber}</p>
@@ -181,9 +201,53 @@ export function SalesOrderDetailPage() {
 
       <Card>
         <CardHeader>
+          <CardTitle>Linked Invoices</CardTitle>
+          <CardDescription>
+            {linkedInvoices.length} invoice(s) linked to this order
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {linkedInvoices.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No linked invoices yet.</p>
+          ) : (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Invoice</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Total</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {linkedInvoices.map((invoice) => (
+                    <TableRow key={invoice.id}>
+                      <TableCell>
+                        <Link
+                          to={`/billing/invoices/${invoice.id}`}
+                          className="font-medium text-primary underline-offset-4 hover:underline"
+                        >
+                          {invoice.invoiceNumber}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{invoice.status}</TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(invoice.totalGross)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Order Items</CardTitle>
           <CardDescription>
-            {order.orderLines?.length || 0} items in this order
+            {order.lines?.length || 0} items in this order
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -198,21 +262,14 @@ export function SalesOrderDetailPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {order.orderLines?.map((line) => (
+                {order.lines?.map((line) => (
                   <TableRow key={line.id}>
-                    <TableCell className="font-medium">
-                       {/* Ideally we would have product name here, but line might only have productId 
-                           depending on DTO. Assuming productId is what we have unless populated. 
-                           Actually, SalesOrderLineDto usually just has productId. 
-                           If we want names, we would need to fetch products or DTO should include ProductDto.
-                           Checking DTO again... SalesOrderLineDto has 'productId'. 
-                           For now, we display productId. Detailed implementation would fetch product names.
-                       */}
-                      {line.productId}
-                    </TableCell>
+                    <TableCell className="font-medium">{line.productId}</TableCell>
                     <TableCell className="text-right">{line.quantity}</TableCell>
                     <TableCell className="text-right">{formatCurrency(line.unitPrice)}</TableCell>
-                    <TableCell className="text-right font-medium">{formatCurrency(line.lineTotal)}</TableCell>
+                    <TableCell className="text-right font-medium">
+                      {formatCurrency(line.lineTotal)}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -220,6 +277,13 @@ export function SalesOrderDetailPage() {
           </div>
         </CardContent>
       </Card>
+
+      <CreateSalesReturnDialog
+        open={isReturnOpen}
+        order={order}
+        onOpenChange={setIsReturnOpen}
+        onSuccess={() => void fetchOrder()}
+      />
     </div>
   );
 }

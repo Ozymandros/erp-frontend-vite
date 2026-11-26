@@ -460,15 +460,15 @@ export class OrderDto extends AuditableGuidDto {
   public status!: OrderStatus;
   public orderDate!: string;
   public customerId!: string;
-  public orderLines: OrderLineDto[] = [];
+  public lines: OrderLineDto[] = [];
   public totalAmount!: number;
 
   constructor(data?: Partial<OrderDto>) {
     super(data);
     if (data) {
       Object.assign(this, data);
-      if (data.orderLines) {
-        this.orderLines = data.orderLines.map(l => new OrderLineDto(l));
+      if (data.lines) {
+        this.lines = data.lines.map(l => new OrderLineDto(l));
       }
     }
   }
@@ -476,13 +476,13 @@ export class OrderDto extends AuditableGuidDto {
 
 export interface CreateUpdateOrderDto {
   customerId: string;
-  orderLines: CreateUpdateOrderLineDto[];
+  lines: CreateUpdateOrderLineDto[];
   orderDate: string;
 }
 
 export interface CreateOrderWithReservationDto {
   customerId: string;
-  orderLines: CreateUpdateOrderLineDto[];
+  lines: CreateUpdateOrderLineDto[];
   orderDate: string;
 }
 
@@ -522,11 +522,12 @@ export class SalesOrderDto extends AuditableGuidDto {
   public status!: SalesOrderStatus;
   public orderDate!: string;
   public totalAmount!: number;
-  public orderLines: SalesOrderLineDto[] = [];
+  public lines: SalesOrderLineDto[] = [];
   // Quote tracking fields
   public isQuote: boolean = false;
   public quoteExpiryDate?: string;
   public convertedToOrderId?: string;
+  public returnOrderId?: string | null;
   // Navigation properties
   public customer?: CustomerDto;
 
@@ -534,8 +535,8 @@ export class SalesOrderDto extends AuditableGuidDto {
     super(data);
     if (data) {
       Object.assign(this, data);
-      if (data.orderLines) {
-        this.orderLines = data.orderLines.map(l => new SalesOrderLineDto(l));
+      if (data.lines) {
+        this.lines = data.lines.map(l => new SalesOrderLineDto(l));
       }
     }
   }
@@ -546,7 +547,7 @@ export interface CreateUpdateSalesOrderDto {
   orderDate: string;
   status?: number;
   totalAmount?: number;
-  orderLines: CreateUpdateSalesOrderLineDto[];
+  lines: CreateUpdateSalesOrderLineDto[];
 }
 
 export class SalesOrderLineDto extends AuditableGuidDto {
@@ -572,7 +573,7 @@ export interface CreateQuoteDto {
   customerId: string;
   orderDate: string;
   validityDays?: number;
-  orderLines: CreateUpdateSalesOrderLineDto[];
+  lines: CreateUpdateSalesOrderLineDto[];
 }
 
 export interface ConfirmQuoteDto {
@@ -584,6 +585,16 @@ export interface ConfirmQuoteDto {
 export interface ConfirmQuoteResponseDto {
   convertedToOrderId: string;
   salesOrder: SalesOrderDto;
+}
+
+export interface CreateSalesReturnLineDto {
+  productId: string;
+  quantity: number;
+}
+
+export interface CreateSalesReturnDto {
+  warehouseId: string;
+  lines: CreateSalesReturnLineDto[];
 }
 
 export interface StockAvailabilityCheckDto {
@@ -628,7 +639,9 @@ export class PurchaseOrderDto extends AuditableGuidDto {
   public orderDate!: string;
   public expectedDeliveryDate?: string;
   public totalAmount!: number;
-  public orderLines: PurchaseOrderLineDto[] = [];
+  public lines: PurchaseOrderLineDto[] = [];
+  public matchStatus?: PurchaseOrderMatchStatus;
+  public matchedAt?: string;
   // Navigation properties
   public supplier?: SupplierDto;
 
@@ -636,8 +649,8 @@ export class PurchaseOrderDto extends AuditableGuidDto {
     super(data);
     if (data) {
       Object.assign(this, data);
-      if (data.orderLines) {
-        this.orderLines = data.orderLines.map(l => new PurchaseOrderLineDto(l));
+      if (data.lines) {
+        this.lines = data.lines.map(l => new PurchaseOrderLineDto(l));
       }
     }
   }
@@ -649,7 +662,7 @@ export interface CreateUpdatePurchaseOrderDto {
   expectedDeliveryDate?: string;
   status?: number;
   totalAmount?: number;
-  orderLines: CreateUpdatePurchaseOrderLineDto[];
+  lines: CreateUpdatePurchaseOrderLineDto[];
 }
 
 export class PurchaseOrderLineDto extends AuditableGuidDto {
@@ -688,6 +701,20 @@ export interface ReceivePurchaseOrderLineDto {
   purchaseOrderLineId: string;
   receivedQuantity: number;
   notes?: string;
+}
+
+export enum PurchaseOrderMatchStatus {
+  Unmatched = "Unmatched",
+  Partial = "Partial",
+  Matched = "Matched",
+  Overbilled = "Overbilled",
+}
+
+export interface PurchaseOrderMatchResultDto {
+  purchaseOrderId: string;
+  matchStatus: PurchaseOrderMatchStatus;
+  matchedAt?: string;
+  summary: string;
 }
 
 export class SupplierDto extends AuditableGuidDto {
@@ -1019,6 +1046,42 @@ export interface CancelInvoiceRequest {
   reason: string;
 }
 
+export interface CreateSupplierInvoiceLineDto {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+}
+
+export interface CreateSupplierInvoiceDto {
+  purchaseOrderId: string;
+  supplierId: string;
+  invoiceNumber: string;
+  invoiceDate: string;
+  currency: string;
+  lines: CreateSupplierInvoiceLineDto[];
+}
+
+export interface SupplierInvoiceLineDto {
+  id: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+}
+
+export interface SupplierInvoiceDto {
+  id: string;
+  purchaseOrderId: string;
+  supplierId: string;
+  invoiceNumber: string;
+  invoiceDate: string;
+  currency: string;
+  totalAmount: number;
+  lines: SupplierInvoiceLineDto[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface RecordPaymentDto {
   amount: number;
   method: string;
@@ -1060,6 +1123,29 @@ export interface CreditNoteDto {
   createdAt: string;
 }
 
+// ==================== AUDIT MODULE ====================
+
+export interface PropertyChangeDto {
+  id: string;
+  propertyName: string;
+  originalValue: string | null;
+  newValue: string | null;
+}
+
+export interface EntityChangeDto {
+  id: string;
+  entityName: string;
+  entityId: string;
+  changeType: string;
+  originalValue: string | null;
+  newValue: string | null;
+  createdAt: string;
+  createdBy: string;
+  updatedAt: string;
+  updatedBy: string | null;
+  propertyChanges: PropertyChangeDto[];
+}
+
 // ==================== ENUMS ====================
 
 export enum TransactionType {
@@ -1085,6 +1171,7 @@ export enum SalesOrderStatus {
   Draft = "Draft",
   Quote = "Quote",
   Confirmed = "Confirmed",
+  Invoiced = "Invoiced",
   Processing = "Processing",
   Shipped = "Shipped",
   Delivered = "Delivered",
@@ -1108,4 +1195,394 @@ export enum AdjustmentType {
   Lost = "Lost",
   Damaged = "Damaged",
   Expired = "Expired",
+}
+
+// ==================== PROJECTS MODULE ====================
+
+export enum ProjectStatus {
+  Planning = 0,
+  Quote = 1,
+  Open = 2,
+  Completed = 3,
+}
+
+export enum ProjectBlocked {
+  None = 0,
+  Posting = 1,
+  All = 2,
+}
+
+export enum ProjectTaskType {
+  Posting = 0,
+  Heading = 1,
+}
+
+export enum PlanningLineType {
+  Budget = 0,
+  Billable = 1,
+  BudgetAndBillable = 2,
+}
+
+export enum ProjectLineKind {
+  Resource = 0,
+  Item = 1,
+  Expense = 2,
+  Text = 3,
+}
+
+export enum ResourceType {
+  Person = 0,
+  Machine = 1,
+}
+
+export enum ProjectLedgerEntryType {
+  Usage = 0,
+  Sale = 1,
+}
+
+export enum ProjectSourceDocument {
+  Manual = 0,
+  ConsumptionOrder = 1,
+  Invoice = 2,
+}
+
+export enum ProjectInvoiceRequestStatus {
+  Requested = 0,
+  Drafted = 1,
+  Invoiced = 2,
+  Cancelled = 3,
+}
+
+export enum ProjectConsumptionStatus {
+  Pending = 0,
+  Fulfilled = 1,
+  Cancelled = 2,
+}
+
+export interface ProjectDto extends IAuditableDto<string> {
+  id: string;
+  projectNumber: string;
+  description: string;
+  customerId: string;
+  projectManagerUserId?: string;
+  status: string;
+  blocked: string;
+  startingDate?: string;
+  endingDate?: string;
+  currencyCode: string;
+  externalReference?: string;
+}
+
+export interface CreateProjectDto {
+  description: string;
+  customerId: string;
+  projectManagerUserId?: string;
+  startingDate?: string;
+  endingDate?: string;
+  currencyCode?: string;
+  externalReference?: string;
+}
+
+export interface UpdateProjectDto {
+  description: string;
+  customerId: string;
+  projectManagerUserId?: string;
+  startingDate?: string;
+  endingDate?: string;
+  currencyCode: string;
+  blocked: ProjectBlocked;
+  externalReference?: string;
+}
+
+export interface ChangeProjectStatusDto {
+  status: ProjectStatus;
+}
+
+export interface CopyProjectDto {
+  description?: string;
+  customerId?: string;
+  includePlanningLines?: boolean;
+}
+
+export interface ProjectAmountsDto {
+  budgetCostLcy: number;
+  budgetPrice: number;
+  billablePrice: number;
+  usageCostLcy: number;
+  usagePrice: number;
+  invoicedPrice: number;
+  invoicedPriceLcy: number;
+  remainingBudgetCostLcy?: number;
+  profitLcy?: number;
+}
+
+export interface TaskStatisticsDto {
+  taskId: string;
+  parentTaskId?: string;
+  taskNo: string;
+  description: string;
+  taskType: string;
+  amounts: ProjectAmountsDto;
+}
+
+export interface ProjectStatisticsDto {
+  projectId: string;
+  currencyCode: string;
+  localCurrency: string;
+  totals: ProjectAmountsDto;
+  tasks: TaskStatisticsDto[];
+}
+
+export interface ProjectTaskDto extends IAuditableDto<string> {
+  id: string;
+  projectId: string;
+  parentTaskId?: string;
+  taskNo: string;
+  description: string;
+  taskType: string;
+  sortOrder: number;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface ProjectTaskTreeNodeDto {
+  task: ProjectTaskDto;
+  level: number;
+  children: ProjectTaskTreeNodeDto[];
+}
+
+export interface CreateProjectTaskDto {
+  parentTaskId?: string;
+  taskNo: string;
+  description: string;
+  taskType?: ProjectTaskType;
+  sortOrder?: number;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface UpdateProjectTaskDto {
+  taskNo: string;
+  description: string;
+  taskType?: ProjectTaskType;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface MoveProjectTaskDto {
+  newParentTaskId?: string;
+  sortOrder?: number;
+}
+
+export interface PlanningLineDto extends IAuditableDto<string> {
+  id: string;
+  projectId: string;
+  projectTaskId: string;
+  lineNo: number;
+  lineType: string;
+  kind: string;
+  resourceId?: string;
+  productId?: string;
+  warehouseId?: string;
+  description: string;
+  unitOfMeasure?: string;
+  planningDate: string;
+  quantity: number;
+  unitCostLcy: number;
+  unitPrice: number;
+  lineDiscountPercent: number;
+  currencyCode: string;
+  exchangeRate: number;
+  totalCostLcy: number;
+  lineAmount: number;
+  lineAmountLcy: number;
+  quantityPosted: number;
+  quantityInConsumption: number;
+  quantityTransferredToInvoice: number;
+  quantityInvoiced: number;
+  quantityToInvoice: number;
+  remainingQuantity: number;
+}
+
+export interface CreateUpdatePlanningLineDto {
+  projectTaskId: string;
+  lineType?: PlanningLineType;
+  kind?: ProjectLineKind;
+  resourceId?: string;
+  productId?: string;
+  warehouseId?: string;
+  description?: string;
+  unitOfMeasure?: string;
+  planningDate?: string;
+  quantity: number;
+  unitCostLcy?: number;
+  unitPrice?: number;
+  lineDiscountPercent?: number;
+}
+
+export interface ProjectLedgerEntryDto extends IAuditableDto<string> {
+  id: string;
+  entryNo: number;
+  entryType: string;
+  postingDate: string;
+  projectId: string;
+  projectTaskId: string;
+  planningLineId?: string;
+  kind: string;
+  resourceId?: string;
+  productId?: string;
+  description: string;
+  quantity: number;
+  unitCostLcy: number;
+  totalCostLcy: number;
+  unitPrice: number;
+  lineAmount: number;
+  lineAmountLcy: number;
+  currencyCode: string;
+  exchangeRate: number;
+  sourceDocument: string;
+  sourceDocumentId?: string;
+  sourceDocumentNo?: string;
+}
+
+export interface PostUsageDto {
+  projectTaskId: string;
+  planningLineId?: string;
+  kind?: ProjectLineKind;
+  resourceId?: string;
+  description?: string;
+  quantity: number;
+  unitCostLcy?: number;
+  unitPrice?: number;
+  postingDate?: string;
+}
+
+export interface ItemConsumptionLineDto {
+  planningLineId: string;
+  quantity: number;
+}
+
+export interface CreateItemConsumptionDto {
+  warehouseId: string;
+  postingDate?: string;
+  destinationAddress?: string;
+  lines: ItemConsumptionLineDto[];
+}
+
+export interface ConsumptionOrderLineDto extends IAuditableDto<string> {
+  id: string;
+  planningLineId: string;
+  productId: string;
+  quantity: number;
+}
+
+export interface ConsumptionOrderDto extends IAuditableDto<string> {
+  id: string;
+  projectId: string;
+  orderId: string;
+  orderNumber: string;
+  warehouseId: string;
+  status: string;
+  postingDate: string;
+  lines: ConsumptionOrderLineDto[];
+}
+
+export interface InvoiceRequestLineInputDto {
+  planningLineId: string;
+  quantity?: number;
+}
+
+export interface CreateInvoiceRequestDto {
+  lines?: InvoiceRequestLineInputDto[];
+  taxRate: number;
+}
+
+export interface InvoiceRequestLineDto extends IAuditableDto<string> {
+  id: string;
+  planningLineId: string;
+  projectTaskId: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  taxRate: number;
+  lineAmount: number;
+}
+
+export interface InvoiceRequestDto extends IAuditableDto<string> {
+  id: string;
+  projectId: string;
+  customerId: string;
+  currencyCode: string;
+  status: string;
+  requestedAt: string;
+  invoiceId?: string;
+  invoiceNumber?: string;
+  totalAmount: number;
+  lines: InvoiceRequestLineDto[];
+}
+
+export interface ResourceDto extends IAuditableDto<string> {
+  id: string;
+  resourceNo: string;
+  name: string;
+  type: string;
+  resourceGroupId?: string;
+  resourceGroupCode?: string;
+  userId?: string;
+  baseUnitOfMeasure: string;
+  unitCost: number;
+  unitPrice: number;
+  dailyCapacity: number;
+  blocked: boolean;
+}
+
+export interface CreateUpdateResourceDto {
+  resourceNo: string;
+  name: string;
+  type?: ResourceType;
+  resourceGroupId?: string;
+  userId?: string;
+  baseUnitOfMeasure: string;
+  unitCost?: number;
+  unitPrice?: number;
+  dailyCapacity?: number;
+  blocked?: boolean;
+}
+
+export interface ResourceGroupDto extends IAuditableDto<string> {
+  id: string;
+  code: string;
+  name: string;
+}
+
+export interface CreateUpdateResourceGroupDto {
+  code: string;
+  name: string;
+}
+
+export interface ExchangeRateDto extends IAuditableDto<string> {
+  id: string;
+  currencyId: string;
+  startingDate: string;
+  rateToLocal: number;
+}
+
+export interface ProjectCurrencyDto extends IAuditableDto<string> {
+  id: string;
+  code: string;
+  description: string;
+  symbol?: string;
+  isLocalCurrency: boolean;
+  exchangeRates: ExchangeRateDto[];
+}
+
+export interface CreateUpdateCurrencyDto {
+  code: string;
+  description: string;
+  symbol?: string;
+}
+
+export interface CreateExchangeRateDto {
+  startingDate: string;
+  rateToLocal: number;
 }

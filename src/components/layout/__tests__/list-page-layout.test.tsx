@@ -34,6 +34,15 @@ const mockColumns: Column<TestItem>[] = [
   { accessor: 'name' as const, header: 'Name' },
 ];
 
+const sortableColumns: Column<TestItem>[] = [
+  {
+    accessor: 'name' as const,
+    header: 'Sortable name',
+    sortable: true,
+    sortField: 'name',
+  },
+];
+
 describe('ListPageLayout', () => {
   it('should render title and description', () => {
     render(
@@ -208,5 +217,146 @@ describe('ListPageLayout', () => {
     await user.click(xlsxButton);
 
     expect(mockOnExport).toHaveBeenCalledWith('xlsx');
+  });
+
+  it("paginates with Previous and Next", async () => {
+    const user = userEvent.setup();
+    const onPageChange = vi.fn();
+    const pagedData: PaginatedResponse<TestItem> = {
+      items: [{ id: "3", name: "Item 3" }],
+      total: 25,
+      page: 2,
+      pageSize: 10,
+      totalPages: 3,
+      hasPreviousPage: true,
+      hasNextPage: true,
+    };
+
+    render(
+      <ListPageLayout
+        title="Test Items"
+        description="Manage test items"
+        resourceName="items"
+        data={pagedData}
+        isLoading={false}
+        error={null}
+        querySpec={{
+          page: 2,
+          pageSize: 10,
+          searchTerm: "",
+          sortBy: "name",
+          sortDesc: false,
+        }}
+        onSearch={vi.fn()}
+        onSort={vi.fn()}
+        onPageChange={onPageChange}
+        columns={mockColumns}
+        cardTitle="Items List"
+        cardDescription="Page 2"
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: /^previous$/i }));
+    expect(onPageChange).toHaveBeenCalledWith(1);
+
+    await user.click(screen.getByRole("button", { name: /^next$/i }));
+    expect(onPageChange).toHaveBeenCalledWith(3);
+  });
+
+  it("calls onSort when clicking a sortable column header", async () => {
+    const user = userEvent.setup();
+    const onSort = vi.fn();
+    render(
+      <ListPageLayout
+        title="Test Items"
+        description="Manage test items"
+        resourceName="items"
+        data={mockData}
+        isLoading={false}
+        error={null}
+        querySpec={mockQuerySpec}
+        onSearch={vi.fn()}
+        onSort={onSort}
+        onPageChange={vi.fn()}
+        columns={sortableColumns}
+        cardTitle="Items List"
+        cardDescription="All test items"
+      />
+    );
+    await user.click(screen.getByRole("button", { name: /sortable name/i }));
+    expect(onSort).toHaveBeenCalledWith("name");
+  });
+
+  it("shows DataTable loading spinner", () => {
+    render(
+      <ListPageLayout
+        title="Test Items"
+        description="Manage test items"
+        resourceName="items"
+        data={mockData}
+        isLoading
+        error={null}
+        querySpec={mockQuerySpec}
+        onSearch={vi.fn()}
+        onSort={vi.fn()}
+        onPageChange={vi.fn()}
+        columns={mockColumns}
+        cardTitle="Items List"
+        cardDescription="All test items"
+      />
+    );
+    expect(screen.getByRole("status")).toBeInTheDocument();
+  });
+
+  it("shows empty message when no rows", () => {
+    const emptyData: PaginatedResponse<TestItem> = {
+      items: [],
+      total: 0,
+      page: 1,
+      pageSize: 10,
+      totalPages: 0,
+      hasPreviousPage: false,
+      hasNextPage: false,
+    };
+    render(
+      <ListPageLayout
+        title="Test Items"
+        description="Manage test items"
+        resourceName="widgets"
+        data={emptyData}
+        isLoading={false}
+        error={null}
+        querySpec={mockQuerySpec}
+        onSearch={vi.fn()}
+        onSort={vi.fn()}
+        onPageChange={vi.fn()}
+        columns={mockColumns}
+        cardTitle="Items List"
+        cardDescription="None"
+      />
+    );
+    expect(screen.getByText("No widgets found.")).toBeInTheDocument();
+  });
+
+  it("renders extra header actions", () => {
+    render(
+      <ListPageLayout
+        title="Test Items"
+        description="Manage test items"
+        resourceName="items"
+        data={mockData}
+        isLoading={false}
+        error={null}
+        querySpec={mockQuerySpec}
+        onSearch={vi.fn()}
+        onSort={vi.fn()}
+        onPageChange={vi.fn()}
+        columns={mockColumns}
+        cardTitle="Items List"
+        cardDescription="All test items"
+        extraHeaderActions={<button type="button">Extra</button>}
+      />
+    );
+    expect(screen.getByRole("button", { name: "Extra" })).toBeInTheDocument();
   });
 });

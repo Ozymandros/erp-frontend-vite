@@ -1,5 +1,3 @@
-"use client";
-
 import { suppliersService } from "@/api/services/suppliers.service";
 import type { SupplierDto, QuerySpec } from "@/types/api.types";
 import { CreateSupplierDialog } from "@/components/purchasing/create-supplier-dialog";

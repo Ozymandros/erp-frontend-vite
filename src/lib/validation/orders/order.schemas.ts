@@ -10,7 +10,7 @@ export const OrderLineSchema = z.object({
 export const CreateOrderSchema = z.object({
   customerId: z.string().min(1, "Customer is required"),
   orderDate: z.string().min(1, "Order date is required"),
-  orderLines: z.array(OrderLineSchema).min(1, "At least one order line is required"),
+  lines: z.array(OrderLineSchema).min(1, "At least one order line is required"),
 });
 
 export const UpdateOrderSchema = CreateOrderSchema;

@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { warehouseStocksService } from "@/api/services/warehouse-stocks.service";
 import { productsService } from "@/api/services/products.service";

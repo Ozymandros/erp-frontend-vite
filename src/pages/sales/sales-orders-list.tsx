@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { salesOrdersService } from "@/api/services/sales-orders.service";
 import { customersService } from "@/api/services/customers.service";
